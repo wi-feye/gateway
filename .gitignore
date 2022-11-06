@@ -10,9 +10,8 @@ src/**/*.map
 src/**/*.jsx
 storybook-static
 .DS_Store
+*.pem
 
-# Created by .ignore support plugin (hsz.mobi)
-### Node template
 # Logs
 logs
 *.log
@@ -51,6 +50,10 @@ build/Release
 node_modules/
 jspm_packages/
 
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
 # Typescript v1 declaration files
 typings/
 
@@ -72,4 +75,12 @@ typings/
 # dotenv environment variables file
 .env
 
+# local env files
+.env*.local
 
+# next.js
+/.next/
+/out/
+
+# production
+/build
