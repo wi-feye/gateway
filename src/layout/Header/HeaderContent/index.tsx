@@ -1,0 +1,53 @@
+// material-ui
+import {Box, IconButton, useMediaQuery} from '@mui/material';
+import {Theme} from "@mui/material/styles";
+
+// project import
+import Profile from './Profile';
+import Search from './Search';
+import {LogoutOutlined} from "@ant-design/icons";
+import React from "react";
+import {authLogout} from "../../../restapi";
+import {loginRoute} from "../../../routes";
+import Router from "next/router";
+
+// ==============================|| HEADER - CONTENT ||============================== //
+
+const LogOutButton = () => {
+    return (
+        <IconButton
+            disableRipple
+            aria-label="logout"
+            onClick={(event) => {
+                authLogout().then(() => {
+                    Router.push(loginRoute.url);
+                }).catch(error => {
+                    console.log(error);
+                    Router.push(loginRoute.url);
+                })
+            }}
+            edge="start"
+            color="secondary"
+            sx={{ color: 'text.primary', bgcolor: 'grey.200', ml: 2, mr: { xs: 0, lg: -2 } }}
+        >
+            <LogoutOutlined />
+        </IconButton>
+    );
+}
+
+const HeaderContent = () => {
+    const matchesXs = useMediaQuery((theme:Theme) => theme.breakpoints.down('md'));
+
+    return (
+        <>
+            {!matchesXs && <Search />}
+            {matchesXs && <Box sx={{ width: '100%', ml: 1 }} />}
+            {!matchesXs && <Profile />}
+            <LogOutButton />
+{/*            <Notification />
+            {matchesXs && <MobileSection />}*/}
+        </>
+    );
+};
+
+export default HeaderContent;
