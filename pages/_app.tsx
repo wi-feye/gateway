@@ -2,12 +2,12 @@ import * as React from 'react';
 import type { AppProps } from 'next/app';
 import { CacheProvider, EmotionCache } from '@emotion/react';
 // third-party
-import {Provider as ReduxProvider, useDispatch, useSelector} from 'react-redux';
+import {Provider as ReduxProvider} from 'react-redux';
 
 import createEmotionCache from '../src/utility/createEmotionCache';
 import ThemeCustomization from "../src/themes";
 import { store } from '../src/store';
-import fetchJson from "../src/restapi/";
+import {fetchJson} from "../src/restapi/";
 import { SWRConfig } from "swr";
 
 interface MyAppProps extends AppProps {

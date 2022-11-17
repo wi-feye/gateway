@@ -41,7 +41,7 @@ export class FetchError extends Error {
     }
 }
 
-async function fetchJson<JSON = unknown>(
+export async function fetchJson<JSON = unknown>(
     input: RequestInfo,
     init?: RequestInit
 ): Promise<JSON> {
