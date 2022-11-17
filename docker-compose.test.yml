@@ -1,9 +1,0 @@
-version: "3.9"
-services:
-  frontend-gateway:
-    image: wifeye/frontend-gateway:latest
-    container_name: wifeye_frontend_gateway
-    expose:
-      - "3000"
-    ports:
-      - "3000:3000"
