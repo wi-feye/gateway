@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  gateway:
+    <<: &gateway
+      image: "gateway:latest"
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: gateway
+
+    expose:
+      - "10004"
+
+    ports:
+      - "10004:10004"
