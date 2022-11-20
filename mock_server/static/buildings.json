@@ -1,0 +1,16 @@
+[
+    {
+        "id": 100001,
+        "id_zerynth": "wks-7e2yv6y5ijmc",
+        "id_user": 100001,
+        "name": "Smart Application project",
+        "last_update": "2022-09-09T00:00:00Z"
+    },
+    {
+        "id": 100002,
+        "id_zerynth": "wks-6sdnjgqfpv98",
+        "id_user": 100001,
+        "name": "MIT",
+        "last_update": "2022-09-09T00:00:00Z"
+    }
+]
