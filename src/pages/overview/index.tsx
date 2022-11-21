@@ -67,7 +67,7 @@ const status = [
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
-const DashboardDefault = () => {
+const Overview = () => {
     const [value, setValue] = useState('today');
     const [slot, setSlot] = useState('week');
 
@@ -94,7 +94,7 @@ const DashboardDefault = () => {
 
             {/* row 2 */}
             <Grid item xs={12} md={7} lg={8}>
-                <Grid container alignItems="center" justifyContent="space-between">
+                <Grid container alignItems="ce  nter" justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h5">Unique Visitor</Typography>
                     </Grid>
@@ -298,4 +298,4 @@ const DashboardDefault = () => {
     );
 };
 
-export default DashboardDefault;
+export default Overview;

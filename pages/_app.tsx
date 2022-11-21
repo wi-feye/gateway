@@ -10,6 +10,8 @@ import { store } from '../src/store';
 import {fetchJson} from "../src/restapi/";
 import { SWRConfig } from "swr";
 
+import "../src/style/globals.css";
+
 interface MyAppProps extends AppProps {
     emotionCache?: EmotionCache;
 }

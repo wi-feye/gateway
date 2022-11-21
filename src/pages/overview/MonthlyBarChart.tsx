@@ -47,7 +47,7 @@ const barChartOptions = {
 const MonthlyBarChart = () => {
     const theme = useTheme();
 
-    const { primary, secondary } = theme.palette.text;
+    const { secondary } = theme.palette.text;
     const info = theme.palette.info.light;
 
     const [series] = useState([
@@ -75,7 +75,7 @@ const MonthlyBarChart = () => {
             }
         }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [primary, info, secondary]);
+    }, [info, secondary]);
 
     // @ts-ignore
     const chartDOM = <ReactApexChart options={options} series={series} type="bar" height={365} />

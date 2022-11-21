@@ -5,6 +5,7 @@ import Overview from "../src/pages/overview";
 import Head from "next/head";
 import {useUser} from "../src/restapi";
 import useAvailableBuildings from "../src/building/useAvailableBuildings";
+import Attendance from "../src/pages/attendance";
 
 export default function AttendancePage() {
     const { user } = useUser({ redirectTo: loginRoute.url })
@@ -17,7 +18,7 @@ export default function AttendancePage() {
 
     return (
         <MainLayout>
-            <Overview />
+            <Attendance />
             <Head>
                 <title>WiFeye | Attendance</title>
                 <meta name="description" content="Crowd Behavior Analysis" />

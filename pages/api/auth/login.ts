@@ -1,9 +1,9 @@
-import {User} from "../../../src/models/user";
-
 import { withIronSessionApiRoute } from 'iron-session/next'
 import { sessionOptions } from '../../../src/auth/session'
 import { NextApiRequest, NextApiResponse } from 'next'
-import gateway_logger from "../../../src/restapi/gateway_logger";
+import gateway_logger from "../../../src/restapi/gateway/gateway_logger";
+import UserManagerAPI from "../../../src/restapi/gateway/usermanagerapi";
+import {FetchError} from "../../../src/restapi";
 
 async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
     gateway_logger(req);
@@ -15,12 +15,21 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
         } = await octokit.rest.users.getByEmail({ email })
 
         const user = { isLoggedIn: true, login, avatarUrl: avatar_url } as User*/
-        const user = { isLoggedIn: true, login: "Gustavo Milan", avatarUrl: "/assets/images/avatar-2.png" } as User
-        req.session.user = user
-        await req.session.save()
-        res.json(user)
+        const userLoggedIn = await UserManagerAPI.login(email, password);
+        userLoggedIn.isLoggedIn = true;
+        userLoggedIn.avatarUrl = "/assets/images/avatar-2.png";
+        req.session.user = userLoggedIn;
+        await req.session.save();
+        res.json(userLoggedIn);
     } catch (error) {
-        res.status(500).json({ message: (error as Error).message })
+        if (error instanceof FetchError) {
+            const fetchError = (error as FetchError);
+            const errorCode = fetchError.response.status == 401 ? 401:500;
+            const errorMsg = errorCode == 401 ? "Invalid credentials":fetchError.message;
+            res.status(errorCode).json({ message: errorMsg });
+        } else {
+            res.status(500).json({ message: (error as Error).message });
+        }
     }
 }
 

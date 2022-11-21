@@ -7,12 +7,14 @@ import {
     Typography
 } from '@mui/material';
 
-// assets
-const avatar2Src = '/assets/images/avatar-2.png';
-
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
-const Profile = () => {
+type ProfileProps = {
+    avatarSrc: string,
+    name: string,
+    surname: string
+}
+const Profile = ({ avatarSrc, name, surname }: ProfileProps) => {
     const profileOnClick = () => {
         console.log("profileOnClick")
     };
@@ -31,8 +33,8 @@ const Profile = () => {
                 onClick={profileOnClick}
             >
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-                    <Avatar alt="profile user" src={avatar2Src} sx={{ width: 32, height: 32 }} />
-                    <Typography variant="subtitle1">Gustavo Milan</Typography>
+                    <Avatar alt="profile user" src={avatarSrc} sx={{ width: 32, height: 32 }} />
+                    <Typography variant="subtitle1">{name} {surname}</Typography>
                 </Stack>
             </ButtonBase>
         </Box>

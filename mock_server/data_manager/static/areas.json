@@ -1,0 +1,52 @@
+[
+    {
+        "id": 100001,
+        "id_building": 100001,
+        "name": "X3",
+        "description": "Aula studio",
+        "color": "#FF0000",
+        "location": [
+            [
+                -1,
+                -0.5
+            ],
+            [
+                5,
+                -0.5
+            ],
+            [
+                5,
+                8.3
+            ],
+            [
+                -1,
+                8.3
+            ]
+        ]
+    },
+    {
+        "id": 100002,
+        "id_building": 100001,
+        "name": "X2",
+        "description": "Aula studio",
+        "color": "#00FF00",
+        "location": [
+            [
+                5,
+                -0.5
+            ],
+            [
+                9.8,
+                -0.5
+            ],
+            [
+                9.8,
+                8.3
+            ],
+            [
+                5,
+                8.3
+            ]
+        ]
+    }
+]

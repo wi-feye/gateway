@@ -10,6 +10,8 @@ import React from "react";
 import {authLogout} from "../../../restapi";
 import {loginRoute} from "../../../routes";
 import Router from "next/router";
+import user from "../../../../pages/api/auth/user";
+import {User} from "../../../models/user";
 
 // ==============================|| HEADER - CONTENT ||============================== //
 
@@ -35,14 +37,17 @@ const LogOutButton = () => {
     );
 }
 
-const HeaderContent = () => {
+type HeaderContentProps = {
+    user?: User
+}
+const HeaderContent = ({ user }: HeaderContentProps) => {
     const matchesXs = useMediaQuery((theme:Theme) => theme.breakpoints.down('md'));
-
+    
     return (
         <>
             {!matchesXs && <Search />}
             {matchesXs && <Box sx={{ width: '100%', ml: 1 }} />}
-            {!matchesXs && <Profile />}
+            {!matchesXs && user && <Profile name={user.name} surname={user.surname} avatarSrc={user.avatarUrl} />}
             <LogOutButton />
 {/*            <Notification />
             {matchesXs && <MobileSection />}*/}

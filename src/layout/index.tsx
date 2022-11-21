@@ -15,6 +15,7 @@ import navigation from '../menu-items';
 // types
 import { openDrawer } from '../store/reducers/menu';
 import { RootState } from "../store";
+import {useUser} from "../restapi";
 
 // ==============================|| MAIN LAYOUT ||============================== //
 
@@ -23,6 +24,7 @@ type MainLayoutProps = {
 }
 
 const MainLayout = ({ children }:MainLayoutProps) => {
+    const { user } = useUser();
     const theme = useTheme();
     const matchDownXS = useMediaQuery(theme.breakpoints.down('md'));
     const dispatch = useDispatch();
@@ -52,7 +54,7 @@ const MainLayout = ({ children }:MainLayoutProps) => {
 
     return (
         <Box sx={{ display: 'flex', width: '100%' }}>
-            <Header open={open} handleDrawerToggle={handleDrawerToggle} />
+            <Header user={user} open={open} handleDrawerToggle={handleDrawerToggle} />
             <Drawer open={open} handleDrawerToggle={handleDrawerToggle} />
             <Box component="main" sx={{ width: '100%', flexGrow: 1, p: { xs: 2, sm: 3 } }}>
                 <Toolbar />

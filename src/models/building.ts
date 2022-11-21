@@ -1,6 +1,6 @@
 export type Building = {
+    id: number,
     name: string,
-    id: string
 }
 
 export default Building;

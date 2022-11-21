@@ -8,14 +8,16 @@ import { AppBar, IconButton, Toolbar, useMediaQuery } from '@mui/material';
 import HeaderContent from './HeaderContent';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import {drawerWidth} from "../../config";
+import {User} from "../../models/user";
 
 // ==============================|| MAIN LAYOUT - HEADER ||============================== //
 type HeaderTypes = {
+    user?: User;
     open?: boolean;
     handleDrawerToggle: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 };
 
-const Header = ({ open, handleDrawerToggle }:HeaderTypes) => {
+const Header = ({ user, open, handleDrawerToggle }:HeaderTypes) => {
     const theme = useTheme();
     const matchDownXS = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -35,7 +37,7 @@ const Header = ({ open, handleDrawerToggle }:HeaderTypes) => {
             >
                 {!open ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </IconButton>
-            <HeaderContent />
+            <HeaderContent user={user}/>
         </Toolbar>
     );
 

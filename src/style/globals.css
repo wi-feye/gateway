@@ -1,0 +1,7 @@
+.leaflet-map .leaflet-control-attribution {
+    display: none !important;
+}
+
+.disable-bar-transition .MuiLinearProgress-bar {
+    transition: none;
+}

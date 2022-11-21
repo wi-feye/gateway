@@ -1,10 +1,10 @@
 import {loginRoute} from "../src/routes";
 import LoadingSplashScreen from "../src/components/LoadingSplashScreen";
 import MainLayout from "../src/layout";
-import Overview from "../src/pages/overview";
 import Head from "next/head";
 import {useUser} from "../src/restapi";
 import useAvailableBuildings from "../src/building/useAvailableBuildings";
+import Devices from "../src/pages/devices";
 
 export default function DevicesPage() {
     const { user } = useUser({ redirectTo: loginRoute.url })
@@ -17,7 +17,7 @@ export default function DevicesPage() {
 
     return (
         <MainLayout>
-            <Overview />
+            <Devices />
             <Head>
                 <title>WiFeye | Devices</title>
                 <meta name="description" content="Crowd Behavior Analysis" />

@@ -1,5 +1,9 @@
 export type User = {
-    isLoggedIn: boolean
-    login: string
-    avatarUrl: string
+    id: number,
+    email: string,
+    name: string,
+    surname: string,
+    zerynth_api_key: string,
+    isLoggedIn: boolean,
+    avatarUrl: string,
 }
