@@ -20,17 +20,13 @@ import {
 
 // project import
 import MainCard from '../../components/MainCard';
-import MonthlyBarChart from './MonthlyBarChart';
+import WeeklyBarChart from './WeeklyBarChart';
 import IncomeAreaChart from './IncomeAreaChart';
 import AnalyticEcommerce from '../../components/cards/statistics/AnalyticEcommerce';
 import OrdersTable from './OrdersTable';
 
 // assets
 import { GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
-/*import avatar1 from 'assets/images/users/avatar-1.png';
-import avatar2 from 'assets/images/users/avatar-2.png';
-import avatar3 from 'assets/images/users/avatar-3.png';
-import avatar4 from 'assets/images/users/avatar-4.png';*/
 
 // avatar style
 const avatarSX = {
@@ -96,7 +92,7 @@ const Overview = () => {
             <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="ce  nter" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Unique Visitor</Typography>
+                        <Typography variant="h5">Attendance over time</Typography>
                     </Grid>
                     <Grid item>
                         <Stack direction="row" alignItems="center" spacing={0}>
@@ -128,7 +124,7 @@ const Overview = () => {
             <Grid item xs={12} md={5} lg={4}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Income Overview</Typography>
+                        <Typography variant="h5">Attendance</Typography>
                     </Grid>
                     <Grid item />
                 </Grid>
@@ -136,12 +132,12 @@ const Overview = () => {
                     <Box sx={{ p: 3, pb: 0 }}>
                         <Stack spacing={2}>
                             <Typography variant="h6" color="textSecondary">
-                                This Week Statistics
+                                Today's attendance
                             </Typography>
-                            <Typography variant="h3">$7,650</Typography>
+                            {/*<Typography variant="h3">$7,650</Typography>*/}
                         </Stack>
                     </Box>
-                    <MonthlyBarChart />
+                    <WeeklyBarChart data={[0, 0, 0, 0, 0, 0, 0, 40, 95, 80, 75, 86, 35, 50, 80, 95, 70, 50, 30, 0, 0, 0, 0, 0]} height={410}/>
                 </MainCard>
             </Grid>
 

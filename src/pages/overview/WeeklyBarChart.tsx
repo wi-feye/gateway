@@ -18,7 +18,7 @@ const barChartOptions = {
     },
     plotOptions: {
         bar: {
-            columnWidth: '45%',
+            /*columnWidth: '45%',*/
             borderRadius: 4
         }
     },
@@ -26,7 +26,6 @@ const barChartOptions = {
         enabled: false
     },
     xaxis: {
-        categories: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
         axisBorder: {
             show: false
         },
@@ -44,7 +43,11 @@ const barChartOptions = {
 
 // ==============================|| MONTHLY BAR CHART ||============================== //
 
-const MonthlyBarChart = () => {
+type WeeklyBarChartProps = {
+    data: number[],
+    height: number
+}
+const WeeklyBarChart = ({ data, height }: WeeklyBarChartProps) => {
     const theme = useTheme();
 
     const { secondary } = theme.palette.text;
@@ -52,7 +55,7 @@ const MonthlyBarChart = () => {
 
     const [series] = useState([
         {
-            data: [80, 95, 70, 42, 65, 55, 78]
+            data: data
         }
     ]);
 
@@ -64,9 +67,10 @@ const MonthlyBarChart = () => {
             ...prevState,
             colors: [info],
             xaxis: {
+                categories: ['', '', '03', '', '', '06', '', '', '09', '', '', '12', '', '', '15', '', '', '18', '', '', '21','','',''],
                 labels: {
                     style: {
-                        colors: [secondary, secondary, secondary, secondary, secondary, secondary, secondary]
+                        colors: [secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary]
                     }
                 }
             },
@@ -78,7 +82,7 @@ const MonthlyBarChart = () => {
     }, [info, secondary]);
 
     // @ts-ignore
-    const chartDOM = <ReactApexChart options={options} series={series} type="bar" height={365} />
+    const chartDOM = <ReactApexChart options={options} series={series} type="bar" height={height} />
     return (
         <div id="chart">
             { chartDOM }
@@ -86,4 +90,4 @@ const MonthlyBarChart = () => {
     );
 };
 
-export default MonthlyBarChart;
+export default WeeklyBarChart;

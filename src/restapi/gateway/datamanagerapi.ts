@@ -2,28 +2,37 @@ import Building from "../../models/building";
 import { fetchJson } from "../index";
 import Area from "../../models/area";
 import Device from "../../models/device";
+import CrowdBehavior from "../../models/crowdbehavior";
 
 const ENDPOINT = "http://localhost:10001";
 const DATA_MANAGER_BUILDINGS_URL = ENDPOINT + "/api/buildings/pull";
 const DATA_MANAGER_AREAS_URL = ENDPOINT + "/api/areas/pull";
 const DATA_MANAGER_DEVICES_URL = ENDPOINT + "/api/sniffers/pull";
+const DATA_MANAGER_POSITION_DETECTION_URL = ENDPOINT + "/api/position-detection/pull";
 
 function buildings(userId: number): Promise<Building[]> {
     return fetchJson<Building[]>(`${DATA_MANAGER_BUILDINGS_URL}/${userId}`);
 }
 
-function areas(buildingId: number): Promise<Area[]> {
+function areas(buildingId: string): Promise<Area[]> {
     return fetchJson<Area[]>(`${DATA_MANAGER_AREAS_URL}/${buildingId}`);
 }
 
-function devices(buildingId: number): Promise<Device[]> {
+function devices(buildingId: string): Promise<Device[]> {
     return fetchJson<Device[]>(`${DATA_MANAGER_DEVICES_URL}/${buildingId}`);
+}
+
+function crowdBehavior(buildingId: string, fromDate: Date, toDate: Date) {
+    const startStr = fromDate.toISOString();
+    const endStr = toDate.toISOString();
+    return fetchJson<CrowdBehavior[]>(`${DATA_MANAGER_POSITION_DETECTION_URL}/${buildingId}?start=${startStr}&end=${endStr}`);
 }
 
 const DataManagerAPI = {
     buildings,
     areas,
-    devices
+    devices,
+    crowdBehavior
 };
 
 export default DataManagerAPI;

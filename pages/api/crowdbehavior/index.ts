@@ -3,6 +3,7 @@ import gateway_logger from "../../../src/restapi/gateway/gateway_logger";
 import {withIronSessionApiRoute} from "iron-session/next";
 import {sessionOptions} from "../../../src/auth/session";
 import CrowdBehavior from "../../../src/models/crowdbehavior";
+import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 
 function createDummyDatapoints(): number[][] {
     const heatmapPoints: number[][] = [];
@@ -49,6 +50,8 @@ async function route(req: NextApiRequest, res: NextApiResponse<CrowdBehavior[]>)
     const user = req.session.user;
     const fromDate = new Date(Array.isArray(from) ? from[0] : from);
     const toDate = new Date(Array.isArray(to) ? to[0] : to);
+
+    //const response = buildingId ? await DataManagerAPI.crowdBehavior(buildingId, fromDate, toDate):[];
 
     const response: CrowdBehavior[] = [];
     pointsList.forEach(points => {

@@ -15,11 +15,8 @@ async function listRoute(req: NextApiRequest, res: NextApiResponse<Area[]>) {
 
     const user = req.session.user;
     const buildingId = Array.isArray(req.query.buildingId) ? req.query.buildingId[0]:req.query.buildingId;
-    if (!buildingId) {
-        res.json([]);
-        return;
-    }
-    const areas = buildingId ? await DataManagerAPI.areas(parseInt(buildingId)):[];
+
+    const areas = buildingId ? await DataManagerAPI.areas(buildingId):[];
     res.json(areas);
 }
 
