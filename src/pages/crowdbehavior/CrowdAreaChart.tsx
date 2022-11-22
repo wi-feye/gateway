@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 
 // material-ui
-import { useTheme } from '@mui/material/styles';
+import {useTheme} from '@mui/material/styles';
 import dynamic from "next/dynamic";
 import PointOfInterest from "../../models/pointOfInterest";
 import Area from "../../models/area";
+import {Dayjs} from "dayjs";
 
 // third-party
-const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
+const ReactApexChart = dynamic(() => import('react-apexcharts'), {ssr: false});
 
 // chart options
 const areaChartOptions = {
@@ -31,16 +32,45 @@ const areaChartOptions = {
 };
 
 type CrowdAreaChartType = {
+    timeFrom: Date
+    timeTo: Date
     pointOfInterest: PointOfInterest[],
     areas: Area[]
 };
-
-const CrowdAreaChart = ({ pointOfInterest, areas }: CrowdAreaChartType) => {
+const d = new Date
+const p: PointOfInterest[] = [{
+    id: 1233,
+    idArea: 1332,
+    time: new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 5),
+    pointOfInterest: [{x: 12, y: 22}]
+}, {
+    id: 123,
+    idArea: 1332,
+    time: new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 20),
+    pointOfInterest: [{x: 4, y: 5}]
+}]
+const a = [1332, 1245, 1478]
+const CrowdAreaChart = ({timeFrom, timeTo, pointOfInterest, areas}: CrowdAreaChartType) => {
     const theme = useTheme();
-    console.log(pointOfInterest)
-    const { primary, secondary } = theme.palette.text;
+    const diff = Math.round((((timeTo - timeFrom) % 86400000) % 3600000) / 60000)
+    const {primary, secondary} = theme.palette.text;
     const line = theme.palette.divider;
-
+    console.log(timeTo.getTime())
+    let arr: string[] = [];
+    let values = []
+    for (let n = 0; n <= diff; n += 5) {
+        const time = new Date(timeFrom.getFullYear(), timeFrom.getMonth(), timeFrom.getDate(), timeFrom.getHours(), timeFrom.getMinutes() + n)
+        let i = 0;
+        p.map(poi => {
+            if (timeFrom.getTime() <= poi.time.getTime() &&  poi.time.getTime() <= time.getTime()) {
+                i += 1
+            }
+        })
+        values.push(i)
+        arr.push(time.getHours().toString() + ":" + time.getMinutes().toString());
+    }
+    console.log(arr)
+    console.log(values)
     const [options, setOptions] = useState(areaChartOptions);
     // @ts-ignore
     const darkerPrimary = theme.palette.primary[700]
@@ -51,8 +81,7 @@ const CrowdAreaChart = ({ pointOfInterest, areas }: CrowdAreaChartType) => {
             ...prevState,
             colors: [theme.palette.primary.main, darkerPrimary],
             xaxis: {
-                categories:
-                         ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                categories: arr,
 
                 labels: {
                     style: {
@@ -96,29 +125,14 @@ const CrowdAreaChart = ({ pointOfInterest, areas }: CrowdAreaChartType) => {
     const [series, setSeries] = useState([
         {
             name: 'Page Views',
-            data: [0, 86, 28, 115, 48, 210, 136]
-        },
-        {
-            name: 'Sessions',
-            data: [0, 43, 14, 56, 24, 105, 68]
+            data: values
         }
     ]);
 
-    // useEffect(() => {
-    //     setSeries([
-    //         {
-    //             name: 'Page Views',
-    //             data: slot === 'month' ? [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35] : [31, 40, 28, 51, 42, 109, 100]
-    //         },
-    //         {
-    //             name: 'Sessions',
-    //             data: slot === 'month' ? [110, 60, 150, 35, 60, 36, 26, 45, 65, 52, 53, 41] : [11, 32, 45, 32, 34, 52, 41]
-    //         }
-    //     ]);
-    // }, [slot]);
+
 
     // @ts-ignore
-    return <ReactApexChart options={options} series={series} type="area" height={450} />;
+    return <ReactApexChart options={options} series={series} type="area" height={450}/>;
 };
 
 export default CrowdAreaChart;

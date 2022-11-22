@@ -25,42 +25,37 @@ import CrowdAreaChart from "./CrowdAreaChart";
 import CrowdBarChart from "./CrowdBarChart";
 import CrowdsGridContainer from "../../components/CrowdsGridContainer";
 import {useAreas, useCrowdBehavior, usePointOfInterest} from "../../restapi";
+import {getMinutes} from "@mui/x-date-pickers/ClockPicker/shared";
 
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const CrowdBehavior = () => {
-    const [date, setDate] = useState<Dayjs>(
-        dayjs(),
+    const [date, setDate] = useState<Date>(
+        new Date()
     );
-    const [timeFrom, setTimeFrom] = useState<Dayjs>(
-        dayjs(),
+    const [timeFrom, setTimeFrom] = useState<Date>(
+        new Date()
     );
-    const [timeTo, setTimeTo] = useState<Dayjs>(
-        dayjs(),
+    let [timeTo, setTimeTo] = useState<Date>(
+        new Date(timeFrom.getFullYear(), timeFrom.getMonth(), timeFrom.getDate(), timeFrom.getHours(), timeFrom.getMinutes()+30)
     );
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
-    const { crowdBehavior, isLoading } = useCrowdBehavior(selectedBuilding.id,
-        new Date(date.year(), date.month(), date.day(), timeFrom.hour(), timeFrom.minute(), timeFrom.second()),
-        new Date(date.year(), date.month(), date.day(), timeTo.hour(), timeTo.minute(), timeTo.second()),
-    );
+    const { crowdBehavior, isLoading } = useCrowdBehavior(selectedBuilding.id,timeFrom, timeTo);
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
 
-    const { pointOfInterest } = usePointOfInterest(selectedBuilding.id,
-        new Date(date.year(), date.month(), date.day(), timeFrom.hour(), timeFrom.minute(), timeFrom.second()),
-        new Date(date.year(), date.month(), date.day(), timeTo.hour(), timeTo.minute(), timeTo.second()),
-    );
+    const { pointOfInterest } = usePointOfInterest(selectedBuilding.id,timeFrom, timeTo);
 
-    const handleChangeDate = (newValue: Dayjs | null, keyboardInputValue?: string | undefined) => {
+    const handleChangeDate = (newValue: Date | null, keyboardInputValue?: string | undefined) => {
         if (newValue) setDate(newValue);
     };
 
-    const handleChangeTimeFrom = (newValue: Dayjs | null, keyboardInputValue?: string | undefined) => {
+    const handleChangeTimeFrom = (newValue: Date | null, keyboardInputValue?: string | undefined) => {
         if (newValue) setTimeFrom(newValue);
     };
-    const handleChangeTimeTo = (newValue: Dayjs | null, keyboardInputValue?: string | undefined) => {
+    const handleChangeTimeTo = (newValue: Date | null, keyboardInputValue?: string | undefined) => {
         if (newValue) setTimeTo(newValue);
     };
 
@@ -118,17 +113,17 @@ const CrowdBehavior = () => {
             <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Number of crowds</Typography>
+                        <Typography variant="h5">Number of point of interest</Typography>
                     </Grid>
                 </Grid>
                 <MainCard sx={{mt: 2}} content={false}>
-                    <CrowdAreaChart pointOfInterest={pointOfInterest ? pointOfInterest:[]} areas={areas? areas:[]}/>
+                    <CrowdAreaChart timeFrom={timeFrom} timeTo={timeTo} pointOfInterest={pointOfInterest ? pointOfInterest:[]} areas={areas? areas:[]}/>
                 </MainCard>
             </Grid>
             <Grid item xs={12} md={5} lg={4}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Crowds per Area</Typography>
+                        <Typography variant="h5">Point of interest Area</Typography>
                     </Grid>
                 </Grid>
                 <MainCard sx={{mt: 2}} content={false}>
