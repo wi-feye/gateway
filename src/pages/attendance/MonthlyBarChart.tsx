@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import dynamic from "next/dynamic";
-import PointOfInterest from "../../models/pointOfInterest";
-import Area from "../../models/area";
 
 // third-party
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -12,7 +10,7 @@ const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false })
 // chart options
 const barChartOptions = {
     chart: {
-        type: "bar",
+        type: 'bar',
         height: 365,
         toolbar: {
             show: false
@@ -20,7 +18,7 @@ const barChartOptions = {
     },
     plotOptions: {
         bar: {
-            /*columnWidth: '45%',*/
+            columnWidth: '45%',
             borderRadius: 4
         }
     },
@@ -28,31 +26,32 @@ const barChartOptions = {
         enabled: false
     },
     xaxis: {
-        categories: ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7'],
+        categories: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
         axisBorder: {
             show: false
         },
         axisTicks: {
             show: false
         }
+    },
+    yaxis: {
+        show: false
+    },
+    grid: {
+        show: false
     }
 };
 
 // ==============================|| MONTHLY BAR CHART ||============================== //
-type CrowdBarChartType = {
-    pointOfInterest: PointOfInterest[],
-    areas: Area[]
-};
 
-const CrowdBarChart = ({ pointOfInterest, areas }: CrowdBarChartType) => {
+const MonthlyBarChart = () => {
     const theme = useTheme();
 
-    const { secondary } = theme.palette.text;
+    const { primary, secondary } = theme.palette.text;
     const info = theme.palette.info.light;
 
     const [series] = useState([
         {
-            name: "Number of crowds",
             data: [80, 95, 70, 42, 65, 55, 78]
         }
     ]);
@@ -65,8 +64,6 @@ const CrowdBarChart = ({ pointOfInterest, areas }: CrowdBarChartType) => {
             ...prevState,
             colors: [info],
             xaxis: {
-                categories: ['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7'],
-
                 labels: {
                     style: {
                         colors: [secondary, secondary, secondary, secondary, secondary, secondary, secondary]
@@ -77,16 +74,16 @@ const CrowdBarChart = ({ pointOfInterest, areas }: CrowdBarChartType) => {
                 theme: 'light'
             }
         }));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [primary, info, secondary]);
 
-    }, [info, secondary]);
-
-
+    // @ts-ignore
+    const chartDOM = <ReactApexChart options={options} series={series} type="bar" height={365} />
     return (
         <div id="chart">
-            {/* @ts-ignore */}
-            { <ReactApexChart options={options} series={series} type="bar" height={450} /> }
+            { chartDOM }
         </div>
     );
 };
 
-export default CrowdBarChart;
+export default MonthlyBarChart;

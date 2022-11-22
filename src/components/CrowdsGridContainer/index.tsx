@@ -4,6 +4,7 @@ import MainCard from "../MainCard";
 import {useEffect, useState} from "react";
 import CrowdBehavior from "../../models/crowdbehavior";
 import dynamic from "next/dynamic";
+import Area from "../../models/area";
 
 const Map = dynamic(() => import('../../components/Map'), {
     ssr: false
@@ -13,9 +14,10 @@ type CrowdsGridContainerProps = {
     crowdBehavior: CrowdBehavior[] | undefined,
     isLoading: boolean,
     height: number,
-    title: string
+    title: string,
+    areas?: Area[]
 }
-export default function CrowdsGridContainer({ title, crowdBehavior, isLoading, height }: CrowdsGridContainerProps) {
+export default function CrowdsGridContainer({ title, areas, crowdBehavior, isLoading, height }: CrowdsGridContainerProps) {
     const [mapProgress, setMapProgress] = useState<number>(0);
     const [index, setIndex] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -77,9 +79,10 @@ export default function CrowdsGridContainer({ title, crowdBehavior, isLoading, h
                 </Box>
                 <Box style={{position: "relative"}}>
                     <Map
-                        center={[43.72082, 10.40806]}
                         height={height}
                         heatmapPoints={crowdBehavior ? crowdBehavior[index].data : []}
+                        areas={areas ? areas:[]}
+                        fitAreasBounds
                     />
                 </Box>
             </MainCard>

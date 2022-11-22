@@ -7,12 +7,14 @@ import Router from "next/router";
 import Device from "../models/device";
 import Attendance from "../models/attendance";
 import CrowdBehavior from "../models/crowdbehavior";
+import PointOfInterest from "../models/pointOfInterest";
 
 const REST_API_AUTH_USER_URL = "/api/auth/user";
 const REST_API_GET_BUILDINGS_URL = "/api/building/list";
 const REST_API_GET_AREAS_URL = "/api/area/list";
 const REST_API_GET_DEVICES_URL = "/api/device/list";
 const REST_API_GET_CROWDBEHAVIOR_URL = "/api/crowdbehavior";
+const REST_API_GET_POINTINTEREST_URL = "/api/pointofinterest";
 const REST_API_GET_ATTENDANCE_URL = "/api/attendance";
 const REST_API_AUTH_LOGIN_URL = "/api/auth/login";
 const REST_API_AUTH_LOGOUT_URL = "/api/auth/logout";
@@ -191,9 +193,26 @@ export function useCrowdBehavior(buildingId: number | undefined, from: Date, to:
     );
 
     const isLoading = !error && !data;
-    if (isLoading) console.log("Fetching attendance...");
+    if (isLoading) console.log("Fetching data...");
     return {
         crowdBehavior: data,
+        isLoading,
+        isError: error
+    }
+}
+
+export function usePointOfInterest(buildingId: number, from: Date, to: Date) {
+    const fromTimestamp = from.toISOString();
+    const toTimestamp = to.toISOString();
+    const { data, error } = useSWR<PointOfInterest[]>(
+        buildingId ? `${REST_API_GET_POINTINTEREST_URL}?buildingId=${buildingId}&from=${fromTimestamp}&to=${toTimestamp}`:null,
+        fetchJson
+    );
+
+    const isLoading = !error && !data;
+    if (isLoading) console.log("Fetching point of interest...");
+    return {
+        pointOfInterest: data,
         isLoading,
         isError: error
     }

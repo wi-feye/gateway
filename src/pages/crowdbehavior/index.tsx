@@ -18,13 +18,14 @@ const Map = dynamic(() => import('../../components/Map'), {
 
 // assets
 import dynamic from "next/dynamic";
-import {useCrowdBehavior} from "../../restapi";
 import dayjs, {Dayjs} from "dayjs";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {LocalizationProvider, MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
 import CrowdAreaChart from "./CrowdAreaChart";
 import CrowdBarChart from "./CrowdBarChart";
 import CrowdsGridContainer from "../../components/CrowdsGridContainer";
+import {useAreas, useCrowdBehavior, usePointOfInterest} from "../../restapi";
+
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
@@ -40,7 +41,14 @@ const CrowdBehavior = () => {
     );
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
+
     const { crowdBehavior, isLoading } = useCrowdBehavior(selectedBuilding.id,
+        new Date(date.year(), date.month(), date.day(), timeFrom.hour(), timeFrom.minute(), timeFrom.second()),
+        new Date(date.year(), date.month(), date.day(), timeTo.hour(), timeTo.minute(), timeTo.second()),
+    );
+    const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
+
+    const { pointOfInterest } = usePointOfInterest(selectedBuilding.id,
         new Date(date.year(), date.month(), date.day(), timeFrom.hour(), timeFrom.minute(), timeFrom.second()),
         new Date(date.year(), date.month(), date.day(), timeTo.hour(), timeTo.minute(), timeTo.second()),
     );
@@ -67,7 +75,7 @@ const CrowdBehavior = () => {
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <MobileDatePicker
                             label="Date"
-                            inputFormat="DD/YY/YYYY"
+                            inputFormat="DD/MM/YYYY"
                             value={date}
                             onChange={handleChangeDate}
                             renderInput={(params) => <TextField {...params} />}
@@ -100,6 +108,7 @@ const CrowdBehavior = () => {
                 <CrowdsGridContainer
                     title="Crowds"
                     crowdBehavior={crowdBehavior}
+                    areas={areas}
                     isLoading={isLoading}
                     height={480}
                 />
@@ -113,7 +122,7 @@ const CrowdBehavior = () => {
                     </Grid>
                 </Grid>
                 <MainCard sx={{mt: 2}} content={false}>
-                    <CrowdAreaChart slot={"day"}/>
+                    <CrowdAreaChart pointOfInterest={pointOfInterest ? pointOfInterest:[]} areas={areas? areas:[]}/>
                 </MainCard>
             </Grid>
             <Grid item xs={12} md={5} lg={4}>
@@ -123,7 +132,7 @@ const CrowdBehavior = () => {
                     </Grid>
                 </Grid>
                 <MainCard sx={{mt: 2}} content={false}>
-                    <CrowdBarChart />
+                    <CrowdBarChart pointOfInterest={pointOfInterest ? pointOfInterest:[]} areas={areas? areas:[]}/>
                 </MainCard>
             </Grid>
         </Grid>

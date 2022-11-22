@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import dynamic from "next/dynamic";
-import PointOfInterest from "../../models/pointOfInterest";
-import Area from "../../models/area";
 
 // third-party
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -30,14 +28,14 @@ const areaChartOptions = {
     }
 };
 
-type CrowdAreaChartType = {
-    pointOfInterest: PointOfInterest[],
-    areas: Area[]
+// ==============================|| INCOME AREA CHART ||============================== //
+type AttendanceChartType = {
+    slot: string
 };
 
-const CrowdAreaChart = ({ pointOfInterest, areas }: CrowdAreaChartType) => {
+const CrowdAreaChart = ({ slot }: AttendanceChartType) => {
     const theme = useTheme();
-    console.log(pointOfInterest)
+
     const { primary, secondary } = theme.palette.text;
     const line = theme.palette.divider;
 
@@ -52,8 +50,9 @@ const CrowdAreaChart = ({ pointOfInterest, areas }: CrowdAreaChartType) => {
             colors: [theme.palette.primary.main, darkerPrimary],
             xaxis: {
                 categories:
-                         ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-
+                    slot === 'month'
+                        ? ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+                        : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                 labels: {
                     style: {
                         colors: [
@@ -76,6 +75,7 @@ const CrowdAreaChart = ({ pointOfInterest, areas }: CrowdAreaChartType) => {
                     show: true,
                     color: line
                 },
+                tickAmount: slot === 'month' ? 11 : 7
             },
             yaxis: {
                 labels: {
@@ -91,7 +91,7 @@ const CrowdAreaChart = ({ pointOfInterest, areas }: CrowdAreaChartType) => {
                 theme: 'light'
             }
         }));
-    }, [primary, secondary, line, theme]);
+    }, [primary, secondary, line, theme, slot]);
 
     const [series, setSeries] = useState([
         {
@@ -104,18 +104,18 @@ const CrowdAreaChart = ({ pointOfInterest, areas }: CrowdAreaChartType) => {
         }
     ]);
 
-    // useEffect(() => {
-    //     setSeries([
-    //         {
-    //             name: 'Page Views',
-    //             data: slot === 'month' ? [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35] : [31, 40, 28, 51, 42, 109, 100]
-    //         },
-    //         {
-    //             name: 'Sessions',
-    //             data: slot === 'month' ? [110, 60, 150, 35, 60, 36, 26, 45, 65, 52, 53, 41] : [11, 32, 45, 32, 34, 52, 41]
-    //         }
-    //     ]);
-    // }, [slot]);
+    useEffect(() => {
+        setSeries([
+            {
+                name: 'Page Views',
+                data: slot === 'month' ? [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35] : [31, 40, 28, 51, 42, 109, 100]
+            },
+            {
+                name: 'Sessions',
+                data: slot === 'month' ? [110, 60, 150, 35, 60, 36, 26, 45, 65, 52, 53, 41] : [11, 32, 45, 32, 34, 52, 41]
+            }
+        ]);
+    }, [slot]);
 
     // @ts-ignore
     return <ReactApexChart options={options} series={series} type="area" height={450} />;

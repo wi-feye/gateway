@@ -2,6 +2,28 @@
     display: none !important;
 }
 
+.leaflet-map .leaflet-area-tooltip {
+    font-size: 16px;
+    background: rgba(255,255,255,.1) !important;
+    font-weight: bold;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.leaflet-map.leaflet-container {
+    background-color: /*rgba(0,0,0,0.0)*/ #f8f9fa !important;
+}
+
 .disable-bar-transition .MuiLinearProgress-bar {
     transition: none;
+}
+
+.marker-device-icon {
+    /*background-color: #78909c;
+    border-radius: 50%;
+    -webkit-box-shadow: 0 5px 6px -2px #9B9B9B;
+    -moz-box-shadow: 0 5px 6px -2px #9B9B9B;
+    -o-box-shadow: 0 5px 6px -2px #9B9B9B;
+    box-shadow: 0 5px 6px -2px #9B9B9B;*/
 }

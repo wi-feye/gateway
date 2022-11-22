@@ -1,15 +1,36 @@
 import {useCallback, useEffect, useState} from "react";
 
 import {
-    HeatMapOptions,
-    LatLng,
-    Map as LeafletMap, Marker,
+    HeatMapOptions, Icon,
+    LatLng, LatLngBounds,
+    Map as LeafletMap, Marker, Point, PointExpression, Polygon, polygon,
     TileLayer
 } from "leaflet";
 import * as Leaflet from 'leaflet'; // this is needed to call Leaflet.heatLayer() function
 import "leaflet/dist/leaflet.css"; // style for leaflet
 import "leaflet.heat"; // add heatLayer function to leaflet
 import LoadingComponent from "../LoadingComponent";
+import Area from "../../models/area";
+import Device from "../../models/device";
+import {renderToString} from "react-dom/server";
+import {CheckCircleOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
+import {Typography} from "@mui/material";
+import * as React from "react";
+
+function buildDeviceMarkerPopup(device: Device) {
+    return (
+        <div style={{ display: "flex", alignItems: "center"}}>
+            {device.status == "Online" ?
+                <CheckCircleOutlined style={{ fontSize: "24px", marginRight: "10px" }}/>
+                :
+                <ExclamationCircleOutlined style={{ fontSize: "24px", marginRight: "10px" }}/>
+            }
+            <Typography variant="h3" sx={{ mt: 0 }}>
+                { device.name }
+            </Typography>
+        </div>
+    );
+}
 
 // Function to convert xy coordinates into yx leaflet coordinates with latitude and longitude
 function xy(x: any, y: any) {
@@ -19,15 +40,22 @@ function xy(x: any, y: any) {
     return new LatLng(y, x);  // When doing xy(x, y);
 }
 
-type HeatmapPropType = {
-    center: number[],
+type MapPropType = {
     height: number,
+    center?: number[],
+    zoomSnap?: number,
+    mapUrl?: string,
     whenReady?: () => void,
-    heatmapPoints?: number[][]
+    heatmapPoints?: number[][],
+    areas?: Area[],
+    fitAreasBounds?: boolean,
+    devices?: Device[]
 }
-export default function Map({ center, height, whenReady, heatmapPoints }: HeatmapPropType) {
+export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatmapPoints, areas, fitAreasBounds, devices }: MapPropType) {
     const [map, setMap] = useState<LeafletMap>();
     const [heatmapLayer, setHeatmapLayer] = useState<Leaflet.HeatLayer>();
+    const [polygons, setPolygons] = useState<Polygon[]>([]);
+    const [devicesMarkers, setDevicesMarkers] = useState<Marker[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const onMapReady = () => {
@@ -41,19 +69,23 @@ export default function Map({ center, height, whenReady, heatmapPoints }: Heatma
             let newMap = new LeafletMap(node, {
                 scrollWheelZoom: false, // avoid zoomming while scrolling on the page
                 zoomControl: true,
+                zoomSnap: zoomSnap
             });
 
             newMap = newMap.whenReady(onMapReady); //Runs when the map gets initialized with a view (center and zoom) and at least one layer
-            const tileLayer = new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png')
-            newMap = newMap.addLayer(tileLayer);
-            //tileLayer.on("load", () => setIsLoading(false))
-            if (center != null && zoom != null) {
-                newMap.setView(new LatLng(center[0], center[1]), zoom)
-            } else {
-                newMap.fitWorld();
+
+            if (mapUrl) {
+                const tileLayer = new TileLayer(mapUrl)
+                newMap = newMap.addLayer(tileLayer);
             }
+
+            if (center != null && zoom != null) {
+                newMap = newMap.setView(new LatLng(center[0], center[1]), zoom);
+            } /* else {
+                newMap = newMap.fitWorld();
+            }*/
+
             setMap(newMap);
-            console.log(newMap.getBounds())
         }
     }, []);
 
@@ -63,20 +95,21 @@ export default function Map({ center, height, whenReady, heatmapPoints }: Heatma
             radius: 16
         }
 
+        let retMap = map;
         const pointsLatLng = points.map(x => new LatLng(x[0], x[1]));
         if (!heatmapLayer) { // build layer if it is the first time
             const heatmapLayer = Leaflet.heatLayer(pointsLatLng, heatmapOptions);
             const newMap = map.addLayer(heatmapLayer);
             setMap(newMap);
             setHeatmapLayer(heatmapLayer);
-            console.log("Build layer and change heatmap points");
+
+            retMap = newMap;
         } else {   // update the layer otherwise
             let newHeatmapLayer = heatmapLayer.setLatLngs(pointsLatLng);
             setHeatmapLayer(newHeatmapLayer);
-            console.log("Change heatmap points");
         }
 
-        return map;
+        return retMap;
     };
 
     useEffect(() => {
@@ -85,6 +118,115 @@ export default function Map({ center, height, whenReady, heatmapPoints }: Heatma
             setMap(newMap);
         }
     }, [heatmapPoints, map]);
+
+    const buildPolygons = (map: LeafletMap, areas: Area[]): LeafletMap => {
+        let retMap = map;
+        areas.forEach(area => {
+            const pointsLatLng = area.location.map(coord => xy(coord[0], coord[1]));
+            const poly = new Polygon(pointsLatLng, {
+                // polygon options
+                color: "#dcdee2",
+                fillColor: "#f1f3f4",
+                fillOpacity: 1,
+                weight: 2,
+            });
+            poly.bindTooltip(area.name,{
+                permanent: true,
+                direction: "center",
+                className: "leaflet-area-tooltip"
+            }).openTooltip();
+
+            polygons.push(poly);
+            setPolygons(polygons);
+
+            retMap = map.addLayer(poly);
+        });
+
+        return retMap;
+    }
+
+    const computeAreasBounds = (areas: Area[]) => {
+        let newBounds: number[] = [];
+        if (areas && areas.length > 0) {
+            // min x, min y, max x, max y
+            newBounds = [areas[0].location[0][0], areas[0].location[0][1], areas[0].location[0][0], areas[0].location[0][1]];
+            areas?.forEach(area => {
+                area.location.forEach(loc => {
+                    if (loc[0] < newBounds[0]) newBounds[0] = loc[0]; // min x
+                    if (loc[1] < newBounds[1]) newBounds[1] = loc[1]; // min y
+                    if (loc[0] > newBounds[2]) newBounds[2] = loc[0]; // max x
+                    if (loc[1] > newBounds[3]) newBounds[3] = loc[1]; // max y
+                })
+            });
+        }
+
+        return newBounds;
+    }
+
+    const boundsGap = 1;
+    useEffect(() => {
+        if (areas && map) {
+            polygons.forEach((poly) => poly.remove());
+            setPolygons([]);
+
+            let newMap = buildPolygons(map, areas);
+            if (fitAreasBounds && areas.length > 0) {
+                // min x, min y, max x, max y
+                const newBounds = computeAreasBounds(areas);
+                console.log(newBounds);
+                const centerXY = xy(
+                    (newBounds[0] + newBounds[2]) / 2,
+                    (newBounds[1] + newBounds[3]) / 2,
+                );
+                newMap = newMap.setView(centerXY).fitBounds(new LatLngBounds(
+                    xy(newBounds[0] - boundsGap, newBounds[1] - boundsGap),
+                    xy(newBounds[2] + boundsGap, newBounds[3] + boundsGap),
+                ));
+            }
+
+            setMap(newMap);
+        }
+    }, [areas, map]);
+
+    const iconSize: PointExpression = [28, 40];
+    const shadowSize: PointExpression = [20, 20];
+    const deviceMarkerIcon = new Icon({
+        iconSize: iconSize, // size of the icon
+        iconAnchor: [iconSize[0]/2, iconSize[1]], // point of the icon which will correspond to marker's location
+        className: "marker-device-icon",
+        iconUrl: '/assets/images/device_icon.png',
+        shadowUrl: '/assets/images/device_icon_shadow.png',
+        shadowSize: shadowSize, // size of the shadow
+        shadowAnchor: [shadowSize[0]/2, shadowSize[1]/2],  // point of the icon which will correspond to shadow's location
+    });
+    const addMarkerDevice = (map: LeafletMap, device: Device, icon: Icon, iconYSize: number): LeafletMap => {
+        const markerLayer = new Marker(xy(device.x, device.y), {
+            icon: icon,
+            title: device.name,
+        });
+        const markerPopup = buildDeviceMarkerPopup(device);
+        markerLayer.bindPopup(renderToString(markerPopup), { // some options for the bind popup
+            offset: new Point(0, -iconYSize / 4),
+            minWidth: 80
+        });
+        devicesMarkers.push(markerLayer);
+        setDevicesMarkers(devicesMarkers);
+
+        return map.addLayer(markerLayer);
+    }
+
+    useEffect(() => {
+        if (devices && map) {
+            devicesMarkers.forEach((marker) => marker.remove());
+            setDevicesMarkers([]);
+
+            let mapObj = map;
+            devices?.forEach((d: Device) => {
+                mapObj = addMarkerDevice(mapObj, d, deviceMarkerIcon, iconSize[1]);
+            });
+            setMap(mapObj);
+        }
+    }, [devices, map]);
 
     return (
         <div style={{ height: `${height}px` }}>
