@@ -10,7 +10,7 @@ function logoutRoute(req: NextApiRequest, res: NextApiResponse<User>) {
     res.json({
         email: "",
         id: -1,
-        zerynth_api_key: "",
+        apikey_zerynth: "",
         isLoggedIn: false,
         name: '',
         surname: '',

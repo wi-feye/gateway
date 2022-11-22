@@ -5,30 +5,6 @@ import {sessionOptions} from "../../../src/auth/session";
 import Device from "../../../src/models/device";
 import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 
-/*const response: Device[] = [
-        {
-            id: "84564564",
-            name: "Device 1",
-            status: "Online",
-            lastRequest: "18/11/2020 18:44",
-            position: [43.72249, 10.40767]
-        },
-        {
-            id: "84564564",
-            name: "Device 2",
-            status: "Online",
-            lastRequest: "18/11/2020 18:44",
-            position: [43.72299, 10.40767]
-        },
-        {
-            id: "84564564",
-            name: "Device 3",
-            status: "Offline",
-            lastRequest: "18/11/2020 18:44",
-            position: [43.72249, 10.40817]
-        }
-    ]*/
-
 async function listRoute(req: NextApiRequest, res: NextApiResponse<Device[]>) {
     gateway_logger(req);
 

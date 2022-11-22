@@ -3,7 +3,7 @@ export type User = {
     email: string,
     name: string,
     surname: string,
-    zerynth_api_key: string,
+    apikey_zerynth: string,
     isLoggedIn: boolean,
     avatarUrl: string,
 }

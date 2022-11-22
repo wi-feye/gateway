@@ -6,7 +6,7 @@ import {
 // project import
 import MainCard from '../../components/MainCard';
 import DevicesTableComponent from './DevicesTableComponent';
-import {useAreas, useDevices} from "../../restapi";
+import {useDevices} from "../../restapi";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
 import dynamic from "next/dynamic";

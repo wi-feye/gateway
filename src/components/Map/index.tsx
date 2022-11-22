@@ -193,7 +193,6 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
     const deviceMarkerIcon = new Icon({
         iconSize: iconSize, // size of the icon
         iconAnchor: [iconSize[0]/2, iconSize[1]], // point of the icon which will correspond to marker's location
-        className: "marker-device-icon",
         iconUrl: '/assets/images/device_icon.png',
         shadowUrl: '/assets/images/device_icon_shadow.png',
         shadowSize: shadowSize, // size of the shadow
