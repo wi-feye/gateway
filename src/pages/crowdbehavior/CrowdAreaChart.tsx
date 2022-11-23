@@ -52,7 +52,7 @@ const p: PointOfInterest[] = [{
 const a = [1332, 1245, 1478]
 const CrowdAreaChart = ({timeFrom, timeTo, pointOfInterest, areas}: CrowdAreaChartType) => {
     const theme = useTheme();
-    const diff = Math.round((((timeTo - timeFrom) % 86400000) % 3600000) / 60000)
+    const diff = Math.round((((timeTo.getTime() - timeFrom.getTime()) % 86400000) % 3600000) / 60000)
     const {primary, secondary} = theme.palette.text;
     const line = theme.palette.divider;
     let arr: string[] = [];
