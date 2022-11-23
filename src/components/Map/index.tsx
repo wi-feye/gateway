@@ -16,6 +16,7 @@ import {renderToString} from "react-dom/server";
 import {CheckCircleOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
 import {Typography} from "@mui/material";
 import * as React from "react";
+import CrowdPosition from "../../models/crowdposition";
 
 function buildDeviceMarkerPopup(device: Device) {
     return (
@@ -46,7 +47,7 @@ type MapPropType = {
     zoomSnap?: number,
     mapUrl?: string,
     whenReady?: () => void,
-    heatmapPoints?: number[][],
+    heatmapPoints?: CrowdPosition[],
     areas?: Area[],
     fitAreasBounds?: boolean,
     devices?: Device[]
@@ -63,6 +64,9 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         if (whenReady != null) whenReady();
     }
 
+    const POLYGON_PANE = "heatmap_pane";
+    const DEVICES_PANE = "devices_pane";
+    const DEVICES_SHADOW_PANE = "devices_shadow_pane";
     const zoom = 18; // max zoom is 18
     const mapRef = useCallback((node: HTMLDivElement | null) => { // fix per "map already created"
         if (node !== null && map == null) {
@@ -85,18 +89,23 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                 newMap = newMap.fitWorld();
             }*/
 
+            newMap.createPane(POLYGON_PANE).style.zIndex = "390"; // polygon is below everything
+            // heatmap goes here. It has zIndex 400
+            newMap.createPane(DEVICES_SHADOW_PANE).style.zIndex = "404"; // on top of heatmap, behind device icon
+            newMap.createPane(DEVICES_PANE).style.zIndex = "405"; // on top of everything
+
             setMap(newMap);
         }
     }, []);
 
-    const buildHeatmap = (map: LeafletMap, points: number[][]): LeafletMap => {
+    const buildHeatmap = (map: LeafletMap, positions: CrowdPosition[]): LeafletMap => {
         const heatmapOptions: HeatMapOptions = {
-            maxZoom: 10,
-            radius: 16
+            maxZoom: 5,
+            radius: 10
         }
 
         let retMap = map;
-        const pointsLatLng = points.map(x => new LatLng(x[0], x[1]));
+        const pointsLatLng = positions.map(pos => xy(pos.x, pos.y));
         if (!heatmapLayer) { // build layer if it is the first time
             const heatmapLayer = Leaflet.heatLayer(pointsLatLng, heatmapOptions);
             const newMap = map.addLayer(heatmapLayer);
@@ -129,6 +138,7 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                 fillColor: "#f1f3f4",
                 fillOpacity: 1,
                 weight: 2,
+                pane: POLYGON_PANE
             });
             poly.bindTooltip(area.name,{
                 permanent: true,
@@ -202,6 +212,8 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         const markerLayer = new Marker(xy(device.x, device.y), {
             icon: icon,
             title: device.name,
+            pane: DEVICES_PANE,
+            shadowPane: DEVICES_SHADOW_PANE,
         });
         const markerPopup = buildDeviceMarkerPopup(device);
         markerLayer.bindPopup(renderToString(markerPopup), { // some options for the bind popup

@@ -11,7 +11,7 @@ const Map = dynamic(() => import('../../components/Map'), {
 });
 
 type CrowdsGridContainerProps = {
-    crowdBehavior: CrowdBehavior[] | undefined,
+    crowdBehavior: CrowdBehavior[],
     isLoading: boolean,
     height: number,
     title: string,
@@ -21,7 +21,7 @@ export default function CrowdsGridContainer({ title, areas, crowdBehavior, isLoa
     const [mapProgress, setMapProgress] = useState<number>(0);
     const [index, setIndex] = useState<number>(0);
     const [isPlaying, setIsPlaying] = useState<boolean>(false);
-    const milliseconds = 400;
+    const milliseconds = 300;
 
     useEffect(() => {
         setIsPlaying(!isLoading && crowdBehavior ? crowdBehavior.length > 1:false);
@@ -52,13 +52,18 @@ export default function CrowdsGridContainer({ title, areas, crowdBehavior, isLoa
         setIsPlaying(!isPlaying);
     }
 
+    const currentTimeStr = crowdBehavior && crowdBehavior.length > index ? new Date(crowdBehavior[index].to).toLocaleString():"";
+
     return (
         <>
             <Grid container alignItems="center" justifyContent="space-between">
                 <Grid item>
                     <Typography variant="h5">{title}</Typography>
                 </Grid>
-                <Grid item>
+                <Grid item alignItems="center">
+                    <span style={{ marginTop: "auto" }}>
+                        { currentTimeStr }
+                    </span>
                     <IconButton
                         color="default"
                         aria-label="play/pause"
@@ -80,7 +85,7 @@ export default function CrowdsGridContainer({ title, areas, crowdBehavior, isLoa
                 <Box style={{position: "relative"}}>
                     <Map
                         height={height}
-                        heatmapPoints={crowdBehavior ? crowdBehavior[index].data : []}
+                        heatmapPoints={crowdBehavior && crowdBehavior.length > index ? crowdBehavior[index].data : []}
                         areas={areas ? areas:[]}
                         fitAreasBounds
                     />

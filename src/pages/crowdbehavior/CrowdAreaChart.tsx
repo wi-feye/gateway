@@ -41,12 +41,12 @@ const d = new Date
 const p: PointOfInterest[] = [{
     id: 1233,
     idArea: 1332,
-    time: new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 5),
+    time: new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 5).toISOString(),
     pointOfInterest: [{x: 12, y: 22}]
 }, {
     id: 123,
     idArea: 1332,
-    time: new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 20),
+    time: new Date(d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes() + 20).toISOString(),
     pointOfInterest: [{x: 4, y: 5}]
 }]
 const a = [1332, 1245, 1478]
@@ -62,7 +62,7 @@ const CrowdAreaChart = ({timeFrom, timeTo, pointOfInterest, areas}: CrowdAreaCha
         const time = new Date(timeFrom.getFullYear(), timeFrom.getMonth(), timeFrom.getDate(), timeFrom.getHours(), timeFrom.getMinutes() + n)
         let i = 0;
         p.map(poi => {
-            if (timeFrom.getTime() <= poi.time.getTime() &&  poi.time.getTime() <= time.getTime()) {
+            if (timeFrom.getTime() <= new Date(poi.time).getTime() &&  new Date(poi.time).getTime() <= time.getTime()) {
                 i += 1
             }
         })

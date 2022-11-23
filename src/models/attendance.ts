@@ -1,6 +1,6 @@
 export type Attendance = {
-    from: Date,
-    to: Date,
+    from: string,
+    to: string,
     data: number
 }
 

@@ -32,6 +32,24 @@ for (let i = 1; i < 20; i++) {
     pointsList.push(newPoints);
 }
 
+function getDateBlocks(start: Date, end: Date, minutes: number): { start: Date, end: Date }[] {
+    let result = [];
+    // Copy start so don't affect original
+    let startCopy = new Date(start);
+
+    while (startCopy < end) {
+        // Create a new date
+        const newEnd = new Date(startCopy);
+        newEnd.setMinutes(startCopy.getMinutes() + minutes);
+        // Push into an array. If block end is beyond end date, use a copy of end date
+        result.push({ start: new Date(startCopy), end: newEnd <= end ? newEnd : new Date(end) });
+
+        startCopy.setDate(startCopy.getDate() + minutes + 1);
+    }
+
+    return result;
+}
+
 async function route(req: NextApiRequest, res: NextApiResponse<CrowdBehavior[]>) {
     gateway_logger(req);
 
@@ -42,7 +60,7 @@ async function route(req: NextApiRequest, res: NextApiResponse<CrowdBehavior[]>)
         return;
     }
 
-    if (from == null || to == null) {
+    if (from == null || to == null || buildingId == null) {
         res.status(400).end();
         return;
     }
@@ -50,17 +68,67 @@ async function route(req: NextApiRequest, res: NextApiResponse<CrowdBehavior[]>)
     const user = req.session.user;
     const fromDate = new Date(Array.isArray(from) ? from[0] : from);
     const toDate = new Date(Array.isArray(to) ? to[0] : to);
+    const positions = await DataManagerAPI.crowdBehavior(
+        Array.isArray(buildingId) ? buildingId[0] : buildingId,
+        fromDate,
+        toDate
+    );
 
-    //const response = buildingId ? await DataManagerAPI.crowdBehavior(buildingId, fromDate, toDate):[];
+    if (positions.length == 0) {
+        res.json([]);
+        return;
+    }
+
+    const sortedByTime = positions.sort(function(x, y){
+        return x.timestamp < y.timestamp ? -1:1;
+    })
 
     const response: CrowdBehavior[] = [];
-    pointsList.forEach(points => {
-        response.push({
-            from: new Date(2022, 11, 1, 0, 0, 0),
-            to: new Date(2022, 11, 1, 23, 59, 59),
-            data: points
-        });
+    const minutesGap = 2;
+
+    let startTime = new Date(sortedByTime[0].timestamp); // start from the oldest one
+    startTime.setSeconds(0);
+    let endTime = new Date(startTime);
+    endTime.setMinutes(startTime.getMinutes() + minutesGap);
+    endTime.setSeconds(59);
+    if (endTime > toDate) endTime = new Date(endTime);
+
+    let current: CrowdBehavior = {
+        from: startTime.toISOString(),
+        to: endTime.toISOString(),
+        data: []
+    };
+    sortedByTime.forEach((pos) => {
+        const posDate = new Date(pos.timestamp);
+        if (posDate > endTime) {
+            // start becomes end + 1 minute
+            startTime = new Date(endTime);
+            startTime.setMinutes(endTime.getMinutes() + 1);
+            startTime.setSeconds(0);
+            // end becomes new start + <minutesGap> minutes
+            endTime = new Date(startTime);
+            endTime.setMinutes(startTime.getMinutes() + minutesGap);
+            endTime.setSeconds(59);
+            //if (endTime > toDate) endTime = new Date(endTime);
+            current = {
+                from: startTime.toISOString(),
+                to: endTime.toISOString(),
+                data: [pos]
+            }
+            response.push(current);
+            console.log("--- FROM:", current.from, ", TO:", current.to, "---");
+        } else {
+            current.data.push(pos);
+        }
+        console.log(pos.timestamp)
     });
+    // OLDEST 2022-11-09T16:20:10Z
+    // NEWEST 2022-11-09T17:16:40Z
+
+    if (response.length == 1 && response[0].data.length == 0) {
+        res.json([]);
+        return;
+    }
 
     res.json(response);
 }

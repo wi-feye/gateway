@@ -1,7 +1,7 @@
 export type PointOfInterest = {
     id: number,
     idArea: number,
-    time: Date,
+    time: string,
     pointOfInterest: [{ x:number,y:number }]
 }
 

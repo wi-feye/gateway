@@ -193,7 +193,7 @@ export function useCrowdBehavior(buildingId: number | undefined, from: Date, to:
     );
 
     const isLoading = !error && !data;
-    if (isLoading) console.log("Fetching data...");
+    if (isLoading) console.log("Fetching crowds data...");
     return {
         crowdBehavior: data,
         isLoading,

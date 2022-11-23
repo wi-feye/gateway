@@ -12,38 +12,30 @@ import {
 // project import
 import MainCard from '../../components/MainCard';
 
-const Map = dynamic(() => import('../../components/Map'), {
-    ssr: false
-});
-
 // assets
-import dynamic from "next/dynamic";
-import dayjs, {Dayjs} from "dayjs";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {LocalizationProvider, MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
 import CrowdAreaChart from "./CrowdAreaChart";
 import CrowdBarChart from "./CrowdBarChart";
 import CrowdsGridContainer from "../../components/CrowdsGridContainer";
 import {useAreas, useCrowdBehavior, usePointOfInterest} from "../../restapi";
-import {getMinutes} from "@mui/x-date-pickers/ClockPicker/shared";
-
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const CrowdBehavior = () => {
     const [date, setDate] = useState<Date>(
-        new Date()
+        new Date("2022-11-09T16:20:10Z")
     );
     const [timeFrom, setTimeFrom] = useState<Date>(
-        new Date()
+        new Date("2022-11-09T16:20:10Z")
     );
     let [timeTo, setTimeTo] = useState<Date>(
-        new Date(timeFrom.getFullYear(), timeFrom.getMonth(), timeFrom.getDate(), timeFrom.getHours(), timeFrom.getMinutes()+30)
+        new Date("2022-11-09T17:16:40Z")
     );
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
-    const { crowdBehavior, isLoading } = useCrowdBehavior(selectedBuilding.id,timeFrom, timeTo);
+    const { crowdBehavior, isLoading: isLoadingCrowdBehavior } = useCrowdBehavior(selectedBuilding.id, timeFrom, timeTo);
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
 
     const { pointOfInterest } = usePointOfInterest(selectedBuilding.id,timeFrom, timeTo);
@@ -102,9 +94,9 @@ const CrowdBehavior = () => {
             <Grid item xs={12}>
                 <CrowdsGridContainer
                     title="Crowds"
-                    crowdBehavior={crowdBehavior}
+                    crowdBehavior={crowdBehavior ? crowdBehavior:[]}
                     areas={areas}
-                    isLoading={isLoading}
+                    isLoading={isLoadingCrowdBehavior}
                     height={480}
                 />
             </Grid>

@@ -132,7 +132,7 @@ const Overview = () => {
                     <Box sx={{ p: 3, pb: 0 }}>
                         <Stack spacing={2}>
                             <Typography variant="h6" color="textSecondary">
-                                Today's attendance
+                                Today`&apos;`s attendance
                             </Typography>
                             {/*<Typography variant="h3">$7,650</Typography>*/}
                         </Stack>

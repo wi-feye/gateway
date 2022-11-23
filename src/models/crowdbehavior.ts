@@ -1,7 +1,9 @@
+import CrowdPosition from "./crowdposition";
+
 export type CrowdBehavior = {
-    from: Date,
-    to: Date,
-    data: number[][]
+    from: string,
+    to: string,
+    data: CrowdPosition[]
 }
 
 export default CrowdBehavior;

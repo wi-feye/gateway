@@ -2,7 +2,7 @@ import Building from "../../models/building";
 import { fetchJson } from "../index";
 import Area from "../../models/area";
 import Device from "../../models/device";
-import CrowdBehavior from "../../models/crowdbehavior";
+import CrowdPosition from "../../models/crowdposition";
 
 const ENDPOINT = "http://localhost:10001";
 const DATA_MANAGER_BUILDINGS_URL = ENDPOINT + "/api/buildings/pull";
@@ -22,10 +22,10 @@ function devices(buildingId: string): Promise<Device[]> {
     return fetchJson<Device[]>(`${DATA_MANAGER_DEVICES_URL}/${buildingId}`);
 }
 
-function crowdBehavior(buildingId: string, fromDate: Date, toDate: Date) {
+function crowdBehavior(buildingId: string, fromDate: Date, toDate: Date): Promise<CrowdPosition[]> {
     const startStr = fromDate.toISOString();
     const endStr = toDate.toISOString();
-    return fetchJson<CrowdBehavior[]>(`${DATA_MANAGER_POSITION_DETECTION_URL}/${buildingId}?start=${startStr}&end=${endStr}`);
+    return fetchJson<CrowdPosition[]>(`${DATA_MANAGER_POSITION_DETECTION_URL}/${buildingId}?start=${startStr}&end=${endStr}`);
 }
 
 const DataManagerAPI = {

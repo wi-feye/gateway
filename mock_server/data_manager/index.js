@@ -26,4 +26,16 @@ app.get('/api/sniffers/pull/:buildingId', (req, res) => {
     res.send(sniffers);
 });
 
+app.get('/api/position-detection/pull/:buildingId', (req, res) => {
+    const buildingId = parseInt(req.params.buildingId);
+    var positions = require('./static/positions.json').filter(s => s.id_building == buildingId);
+    if (req.query.start != undefined) {
+        positions = positions.filter(s => new Date(req.query.start) <= new Date(s.timestamp));
+    }
+    if (req.query.end != undefined) {
+        positions = positions.filter(s => new Date(s.timestamp) < new Date(req.query.end));
+    }
+    res.send(positions);
+});
+
 app.listen(DATA_MANAGER_PORT, () => console.log('start data manager mock server...'));

@@ -24,8 +24,8 @@ async function route(req: NextApiRequest, res: NextApiResponse<Attendance[]>) {
     const toDate = new Date(Array.isArray(to) ? to[0] : to);
 
     const response: Attendance[] = [{
-        from: new Date(2022, 11, 1, 0, 0, 0),
-        to: new Date(2022, 11, 1, 23, 59, 59),
+        from: fromDate.toISOString(),
+        to: toDate.toISOString(),
         data: 120
     }];
 
