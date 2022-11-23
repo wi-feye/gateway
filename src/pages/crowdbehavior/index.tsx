@@ -36,20 +36,32 @@ const CrowdBehavior = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
-    const { crowdBehavior, isLoading: isLoadingCrowdBehavior } = useCrowdBehavior(selectedBuilding.id, timeFrom, timeTo);
+    const { crowdBehavior, isLoading: isLoadingCrowdBehavior } = useCrowdBehavior(
+        selectedBuilding.id,
+        new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), timeFrom.getSeconds()),
+        new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours(), timeTo.getMinutes(), timeTo.getSeconds())
+    );
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
 
     const { pointOfInterest } = usePointOfInterest(selectedBuilding.id,timeFrom, timeTo);
 
     const handleChangeDate = (newValue: Date | null, keyboardInputValue?: string | undefined) => {
-        if (newValue) setDate(newValue);
+        if (newValue) {
+            setDate(newValue);
+        }
     };
 
     const handleChangeTimeFrom = (newValue: Date | null, keyboardInputValue?: string | undefined) => {
-        if (newValue) setTimeFrom(newValue);
+        if (newValue) {
+            newValue.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+            setTimeFrom(newValue);
+        }
     };
     const handleChangeTimeTo = (newValue: Date | null, keyboardInputValue?: string | undefined) => {
-        if (newValue) setTimeTo(newValue);
+        if (newValue) {
+            newValue.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+            setTimeTo(newValue);
+        }
     };
 
     return (
@@ -58,43 +70,42 @@ const CrowdBehavior = () => {
             <Grid item xs={12} sx={{mb: -2.25}}>
                 <Typography variant="h5">Crowd Behavior</Typography>
             </Grid>
-            <Grid item xs={12} sx={{mb: -2.25}}>
-                <Grid item xs={12} md={7} lg={8}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <MobileDatePicker
-                            label="Date"
-                            inputFormat="dd/MM/yyyy"
-                            value={date}
-                            onChange={handleChangeDate}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </LocalizationProvider>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} mt={2} sm={6} md={4} lg={1}>
+            <Grid item xs={12} md={2} lg={2}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <MobileTimePicker
-                    label="Time From"
-                    value={timeFrom}
-                    onChange={handleChangeTimeFrom}
-                    renderInput={(params) => <TextField {...params} />}
-                />
+                    <MobileDatePicker
+                        label="Date"
+                        inputFormat="dd/MM/yyyy"
+                        value={date}
+                        onChange={handleChangeDate}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
                 </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} mt={2} sm={6} md={4} lg={1}>
+            <Grid item xs={12} md={2} lg={2}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <MobileTimePicker
-                    label="Time To"
-                    value={timeTo}
-                    onChange={handleChangeTimeTo}
-                    renderInput={(params) => <TextField {...params} />}
-                />
+                    <MobileTimePicker
+                        label="Time From"
+                        value={timeFrom}
+                        onChange={handleChangeTimeFrom}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
                 </LocalizationProvider>
             </Grid>
+            <Grid item xs={12} md={5} lg={4}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <MobileTimePicker
+                        label="Time To"
+                        value={timeTo}
+                        onChange={handleChangeTimeTo}
+                        renderInput={(params) => <TextField {...params} />}
+                    />
+                </LocalizationProvider>
+            </Grid>
+
             {/* row 2 */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{mt: -4.5}}>
                 <CrowdsGridContainer
-                    title="Crowds"
+                    title=""
                     crowdBehavior={crowdBehavior ? crowdBehavior:[]}
                     areas={areas}
                     isLoading={isLoadingCrowdBehavior}

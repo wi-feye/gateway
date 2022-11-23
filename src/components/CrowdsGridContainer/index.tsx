@@ -42,7 +42,6 @@ export default function CrowdsGridContainer({ title, areas, crowdBehavior, isLoa
                 return 0;
             });
             setIndex(newIndex);
-
         }, milliseconds);
 
         return () => clearInterval(interval);
