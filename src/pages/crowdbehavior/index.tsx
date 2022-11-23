@@ -19,6 +19,7 @@ import CrowdAreaChart from "./CrowdAreaChart";
 import CrowdBarChart from "./CrowdBarChart";
 import CrowdsGridContainer from "../../components/CrowdsGridContainer";
 import {useAreas, useCrowdBehavior, usePointOfInterest} from "../../restapi";
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
@@ -59,10 +60,10 @@ const CrowdBehavior = () => {
             </Grid>
             <Grid item xs={12} sx={{mb: -2.25}}>
                 <Grid item xs={12} md={7} lg={8}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
                         <MobileDatePicker
                             label="Date"
-                            inputFormat="DD/MM/YYYY"
+                            inputFormat="dd/MM/yyyy"
                             value={date}
                             onChange={handleChangeDate}
                             renderInput={(params) => <TextField {...params} />}
@@ -71,7 +72,7 @@ const CrowdBehavior = () => {
                 </Grid>
             </Grid>
             <Grid item xs={12} mt={2} sm={6} md={4} lg={1}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <MobileTimePicker
                     label="Time From"
                     value={timeFrom}
@@ -81,7 +82,7 @@ const CrowdBehavior = () => {
                 </LocalizationProvider>
             </Grid>
             <Grid item xs={12} mt={2} sm={6} md={4} lg={1}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <MobileTimePicker
                     label="Time To"
                     value={timeTo}

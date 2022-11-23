@@ -44,8 +44,6 @@ type CrowdBarChartType = {
     areas: Area[]
 };
 
-const p: PointOfInterest[]= [{id: 1233,idArea:1332,pointOfInterest:[{x:12,y:22}]}, {id: 123,idArea:1332,pointOfInterest:[{x:4,y:5}]}]
-const a = [1332, 1245, 1478]
 
 const CrowdBarChart = ({ pointOfInterest, areas }: CrowdBarChartType) => {
     const theme = useTheme();
