@@ -32,24 +32,6 @@ for (let i = 1; i < 20; i++) {
     pointsList.push(newPoints);
 }
 
-function getDateBlocks(start: Date, end: Date, minutes: number): { start: Date, end: Date }[] {
-    let result = [];
-    // Copy start so don't affect original
-    let startCopy = new Date(start);
-
-    while (startCopy < end) {
-        // Create a new date
-        const newEnd = new Date(startCopy);
-        newEnd.setMinutes(startCopy.getMinutes() + minutes);
-        // Push into an array. If block end is beyond end date, use a copy of end date
-        result.push({ start: new Date(startCopy), end: newEnd <= end ? newEnd : new Date(end) });
-
-        startCopy.setDate(startCopy.getDate() + minutes + 1);
-    }
-
-    return result;
-}
-
 async function route(req: NextApiRequest, res: NextApiResponse<CrowdBehavior[]>) {
     gateway_logger(req);
 

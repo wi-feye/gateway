@@ -1,7 +1,7 @@
 import {User} from "../../models/user";
 import {fetchJson} from "../index";
 
-const ENDPOINT = "http://localhost:10002";
+const ENDPOINT = process.env.USER_MANAGER_HOST ? process.env.USER_MANAGER_HOST:"http://localhost:10002";
 const USER_MANAGER_LOGIN_URL = ENDPOINT + "/login";
 const USER_MANAGER_USER_URL = ENDPOINT + "/user";
 

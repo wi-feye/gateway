@@ -4,7 +4,7 @@ import Area from "../../models/area";
 import Device from "../../models/device";
 import CrowdPosition from "../../models/crowdposition";
 
-const ENDPOINT = "http://localhost:10001";
+const ENDPOINT = process.env.DATA_MANAGER_HOST ? process.env.DATA_MANAGER_HOST:"http://localhost:10002";
 const DATA_MANAGER_BUILDINGS_URL = ENDPOINT + "/api/buildings/pull";
 const DATA_MANAGER_AREAS_URL = ENDPOINT + "/api/areas/pull";
 const DATA_MANAGER_DEVICES_URL = ENDPOINT + "/api/sniffers/pull";
