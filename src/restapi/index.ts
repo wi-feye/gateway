@@ -137,9 +137,9 @@ export function useBuildings(user?: User): { buildings: Building[] | undefined, 
     }
 }
 
-export function useAreas(buildingId: number | undefined) {
+export function useAreas(buildingId: number | undefined, validOnly: boolean = true) {
     const { data, error } = useSWR<Area[]>(
-        buildingId ? `${REST_API_GET_AREAS_URL}?buildingId=${buildingId}`:null,
+        buildingId ? `${REST_API_GET_AREAS_URL}?buildingId=${buildingId}&validOnly=${validOnly}`:null,
         fetchJson
     );
 
@@ -167,9 +167,9 @@ export function useDevices(buildingId: number | undefined) {
     }
 }
 
-export function useAttendance(buildingId: number | undefined, from: Date, to: Date) {
-    const fromTimestamp = from.toISOString();
-    const toTimestamp = to.toISOString();
+export function useAttendance(buildingId: number | undefined, from?: Date, to?: Date) {
+    const fromTimestamp = from ? from.toISOString():"";
+    const toTimestamp = to ? to.toISOString():"";
     const { data, error } = useSWR<Attendance[]>(
         buildingId ? `${REST_API_GET_ATTENDANCE_URL}?buildingId=${buildingId}&from=${fromTimestamp}&to=${toTimestamp}`:null,
         fetchJson
@@ -184,16 +184,16 @@ export function useAttendance(buildingId: number | undefined, from: Date, to: Da
     }
 }
 
-export function useCrowdBehavior(buildingId: number | undefined, from: Date, to: Date) {
+export function useCrowdBehavior(buildingId: number | undefined, from: Date, to: Date, minutesGap: number | undefined = 2) {
     const fromTimestamp = from.toISOString();
     const toTimestamp = to.toISOString();
     const { data, error } = useSWR<CrowdBehavior[]>(
-        buildingId ? `${REST_API_GET_CROWDBEHAVIOR_URL}?buildingId=${buildingId}&from=${fromTimestamp}&to=${toTimestamp}`:null,
+        buildingId ? `${REST_API_GET_CROWDBEHAVIOR_URL}?buildingId=${buildingId}&from=${fromTimestamp}&to=${toTimestamp}&minutesGap=${minutesGap}`:null,
         fetchJson
     );
 
     const isLoading = !error && !data;
-    if (isLoading) console.log("Fetching crowds data...");
+    if (isLoading) console.log("Fetching position data...");
     return {
         crowdBehavior: data,
         isLoading,

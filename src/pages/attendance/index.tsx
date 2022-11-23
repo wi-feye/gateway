@@ -22,45 +22,19 @@ import {
 import MainCard from '../../components/MainCard';
 import MonthlyBarChart from "./MonthlyBarChart";
 import CrowdAreaChart from "./CrowdAreaChart";
-
-// avatar style
-const avatarSX = {
-    width: 36,
-    height: 36,
-    fontSize: '1rem'
-};
-
-// action style
-const actionSX = {
-    mt: 0.75,
-    ml: 1,
-    top: 'auto',
-    right: 'auto',
-    alignSelf: 'flex-start',
-    transform: 'none'
-};
-
-// sales report status
-const status = [
-    {
-        value: 'today',
-        label: 'Today'
-    },
-    {
-        value: 'month',
-        label: 'This Month'
-    },
-    {
-        value: 'year',
-        label: 'This Year'
-    }
-];
+import {useAttendance, useCrowdBehavior} from "../../restapi";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store";
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const Attendance = () => {
     const [value, setValue] = useState('today');
     const [slot, setSlot] = useState('week');
+
+    const buildingState = useSelector((state: RootState) => state.building);
+    const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
+    const { attendance, isLoading: isLoadingAttendance } = useAttendance(selectedBuilding.id);
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>

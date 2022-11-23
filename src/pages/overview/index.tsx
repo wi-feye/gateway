@@ -1,17 +1,11 @@
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 
 // material-ui
 import {
-    Avatar,
     AvatarGroup,
     Box,
     Button,
     Grid,
-    List,
-    ListItemAvatar,
-    ListItemButton,
-    ListItemSecondaryAction,
-    ListItemText,
     MenuItem,
     Stack,
     TextField,
@@ -20,13 +14,17 @@ import {
 
 // project import
 import MainCard from '../../components/MainCard';
-import WeeklyBarChart from './WeeklyBarChart';
+import AttendanceBarChart from './AttendanceBarChart';
 import IncomeAreaChart from './IncomeAreaChart';
-import AnalyticEcommerce from '../../components/cards/statistics/AnalyticEcommerce';
-import OrdersTable from './OrdersTable';
+import LittleCard from '../../components/cards/statistics/LittleCard';
 
 // assets
-import { GiftOutlined, MessageOutlined, SettingOutlined } from '@ant-design/icons';
+import {useAreas, useAttendance, useDevices} from "../../restapi";
+import {useSelector} from "react-redux";
+import {RootState} from "../../store";
+import Attendance from "../../models/attendance";
+import Area from "../../models/area";
+import DevicesTableComponent from "../devices/DevicesTableComponent";
 
 // avatar style
 const avatarSX = {
@@ -61,11 +59,54 @@ const status = [
     }
 ];
 
+function getAreaNameById(areas: Area[], areaId: number): string {
+    // R.I.P. EFFICIENZA
+    const area = areas.find(area => area.id == areaId);
+    return area ? area.name:"";
+}
+
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const Overview = () => {
     const [value, setValue] = useState('today');
     const [slot, setSlot] = useState('week');
+    const [lessBusy, setLessBusy] = useState<{
+        attendance: number,
+        areaName: string
+    }>();
+    const [mostBusy, setMostBusy] = useState<{
+        attendance: number,
+        areaName: string
+    }>();
+
+    const buildingState = useSelector((state: RootState) => state.building);
+    const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
+    const { attendance, isLoading: isLoadingAttendance } = useAttendance(selectedBuilding.id);
+    const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
+    const { devices, isLoading } = useDevices(selectedBuilding.id);
+
+    useEffect(() => {
+        if (!areas) return;
+
+        let newLessBusy: Attendance;
+        let newMostBusy: Attendance;
+        if (attendance && attendance.length > 0) {
+            newLessBusy = attendance[0];
+            newMostBusy = attendance[0];
+            for (let i = 1; i < attendance.length; i++) {
+                const att = attendance[i];
+                if (att.count < newLessBusy.count) newLessBusy = att;
+                if (att.count > newMostBusy.count) newMostBusy = att;
+            }
+
+            const lessBusyArea = areas.find(area => area.id == newLessBusy?.id_area);
+            setLessBusy({ attendance: newLessBusy?.count, areaName: lessBusyArea ? lessBusyArea.name: "N\\A"});
+
+            const mostBusyArea = areas.find(area => area.id == newMostBusy?.id_area)
+            setMostBusy({ attendance: newMostBusy?.count, areaName: mostBusyArea ? mostBusyArea.name: "N\\A"});
+        }
+
+    }, [attendance, areas]);
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -74,16 +115,16 @@ const Overview = () => {
                 <Typography variant="h5">Overview</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Total Page Views" count="4,42,236" percentage={59.3} extra="35,000" />
+                <LittleCard title="Busiest area" content={ mostBusy ? mostBusy.areaName:"N\\A"} percentage={59.3} subtitle="This area is really busy right now" />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Total Users" count="78,250" percentage={70.5} extra="8,900" />
+                <LittleCard title="Less busy area" content={ lessBusy ? lessBusy.areaName:"N\\A"} percentage={70.5} subtitle="This area is not so busy right now" />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Total Order" count="18,800" percentage={27.4} isLoss color="warning" extra="1,943" />
+                <LittleCard title="Total Order" content="18,800" percentage={27.4} isLoss color="warning" subtitle="" />
             </Grid>
             <Grid item xs={12} sm={6} md={4} lg={3}>
-                <AnalyticEcommerce title="Total Sales" count="$35,078" percentage={27.4} isLoss color="warning" extra="$20,395" />
+                <LittleCard title="Total Sales" content="$35,078" percentage={27.4} isLoss color="warning" subtitle="" />
             </Grid>
 
             <Grid item md={8} sx={{ display: { sm: 'none', md: 'block', lg: 'none' } }} />
@@ -132,12 +173,17 @@ const Overview = () => {
                     <Box sx={{ p: 3, pb: 0 }}>
                         <Stack spacing={2}>
                             <Typography variant="h6" color="textSecondary">
-                                Today`&apos;`s attendance
+                                Area&apos;s attendance
                             </Typography>
                             {/*<Typography variant="h3">$7,650</Typography>*/}
                         </Stack>
                     </Box>
-                    <WeeklyBarChart data={[0, 0, 0, 0, 0, 0, 0, 40, 95, 80, 75, 86, 35, 50, 80, 95, 70, 50, 30, 0, 0, 0, 0, 0]} height={410}/>
+                    { /* [0, 0, 0, 0, 0, 0, 0, 40, 95, 80, 75, 86, 35, 50, 80, 95, 70, 50, 30, 0, 0, 0, 0, 0] */ }
+                    <AttendanceBarChart
+                        data={ attendance ? attendance.map(att => att.count):[] }
+                        height={410}
+                        categories={ attendance && areas ? attendance.map(att => getAreaNameById(areas, att.id_area) ):[] }
+                    />
                 </MainCard>
             </Grid>
 
@@ -145,7 +191,7 @@ const Overview = () => {
             <Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Recent Orders</Typography>
+                        <Typography variant="h5">Devices</Typography>
                     </Grid>
                     <Grid item>
                         <TextField
@@ -165,16 +211,17 @@ const Overview = () => {
                     </Grid>
                 </Grid>
                 <MainCard sx={{ mt: 2 }} content={false}>
-                    <OrdersTable />
+                    <DevicesTableComponent devices={devices} loading={isLoading}/>
                 </MainCard>
             </Grid>
             <Grid item xs={12} md={5} lg={4}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
-                        <Typography variant="h5">Transaction History</Typography>
+                        <Typography variant="h5">Support</Typography>
                     </Grid>
                     <Grid item />
                 </Grid>
+                {/*
                 <MainCard sx={{ mt: 2 }} content={false}>
                     <List
                         component="nav"
@@ -261,14 +308,14 @@ const Overview = () => {
                             </ListItemSecondaryAction>
                         </ListItemButton>
                     </List>
-                </MainCard>
-                <MainCard sx={{ mt: 2 }}>
+                </MainCard>*/}
+                <MainCard sx={{ mt: 2.5 }}>
                     <Stack spacing={3}>
                         <Grid container justifyContent="space-between" alignItems="center">
                             <Grid item>
                                 <Stack>
                                     <Typography variant="h5" noWrap>
-                                        Help & Support Chat
+                                        Help & Support
                                     </Typography>
                                     <Typography variant="caption" color="secondary" noWrap>
                                         Typical replay within 5 min

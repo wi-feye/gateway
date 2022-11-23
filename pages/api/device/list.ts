@@ -21,7 +21,7 @@ async function listRoute(req: NextApiRequest, res: NextApiResponse<Device[]>) {
     }
     const devices = await DataManagerAPI.devices(buildingId);
     devices.forEach((dev, i) => {
-        dev.status = i == devices.length - 1 ? "Offline":"Online";
+        dev.status = "Offline";
         dev.lastRequest = "18/11/2020 18:44";
     })
     res.json(devices);

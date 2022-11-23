@@ -16,12 +16,12 @@ type AnalyticEcommerceType = {
         'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning',
         ChipPropsColorOverrides>,
     title: string,
-    count: string,
+    subtitle: string,
+    content: string,
     percentage: number,
-    isLoss?: boolean,
-    extra: React.ReactNode
+    isLoss?: boolean
 };
-const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }: AnalyticEcommerceType) => (
+const LittleCard = ({ color, title, content, percentage, isLoss, subtitle }: AnalyticEcommerceType) => (
     <MainCard contentSX={{ p: 2.25 }}>
         <Stack spacing={0.5}>
             <Typography variant="h6" color="textSecondary">
@@ -30,7 +30,7 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }: A
             <Grid container alignItems="center">
                 <Grid item>
                     <Typography variant="h4" color="inherit">
-                        {count}
+                        {content}
                     </Typography>
                 </Grid>
                 {percentage && (
@@ -54,18 +54,14 @@ const AnalyticEcommerce = ({ color, title, count, percentage, isLoss, extra }: A
         </Stack>
         <Box sx={{ pt: 2.25 }}>
             <Typography variant="caption" color="textSecondary">
-                You made an extra{' '}
-                <Typography component="span" variant="caption" sx={{ color: `${color || 'primary'}.main` }}>
-                    { extra }
-                </Typography>{' '}
-                this year
+                { subtitle}
             </Typography>
         </Box>
     </MainCard>
 );
 
-AnalyticEcommerce.defaultProps = {
+LittleCard.defaultProps = {
     color: 'primary'
 };
 
-export default AnalyticEcommerce;
+export default LittleCard;

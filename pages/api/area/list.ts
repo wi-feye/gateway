@@ -13,10 +13,20 @@ async function listRoute(req: NextApiRequest, res: NextApiResponse<Area[]>) {
         return;
     }
 
+    if (!req.query.buildingId || !req.query.validOnly) {
+        res.status(400).end();
+        return;
+    }
+
     const user = req.session.user;
     const buildingId = Array.isArray(req.query.buildingId) ? req.query.buildingId[0]:req.query.buildingId;
+    const validOnly = Array.isArray(req.query.validOnly) ? req.query.validOnly[0]:req.query.validOnly;
 
-    const areas = buildingId ? await DataManagerAPI.areas(buildingId):[];
+    let areas = buildingId ? await DataManagerAPI.areas(buildingId):[];
+    if (validOnly === "true") {
+        areas = areas.filter(area => area.id !== -1);
+    }
+
     res.json(areas);
 }
 

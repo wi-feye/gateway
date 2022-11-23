@@ -43,21 +43,22 @@ const barChartOptions = {
 
 // ==============================|| MONTHLY BAR CHART ||============================== //
 
-type WeeklyBarChartProps = {
+type AttendanceBarChartProps = {
     data: number[],
+    categories: string[], //['', '', '03', '', '', '06', '', '', '09', '', '', '12', '', '', '15', '', '', '18', '', '', '21','','',''],
     height: number
 }
-const WeeklyBarChart = ({ data, height }: WeeklyBarChartProps) => {
+const AttendanceBarChart = ({ data, height, categories }: AttendanceBarChartProps) => {
     const theme = useTheme();
 
     const { secondary } = theme.palette.text;
     const info = theme.palette.info.light;
 
-    const [series] = useState([
-        {
-            data: data
-        }
-    ]);
+    const [series, setSeries] = useState([{ data: data }]);
+
+    useEffect(() => {
+        setSeries([{ data: data }]);
+    }, [data]);
 
     const [options, setOptions] = useState(barChartOptions);
 
@@ -67,7 +68,7 @@ const WeeklyBarChart = ({ data, height }: WeeklyBarChartProps) => {
             ...prevState,
             colors: [info],
             xaxis: {
-                categories: ['', '', '03', '', '', '06', '', '', '09', '', '', '12', '', '', '15', '', '', '18', '', '', '21','','',''],
+                categories: categories,
                 labels: {
                     style: {
                         colors: [secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary, secondary]
@@ -79,7 +80,7 @@ const WeeklyBarChart = ({ data, height }: WeeklyBarChartProps) => {
             }
         }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [info, secondary]);
+    }, [info, secondary, categories]);
 
     // @ts-ignore
     const chartDOM = <ReactApexChart options={options} series={series} type="bar" height={height} />
@@ -90,4 +91,4 @@ const WeeklyBarChart = ({ data, height }: WeeklyBarChartProps) => {
     );
 };
 
-export default WeeklyBarChart;
+export default AttendanceBarChart;

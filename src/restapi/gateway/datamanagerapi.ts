@@ -22,10 +22,14 @@ function devices(buildingId: string): Promise<Device[]> {
     return fetchJson<Device[]>(`${DATA_MANAGER_DEVICES_URL}/${buildingId}`);
 }
 
-function crowdBehavior(buildingId: string, fromDate: Date, toDate: Date): Promise<CrowdPosition[]> {
-    const startStr = fromDate.toISOString();
-    const endStr = toDate.toISOString();
-    return fetchJson<CrowdPosition[]>(`${DATA_MANAGER_POSITION_DETECTION_URL}/${buildingId}?start=${startStr}&end=${endStr}`);
+function crowdBehavior(buildingId: string, fromDate?: string, toDate?: string): Promise<CrowdPosition[]> {
+    let url = `${DATA_MANAGER_POSITION_DETECTION_URL}/${buildingId}`;
+    if (fromDate || toDate) url += "?";
+    if (fromDate) url += `start=${fromDate}`;
+    if (fromDate && toDate) url += `&`;
+    if (toDate) url += `end=${toDate}`;
+
+    return fetchJson<CrowdPosition[]>(url);
 }
 
 const DataManagerAPI = {

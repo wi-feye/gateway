@@ -13,7 +13,6 @@ import {
 import MainCard from '../../components/MainCard';
 
 // assets
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
 import {LocalizationProvider, MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
 import CrowdAreaChart from "./CrowdAreaChart";
 import CrowdBarChart from "./CrowdBarChart";

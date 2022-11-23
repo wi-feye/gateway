@@ -1,7 +1,8 @@
 export type Attendance = {
     from: string,
     to: string,
-    data: number
+    count: number,
+    id_area: number,
 }
 
 export default Attendance;
