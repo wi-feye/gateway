@@ -100,8 +100,8 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
 
     const buildHeatmap = (map: LeafletMap, positions: CrowdPosition[]): LeafletMap => {
         const heatmapOptions: HeatMapOptions = {
-            maxZoom: 5,
-            radius: 10
+            maxZoom: 6,
+            radius: 13
         }
 
         let retMap = map;

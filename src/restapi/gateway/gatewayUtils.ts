@@ -6,13 +6,16 @@ function splitByDuration(positions: CrowdPosition[], durationMinutes: number): C
         return x.timestamp < y.timestamp ? -1:1;
     })
 
+    if (sortedByTime.length == 0) {
+        return [];
+    }
     const result: CrowdBehavior[] = [];
 
     let startTime = new Date(sortedByTime[0].timestamp); // start from the oldest one
     startTime.setSeconds(0);
     let endTime = new Date(startTime);
     endTime.setMinutes(startTime.getMinutes() + durationMinutes);
-    endTime.setSeconds(59);
+    //endTime.setSeconds(59);
 
     let current: CrowdBehavior = {
         from: startTime.toISOString(),
@@ -26,12 +29,12 @@ function splitByDuration(positions: CrowdPosition[], durationMinutes: number): C
         if (posDate > endTime) {
             // start becomes end + 1 minute
             startTime = new Date(endTime);
-            startTime.setMinutes(endTime.getMinutes() + 1);
+            startTime.setMinutes(endTime.getMinutes());
             startTime.setSeconds(0);
             // end becomes new start + <minutesGap> minutes
             endTime = new Date(startTime);
             endTime.setMinutes(startTime.getMinutes() + durationMinutes);
-            endTime.setSeconds(59);
+            //endTime.setSeconds(59);
             //if (endTime > toDate) endTime = new Date(endTime);
             current = {
                 from: startTime.toISOString(),

@@ -184,7 +184,7 @@ export function useAttendance(buildingId: number | undefined, from?: Date, to?: 
     }
 }
 
-export function useCrowdBehavior(buildingId: number | undefined, from: Date, to: Date, minutesGap: number | undefined = 2) {
+export function useCrowdBehavior(buildingId: number | undefined, from: Date, to: Date, minutesGap: number | undefined = 1) {
     const fromTimestamp = from.toISOString();
     const toTimestamp = to.toISOString();
     const { data, error } = useSWR<CrowdBehavior[]>(
