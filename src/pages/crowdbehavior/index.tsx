@@ -42,7 +42,7 @@ const CrowdBehavior = () => {
     );
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
 
-    const { pointOfInterest } = usePointOfInterest(selectedBuilding.id,timeFrom, timeTo);
+    //const { pointOfInterest } = usePointOfInterest(selectedBuilding.id,timeFrom, timeTo);
 
     const handleChangeDate = (newValue: Date | null, keyboardInputValue?: string | undefined) => {
         if (newValue) {

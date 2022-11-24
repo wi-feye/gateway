@@ -16,6 +16,7 @@ const REST_API_GET_DEVICES_URL = "/api/device/list";
 const REST_API_GET_CROWDBEHAVIOR_URL = "/api/crowdbehavior";
 const REST_API_GET_POINTINTEREST_URL = "/api/pointofinterest";
 const REST_API_GET_ATTENDANCE_URL = "/api/attendance";
+const REST_API_GET_ATTENDANCE_PERHOUR_URL = "/api/attendance/perhour";
 const REST_API_AUTH_LOGIN_URL = "/api/auth/login";
 const REST_API_AUTH_LOGOUT_URL = "/api/auth/logout";
 
@@ -179,6 +180,23 @@ export function useAttendance(buildingId: number | undefined, from?: Date, to?: 
     if (isLoading) console.log("Fetching attendance...");
     return {
         attendance: data,
+        isLoading,
+        isError: error
+    }
+}
+
+export function useAttendancePerHour(buildingId: number | undefined, from?: Date, to?: Date) {
+    const fromTimestamp = from ? from.toISOString():"";
+    const toTimestamp = to ? to.toISOString():"";
+    const { data, error } = useSWR<Attendance[]>(
+        buildingId ? `${REST_API_GET_ATTENDANCE_PERHOUR_URL}?buildingId=${buildingId}&from=${fromTimestamp}&to=${toTimestamp}`:null,
+        fetchJson
+    );
+
+    const isLoading = !error && !data;
+    if (isLoading) console.log("Fetching attendance...");
+    return {
+        attendancePerHour: data,
         isLoading,
         isError: error
     }

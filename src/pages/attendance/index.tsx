@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 
 // material-ui
 import {
@@ -11,7 +11,7 @@ import {
 
 // project import
 import MainCard from '../../components/MainCard';
-import {useAreas, useAttendance} from "../../restapi";
+import {useAreas, useAttendance, useAttendancePerHour} from "../../restapi";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
 import AttendanceBarChart from "../overview/AttendanceBarChart";
@@ -28,9 +28,23 @@ function getAreaNameById(areas: Area[], areaId: number): string {
 type AreaAttendanceProps = {
     slot: string,
     area: Area,
-    attendance: Attendance[] | undefined
+    attendancePerHour: Attendance[] | undefined
 }
-function AreaAttendance({ slot, area, attendance }: AreaAttendanceProps) {
+function AreaAttendance({ slot, area, attendancePerHour }: AreaAttendanceProps) {
+    const [ attendanceData, setAttendanceData ] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+
+    useEffect(() => {
+        if (!attendancePerHour || !area) return;
+
+        const newAttendanceData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        attendancePerHour.forEach((att) => {
+            if (att.id_area === area.id) {
+                if (new Date(att.from).getHours() < newAttendanceData.length)
+                    newAttendanceData[new Date(att.from).getHours()] = att.count;
+            }
+        });
+        setAttendanceData(newAttendanceData);
+    }, [area, attendancePerHour]);
 
     return (
         <Grid item xs={12} md={4} lg={4}>
@@ -40,14 +54,6 @@ function AreaAttendance({ slot, area, attendance }: AreaAttendanceProps) {
                 </Grid>
                 <Grid item>
                     <Stack direction="row" alignItems="center" spacing={0}>
-                        <Button
-                            size="small"
-                            /*onClick={() => setSlot('month')}*/
-                            color={slot === 'month' ? 'primary' : 'secondary'}
-                            variant={slot === 'month' ? 'outlined' : 'text'}
-                        >
-                            Week
-                        </Button>
                         <Button
                             size="small"
                             /*onClick={() => setSlot('week')}*/
@@ -68,7 +74,7 @@ function AreaAttendance({ slot, area, attendance }: AreaAttendanceProps) {
                     </Stack>
                 </Box>
                 <AttendanceBarChart
-                    data={[0, 0, 0, 0, 0, 0, 0, 40, 95, 80, 75, 86, 35, 50, 80, 95, 70, 50, 30, 0, 0, 0, 0, 0] /*attendance ? attendance.map(att => att.count):[]*/}
+                    data={attendanceData/*[0, 0, 0, 0, 0, 0, 0, 40, 95, 80, 75, 86, 35, 50, 80, 95, 70, 50, 30, 0, 0, 0, 0, 0] /*attendance ? attendance.map(att => att.count):[]*/}
                     height={410}
                     categories={['', '', '03', '', '', '06', '', '', '09', '', '', '12', '', '', '15', '', '', '18', '', '', '21', '', '', '']}
                 />
@@ -82,20 +88,8 @@ const AttendancePage = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
     const { attendance, isLoading: isLoadingAttendance } = useAttendance(selectedBuilding.id);
+    const { attendancePerHour, isLoading: isLoadingAttendancePerHour } = useAttendancePerHour(selectedBuilding.id);
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
-
-    /*const getAttendanceCategories = (idArea: number) => {
-        if (!attendance || !areas) return [];
-
-        attendance.forEach((att) => {
-            if (att.id_area === idArea) {
-
-            }
-        });
-
-        return [0, 0, 0, 0, 0, 0, 0, 40, 95, 80, 75, 86, 35, 50, 80, 95, 70, 50, 30, 0, 0, 0, 0, 0];
-        //attendance && areas ? attendance.map(att => getAreaNameById(areas, att.id_area) ):[]
-    }*/
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -114,7 +108,7 @@ const AttendancePage = () => {
                     <Box sx={{ p: 3, pb: 0 }}>
                         <Stack spacing={2}>
                             <Typography variant="h6" color="textSecondary">
-                                Today&apos;s attendance
+                                Daily attendance
                             </Typography>
                             {/*<Typography variant="h3">$7,650</Typography>*/}
                         </Stack>
@@ -129,7 +123,7 @@ const AttendancePage = () => {
             </Grid>
 
             {/* row 2 */}
-            { areas?.map(area => <AreaAttendance key={""} slot={"month"} area={area} attendance={attendance}/>) }
+            { areas?.map(area => <AreaAttendance key={""} slot={"month"} area={area} attendancePerHour={attendancePerHour}/>) }
         </Grid>
     );
 };

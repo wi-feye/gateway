@@ -18,7 +18,7 @@ export default function SettingsPage() {
 
     return (
         <MainLayout>
-            <Overview />
+            {/*<Overview />*/}
             <Head>
                 <title>WiFeye | Settings</title>
                 <meta name="description" content="Crowd Behavior Analysis" />
