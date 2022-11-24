@@ -13,6 +13,7 @@ function splitByDuration(positions: CrowdPosition[], durationMinutes: number): C
 
     let startTime = new Date(sortedByTime[0].timestamp); // start from the oldest one
     startTime.setSeconds(0);
+    startTime.setMinutes(0);
     let endTime = new Date(startTime);
     endTime.setMinutes(startTime.getMinutes() + durationMinutes);
     //endTime.setSeconds(59);
@@ -34,6 +35,7 @@ function splitByDuration(positions: CrowdPosition[], durationMinutes: number): C
             // end becomes new start + <minutesGap> minutes
             endTime = new Date(startTime);
             endTime.setMinutes(startTime.getMinutes() + durationMinutes);
+            
             //endTime.setSeconds(59);
             //if (endTime > toDate) endTime = new Date(endTime);
             current = {

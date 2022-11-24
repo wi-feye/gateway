@@ -113,7 +113,7 @@ const CrowdBehavior = () => {
             </Grid>
 
             {/* row 3 */}
-            <Grid item xs={12} md={7} lg={8}>
+            {/*<Grid item xs={12} md={7} lg={8}>
                 <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                         <Typography variant="h5">Number of point of interest</Typography>
@@ -132,7 +132,7 @@ const CrowdBehavior = () => {
                 <MainCard sx={{mt: 2}} content={false}>
                     <CrowdBarChart pointOfInterest={pointOfInterest ? pointOfInterest:[]} areas={areas? areas:[]}/>
                 </MainCard>
-            </Grid>
+            </Grid>*/}
         </Grid>
     );
 };

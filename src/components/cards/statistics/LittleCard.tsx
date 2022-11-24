@@ -18,7 +18,7 @@ type AnalyticEcommerceType = {
     title: string,
     subtitle: string,
     content: string,
-    percentage: number,
+    percentage?: number,
     isLoss?: boolean
 };
 const LittleCard = ({ color, title, content, percentage, isLoss, subtitle }: AnalyticEcommerceType) => (

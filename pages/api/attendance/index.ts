@@ -39,8 +39,23 @@ async function route(req: NextApiRequest, res: NextApiResponse<Attendance[]>) {
         crowd.data.forEach(pos => {
             if (pos.id_area !== -1) {
                 if (pos.id_area in areaAttendanceHashMap) {
+                    //const index = new Date(pos.timestamp).getHours();
+                    //areaAttendanceHashMap[pos.id_area][index].count += 1;
                     areaAttendanceHashMap[pos.id_area].count += 1;
                 } else {
+                    /*let areaAttendance: Attendance[] = [];
+                    for (let i = 0; i < 24; i++) {
+                        const fromDate = new Date();
+                        fromDate.setHours(i);
+                        const toDate = new Date();
+                        toDate.setHours(i + 1);
+                        areaAttendance.push({
+                            id_area: pos.id_area,
+                            from: fromDate.toISOString(),
+                            to: toDate.toISOString(),
+                            count: 0
+                        })
+                    }*/
                     areaAttendanceHashMap[pos.id_area] = {
                         id_area: pos.id_area,
                         from: crowd.from,
