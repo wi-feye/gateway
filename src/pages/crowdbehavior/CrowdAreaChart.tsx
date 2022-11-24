@@ -121,7 +121,7 @@ const CrowdAreaChart = ({timeFrom, timeTo, pointOfInterest, areas}: CrowdAreaCha
                 borderColor: line
             },
             tooltip: {
-                theme: 'light'
+                enabled: false
             }
         }));
     }, [primary, secondary, line, theme]);

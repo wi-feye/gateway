@@ -76,7 +76,7 @@ const AttendanceBarChart = ({ data, height, categories }: AttendanceBarChartProp
                 }
             },
             tooltip: {
-                theme: 'light'
+                enabled: false
             }
         }));
         // eslint-disable-next-line react-hooks/exhaustive-deps

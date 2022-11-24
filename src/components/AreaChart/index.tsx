@@ -86,7 +86,7 @@ const AreaChart = ({ categories, isMonth }: IncomeAreaChartType) => {
                 borderColor: line
             },
             tooltip: {
-                theme: 'light'
+                enabled: false
             }
         }));
     }, [primary, secondary, line, theme, isMonth]);
