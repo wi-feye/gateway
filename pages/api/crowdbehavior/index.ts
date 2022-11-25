@@ -32,7 +32,6 @@ async function route(req: NextApiRequest, res: NextApiResponse<CrowdBehavior[]>)
     const gap_in_minutes = minutesGap ? parseInt(Array.isArray(minutesGap) ? minutesGap[0] : minutesGap):1;
 
     const response = splitByDuration(crowdBehaviorResponse, gap_in_minutes);
-    response.forEach(res => console.log(res.data.length, res.from, res.to))
     res.json(response);
 }
 
