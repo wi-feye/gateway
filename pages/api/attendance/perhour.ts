@@ -34,7 +34,7 @@ async function route(req: NextApiRequest, res: NextApiResponse<Attendance[]>) {
     );*/
 
     let crowdBehaviorResponse: CrowdPosition[] = [];
-    if (!fromDate && !toDate) {
+    /*if (!fromDate && !toDate) {
         crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
             Array.isArray(buildingId) ? buildingId[0] : buildingId,
             new Date(new Date().setUTCHours(0,0,0,0)).toISOString(),
@@ -48,13 +48,13 @@ async function route(req: NextApiRequest, res: NextApiResponse<Attendance[]>) {
                 toDate,
             );
         }
-    } else {
+    } else {*/
         crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
             Array.isArray(buildingId) ? buildingId[0] : buildingId,
             fromDate,
             toDate
         );
-    }
+    //}
 
     // hashmap area id -> list of positions
     const positionsPerAreaHashMap: { [areaId: number] : CrowdPosition[]; }  = {};
