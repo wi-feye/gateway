@@ -77,6 +77,7 @@ const AreaChart = ({ categories, isMonth }: IncomeAreaChartType) => {
             },
             yaxis: {
                 labels: {
+                    show: false,
                     style: {
                         colors: [secondary]
                     }
