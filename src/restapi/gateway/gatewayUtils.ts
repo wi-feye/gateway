@@ -12,8 +12,8 @@ function splitByDuration(positions: CrowdPosition[], durationMinutes: number): C
     const result: CrowdBehavior[] = [];
 
     let startTime = new Date(sortedByTime[0].timestamp); // start from the oldest one
-    startTime.setUTCSeconds(0);
     startTime.setUTCMinutes(0);
+    startTime.setUTCSeconds(0);
     let endTime = new Date(startTime);
     endTime.setUTCMinutes(startTime.getUTCMinutes() + durationMinutes);
     //endTime.setSeconds(59);

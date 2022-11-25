@@ -1,8 +1,8 @@
 // material-ui
 import {
     Alert,
-    AlertTitle,
-    Box, Button, Chip, Grid, LinearProgress,
+    Box,
+    LinearProgress,
     Table,
     TableBody,
     TableCell,
@@ -13,11 +13,8 @@ import {
 
 // project
 import {TableCellProps} from "@mui/material/TableCell/TableCell";
-import {FallOutlined, RightSquareOutlined, RiseOutlined} from "@ant-design/icons";
 import * as React from "react";
-import Router from "next/router";
 import Device from "../../models/device";
-
 
 // ==============================|| ORDER TABLE - HEADER CELL ||============================== //
 const headCells = [

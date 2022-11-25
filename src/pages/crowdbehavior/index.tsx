@@ -9,15 +9,10 @@ import {
     Typography,
 } from '@mui/material';
 
-// project import
-import MainCard from '../../components/MainCard';
-
 // assets
 import {LocalizationProvider, MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
-import CrowdAreaChart from "./CrowdAreaChart";
-import CrowdBarChart from "./CrowdBarChart";
 import CrowdsGridContainer from "../../components/CrowdsGridContainer";
-import {useAreas, useCrowdBehavior, usePointOfInterest} from "../../restapi";
+import {useAreas, useCrowdBehavior} from "../../restapi";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //

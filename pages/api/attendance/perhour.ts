@@ -27,11 +27,34 @@ async function route(req: NextApiRequest, res: NextApiResponse<Attendance[]>) {
     const fromDate = from ? (Array.isArray(from) ? from[0] : from):undefined;
     const toDate = to ? (Array.isArray(to) ? to[0] : to): undefined;
 
-    const crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
+    /*const crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
         Array.isArray(buildingId) ? buildingId[0] : buildingId,
         fromDate,
         toDate
-    );
+    );*/
+
+    let crowdBehaviorResponse: CrowdPosition[] = [];
+    if (!fromDate && !toDate) {
+        crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
+            Array.isArray(buildingId) ? buildingId[0] : buildingId,
+            new Date(new Date().setUTCHours(0,0,0,0)).toISOString(),
+            new Date(new Date().setUTCHours(24,0,0,0)).toISOString(),
+        );
+
+        if (crowdBehaviorResponse.length == 0) {
+            crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
+                Array.isArray(buildingId) ? buildingId[0] : buildingId,
+                fromDate,
+                toDate,
+            );
+        }
+    } else {
+        crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
+            Array.isArray(buildingId) ? buildingId[0] : buildingId,
+            fromDate,
+            toDate
+        );
+    }
 
     // hashmap area id -> list of positions
     const positionsPerAreaHashMap: { [areaId: number] : CrowdPosition[]; }  = {};
@@ -82,6 +105,17 @@ async function route(req: NextApiRequest, res: NextApiResponse<Attendance[]>) {
             }
         })
     });
+
+    // JUST FOR DEBUG
+    /*areasId.forEach(id => {
+        const positionsInsideArea = positionsChunksPerArea[id];
+        positionsInsideArea.forEach(crowdBeh => {
+            const timeIndex = new Date(crowdBeh.from).getUTCHours();
+            if (timeIndex < attendancePerAreaByHour[id].length) {
+                console.log(id, timeIndex, attendancePerAreaByHour[id][timeIndex].count);
+            }
+        })
+    });*/
 
     const response: Attendance[] = [];
     areasId.map( id => response.push(...attendancePerAreaByHour[id]) );

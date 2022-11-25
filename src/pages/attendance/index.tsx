@@ -39,8 +39,8 @@ function AreaAttendance({ slot, area, attendancePerHour }: AreaAttendanceProps) 
         const newAttendanceData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         attendancePerHour.forEach((att) => {
             if (att.id_area === area.id) {
-                if (new Date(att.from).getHours() < newAttendanceData.length)
-                    newAttendanceData[new Date(att.from).getHours()] = att.count;
+                if (new Date(att.from).getUTCHours() < newAttendanceData.length)
+                    newAttendanceData[new Date(att.from).getUTCHours()] = att.count;
             }
         });
         setAttendanceData(newAttendanceData);
