@@ -1,19 +1,20 @@
-import {useSelector} from "react-redux";
-import {RootState} from "../../store";
-import {useState} from 'react';
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
+import { useState } from 'react';
 
 // material-ui
 import {
     Grid,
+    Slider,
     TextField,
     Typography,
 } from '@mui/material';
 
 // assets
-import {LocalizationProvider, MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
+import { LocalizationProvider, MobileDatePicker, MobileTimePicker } from "@mui/x-date-pickers";
 import CrowdsGridContainer from "../../components/CrowdsGridContainer";
-import {useAreas, useCrowdBehavior} from "../../restapi";
-import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import { useAreas, useCrowdBehavior } from "../../restapi";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
@@ -27,13 +28,17 @@ const CrowdBehavior = () => {
     let [timeTo, setTimeTo] = useState<Date>(
         new Date("2022-11-09T17:16:40Z")
     );
+    let [gap, setGap] = useState<number>(
+        1
+    );
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
     const { crowdBehavior, isLoading: isLoadingCrowdBehavior } = useCrowdBehavior(
         selectedBuilding.id,
         new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), timeFrom.getSeconds()),
-        new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours(), timeTo.getMinutes(), timeTo.getSeconds())
+        new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours(), timeTo.getMinutes(), timeTo.getSeconds()),
+        gap
     );
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
 
@@ -57,11 +62,16 @@ const CrowdBehavior = () => {
             setTimeTo(newValue);
         }
     };
+    const handleChangeGap = (event: Event, newValue: number | number[], activeThumb: number) => {
+        if (newValue) {
+            setGap(Array.isArray(newValue) ? newValue[0] : newValue);
+        }
+    };
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
             {/* row 1 */}
-            <Grid item xs={12} sx={{mb: -2.25}}>
+            <Grid item xs={12} sx={{ mb: -2.25 }}>
                 <Typography variant="h5">Crowd Behavior</Typography>
             </Grid>
             <Grid item xs={12} md={2} lg={2}>
@@ -95,12 +105,27 @@ const CrowdBehavior = () => {
                     />
                 </LocalizationProvider>
             </Grid>
+            <Grid item xs={12} md={5} lg={4}>
+                <Typography id="non-linear-slider">
+                    Minutes gap: {gap}m
+                </Typography>
+                <Slider
+                    defaultValue={1}
+                    value={gap}
+                    onChange={handleChangeGap}
+                    step={1}
+                    marks
+                    valueLabelDisplay="auto"
+                    min={1}
+                    max={30}
+                />
+            </Grid>
 
             {/* row 2 */}
-            <Grid item xs={12} sx={{mt: -4.5}}>
+            <Grid item xs={12} sx={{ mt: -4.5 }}>
                 <CrowdsGridContainer
                     title=""
-                    crowdBehavior={crowdBehavior ? crowdBehavior:[]}
+                    crowdBehavior={crowdBehavior ? crowdBehavior : []}
                     areas={areas}
                     isLoading={isLoadingCrowdBehavior}
                     height={480}
