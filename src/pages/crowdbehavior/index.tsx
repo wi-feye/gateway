@@ -19,6 +19,8 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const CrowdBehavior = () => {
+    const DEFAULT_MILLISECONDS = 300;
+
     const [date, setDate] = useState<Date>(
         new Date("2022-11-09T13:20:00Z")
     );
@@ -31,9 +33,8 @@ const CrowdBehavior = () => {
     let [gap, setGap] = useState<number>(
         1
     );
-    let [milliseconds, setMilliseconds] = useState<number>(
-        300
-    );
+    let [milliseconds, setMilliseconds] = useState<number>(DEFAULT_MILLISECONDS);
+    let [index, setIndex] = useState<number>(2);
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
@@ -72,9 +73,31 @@ const CrowdBehavior = () => {
     };
     const handleChangeMilliseconds = (event: Event, newValue: number | number[], activeThumb: number) => {
         if (newValue) {
-            setMilliseconds(Array.isArray(newValue) ? newValue[0] : newValue);
+            const value = Array.isArray(newValue) ? newValue[0] : newValue;
+            setIndex(value);
+            setMilliseconds(Math.round(DEFAULT_MILLISECONDS / calculateMarksValue(value)));
         }
     };
+    const calculateMarksValue = (value: number) => {
+        switch (value) {
+            case 1:
+                return 0.5;
+            case 2:
+                return 1;
+            case 3:
+                return 2;
+            case 4:
+                return 4;
+            case 5:
+                return 8;
+        }
+        return 1;
+    }
+
+    const marks = [1, 2, 3, 4, 5].map((value) => ({
+        value,
+        label: `${calculateMarksValue(value)}X`
+    }));
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -132,17 +155,15 @@ const CrowdBehavior = () => {
             </Grid> */}
             <Grid item xs={12} md={4}>
                 <Typography id="non-linear-slider">
-                    Speed: {milliseconds} milliseconds
+                    Speed: {calculateMarksValue(index)}X
                 </Typography>
                 <Slider
-                    defaultValue={1}
-                    value={milliseconds}
+                    value={index}
                     onChange={handleChangeMilliseconds}
-                    step={100}
-                    marks
-                    valueLabelDisplay="auto"
-                    min={100}
-                    max={1000}
+                    step={1}
+                    marks={marks}
+                    min={1}
+                    max={marks.length}
                 />
             </Grid>
 
