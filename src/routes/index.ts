@@ -29,7 +29,7 @@ export const areasRoute: Route = {
 }
 
 export const devicesRoute: Route = {
-    title: "Devices",
+    title: "Sniffers",
     url: "/devices"
 }
 

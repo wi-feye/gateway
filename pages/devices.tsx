@@ -19,7 +19,7 @@ export default function DevicesPage() {
         <MainLayout>
             <Devices />
             <Head>
-                <title>WiFeye | Devices</title>
+                <title>WiFeye | Sniffers</title>
                 <meta name="description" content="Crowd Behavior Analysis" />
             </Head>
         </MainLayout>

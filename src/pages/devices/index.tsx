@@ -24,7 +24,7 @@ const Devices = () => {
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
             <Grid item xs={12} sx={{mb: -2.25}}>
-                <Typography variant="h5">Devices</Typography>
+                <Typography variant="h5">Sniffers</Typography>
             </Grid>
             <Grid item xs={12}>
                 <MainCard sx={{ mt: 2 }} content={false}>
