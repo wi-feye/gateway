@@ -31,6 +31,9 @@ const CrowdBehavior = () => {
     let [gap, setGap] = useState<number>(
         1
     );
+    let [milliseconds, setMilliseconds] = useState<number>(
+        300
+    );
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
@@ -67,6 +70,11 @@ const CrowdBehavior = () => {
             setGap(Array.isArray(newValue) ? newValue[0] : newValue);
         }
     };
+    const handleChangeMilliseconds = (event: Event, newValue: number | number[], activeThumb: number) => {
+        if (newValue) {
+            setMilliseconds(Array.isArray(newValue) ? newValue[0] : newValue);
+        }
+    };
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -74,7 +82,7 @@ const CrowdBehavior = () => {
             <Grid item xs={12} sx={{ mb: -2.25 }}>
                 <Typography variant="h5">Crowd Behavior</Typography>
             </Grid>
-            <Grid item xs={12} md={2} lg={2}>
+            <Grid item xs={12} md={3}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileDatePicker
                         label="Date"
@@ -85,7 +93,7 @@ const CrowdBehavior = () => {
                     />
                 </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} md={2} lg={2}>
+            <Grid item xs={12} md={3}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileTimePicker
                         label="Time From"
@@ -95,7 +103,7 @@ const CrowdBehavior = () => {
                     />
                 </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} md={5} lg={4}>
+            <Grid item xs={12} md={4}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileTimePicker
                         label="Time To"
@@ -105,9 +113,9 @@ const CrowdBehavior = () => {
                     />
                 </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} md={5} lg={4}>
+            <Grid item xs={12} lg={6}>
                 <Typography id="non-linear-slider">
-                    Minutes gap: {gap}m
+                    Gap: {gap} minutes
                 </Typography>
                 <Slider
                     defaultValue={1}
@@ -120,6 +128,21 @@ const CrowdBehavior = () => {
                     max={30}
                 />
             </Grid>
+            <Grid item xs={12} lg={6}>
+                <Typography id="non-linear-slider">
+                    Speed: {milliseconds} milliseconds
+                </Typography>
+                <Slider
+                    defaultValue={1}
+                    value={milliseconds}
+                    onChange={handleChangeMilliseconds}
+                    step={100}
+                    marks
+                    valueLabelDisplay="auto"
+                    min={100}
+                    max={1000}
+                />
+            </Grid>
 
             {/* row 2 */}
             <Grid item xs={12} sx={{ mt: -4.5 }}>
@@ -129,6 +152,7 @@ const CrowdBehavior = () => {
                     areas={areas}
                     isLoading={isLoadingCrowdBehavior}
                     height={480}
+                    milliseconds={milliseconds}
                 />
             </Grid>
 
