@@ -82,7 +82,7 @@ const CrowdBehavior = () => {
             <Grid item xs={12} sx={{ mb: -2.25 }}>
                 <Typography variant="h5">Crowd Behavior</Typography>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={2}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileDatePicker
                         label="Date"
@@ -93,7 +93,7 @@ const CrowdBehavior = () => {
                     />
                 </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={2}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileTimePicker
                         label="Time From"
@@ -103,7 +103,7 @@ const CrowdBehavior = () => {
                     />
                 </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={2}>
                 <LocalizationProvider dateAdapter={AdapterDateFns}>
                     <MobileTimePicker
                         label="Time To"
@@ -113,7 +113,9 @@ const CrowdBehavior = () => {
                     />
                 </LocalizationProvider>
             </Grid>
-            <Grid item xs={12} lg={6}>
+
+            <Grid item md={2}></Grid>
+            {/* <Grid item xs={12} lg={6}>
                 <Typography id="non-linear-slider">
                     Gap: {gap} minutes
                 </Typography>
@@ -127,8 +129,8 @@ const CrowdBehavior = () => {
                     min={1}
                     max={30}
                 />
-            </Grid>
-            <Grid item xs={12} lg={6}>
+            </Grid> */}
+            <Grid item xs={12} md={4}>
                 <Typography id="non-linear-slider">
                     Speed: {milliseconds} milliseconds
                 </Typography>
