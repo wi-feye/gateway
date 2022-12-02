@@ -27,15 +27,15 @@ async function listRoute(req: NextApiRequest, res: NextApiResponse<Device[]>) {
         const z_devices = await fetchJson<any>(`https://api.zdm.zerynth.com/v3/workspaces/${building?.id_zerynth}/devices`, {headers: {"X-API-KEY": user.apikey_zerynth}})
         devices.forEach((dev, i) => {
             const z_device = z_devices.devices.find((d: any) => d.id == dev.id_zerynth);
-            const last_connected_at = (z_device.last_connected_at as string);
+            const last_connected_at = ((z_device.is_connected ? z_device.last_connected_at : z_device.last_disconnected_at) as string);
             dev.status = z_device.is_connected ? "Online" : "Offline";
-            dev.lastRequest = last_connected_at.substring(0, last_connected_at.indexOf(".")).replace("T", " ");
+            dev.lastRequest = new Date(last_connected_at).toLocaleString();
         });
     } catch (e) {
         console.log(e)
         devices.forEach((dev, i) => {
             dev.status = "Offline";
-            dev.lastRequest = "18-11-2020 18:44:08";
+            dev.lastRequest = new Date("18-11-2020T18:44:08Z").toLocaleString();
         });
     }
     res.json(devices);
