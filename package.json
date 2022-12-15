@@ -7,9 +7,13 @@
     "build": "next build",
     "start": "next start",
     "serve": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "static": "next build && next export"
   },
   "dependencies": {
+    "@capacitor/android": "^4.6.1",
+    "@capacitor/core": "^4.6.1",
+    "@capacitor/ios": "^4.6.1",
     "@emotion/cache": "^11.10.5",
     "@emotion/react": "^11.10.5",
     "@emotion/server": "^11.10.0",
@@ -41,6 +45,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@capacitor/cli": "^4.6.1",
     "@next/eslint-plugin-next": "^13.0.3"
   }
 }

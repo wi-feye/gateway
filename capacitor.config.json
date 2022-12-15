@@ -1,0 +1,9 @@
+{
+  "server": {
+    "url": "https://wifeye.it"
+  },
+  "appId": "it.smartapp.wifeye",
+  "appName": "WiFeye",
+  "webDir": "public",
+  "bundledWebRuntime": false
+}
