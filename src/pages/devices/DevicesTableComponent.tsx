@@ -1,14 +1,14 @@
 // material-ui
 import {
     Alert,
-    Box, Button,
+    Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
     LinearProgress,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow,
+    TableRow, TextField,
 } from '@mui/material';
 
 // project
@@ -60,7 +60,9 @@ function DevicesTableHead() {
 
 // ==============================|| TABLE ||============================== //
 
-function buildDeviceRow(key: number, device:Device) {
+function buildDeviceRow(key: number, device:Device, handleClickOpen: React.MouseEventHandler<HTMLButtonElement> | undefined) {
+
+
     return (
         <TableRow hover role="checkbox" tabIndex={-1} key={key}>
             <TableCell align="center">{device.name}</TableCell>
@@ -68,7 +70,7 @@ function buildDeviceRow(key: number, device:Device) {
                 {device.status}
             </Alert></TableCell>
             <TableCell align="center">{device.lastRequest}</TableCell>
-            <TableCell align="center"><Button variant="contained">Modifica</Button> {" "} <Button variant="contained" color="error">Elimina</Button></TableCell>
+            <TableCell align="center"><Button variant="contained" onClick={handleClickOpen}>Modifica</Button> {" "} <Button variant="contained" color="error">Elimina</Button></TableCell>
         </TableRow>
     );
 }
@@ -78,7 +80,22 @@ export type DevicesTableComponentType = {
     loading: boolean
 }
 export default function DevicesTableComponent({ devices, loading }: DevicesTableComponentType) {
+    const [open, setOpen] = React.useState(false);
+    const [nameSniffer, setNameSniffer] = React.useState(false);
+    const [xPosition, setxPosition] = React.useState(false);
+    const [yPosition, setyPosition] = React.useState(false);
 
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const handleConfirm = () => {
+        setOpen(false);
+    };
     return (
         <Box>
             <TableContainer
@@ -111,12 +128,51 @@ export default function DevicesTableComponent({ devices, loading }: DevicesTable
                                     <LinearProgress />
                                 </TableCell>
                             ) : ( devices && devices.length > 0 ? devices.map((device, idx) => {
-                                    return buildDeviceRow(idx, device)
+                                    return buildDeviceRow(idx, device, handleClickOpen)
                                 })
                                 : <TableCell align="center" colSpan={headCells.length}></TableCell>
                             )
                         }
                     </TableBody>
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Modify Sniffer</DialogTitle>
+                        <DialogContent>
+                            <DialogContentText>
+                                Enter the values you want to change:
+                            </DialogContentText>
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                label="Name"
+                                type="text"
+                                variant="outlined"
+                                value={nameSniffer}
+                            />
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                label="Position X"
+                                type="text"
+                                variant="outlined"
+                                value={xPosition}
+                            />
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                label="Position Y"
+                                type="text"
+                                variant="outlined"
+                                value={yPosition}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button onClick={handleConfirm}>Confirm</Button>
+                        </DialogActions>
+                    </Dialog>
                 </Table>
             </TableContainer>
         </Box>

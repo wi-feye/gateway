@@ -4,11 +4,13 @@ import Area from "../../models/area";
 import Device from "../../models/device";
 import CrowdPosition from "../../models/crowdposition";
 import PointOfInterest from "../../models/pointOfInterest";
+import {User} from "../../models/user";
 
 const ENDPOINT = process.env.DATA_MANAGER_HOST ? process.env.DATA_MANAGER_HOST:"http://localhost:10002";
 const DATA_MANAGER_BUILDINGS_URL = ENDPOINT + "/api/buildings/pull";
 const DATA_MANAGER_AREAS_URL = ENDPOINT + "/api/areas/pull";
 const DATA_MANAGER_DEVICES_URL = ENDPOINT + "/api/sniffers/pull";
+const DATA_MANAGER_SNIFFER_UPDATE_URL = ENDPOINT + "/api/sniffers/update";
 const DATA_MANAGER_POSITION_DETECTION_URL = ENDPOINT + "/api/position-detection/pull";
 const DATA_MANAGER_POSITION_DETECTION_MAX_DATE_URL = ENDPOINT + "/api/position-detection/maxdate";
 
@@ -50,13 +52,28 @@ function maxDate(buildingId: string): Promise<Date> {
         .then(res => new Date(res.maxDate) );
 }
 
+function modifySniffer(idSniffer: string, id_building:string, name: string, xPosition: string, yPosition: string){
+    const body = {
+        name,
+        id_building,
+        xPosition,
+        yPosition
+    }
+    fetchJson(`${DATA_MANAGER_SNIFFER_UPDATE_URL}/${idSniffer}?`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+}
+
 const DataManagerAPI = {
     buildings,
     areas,
     devices,
     crowdBehavior,
     poi,
-    maxDate
+    maxDate,
+    modifySniffer
 };
 
 export default DataManagerAPI;

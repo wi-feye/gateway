@@ -21,6 +21,8 @@ const REST_API_GET_ATTENDANCE_PERHOUR_URL = "/api/attendance/perhour";
 const REST_API_AUTH_LOGIN_URL = "/api/auth/login";
 const REST_API_AUTH_LOGOUT_URL = "/api/auth/logout";
 
+const REST_API_MODIFY_SNIFFER_URL = "/api/device/modify";
+
 export class FetchError extends Error {
     response: Response
     data: {
@@ -256,29 +258,17 @@ export function useMaxDate(buildingId: number | undefined) {
     }
 }
 
-/*export function useApi<FunArgsType extends any[], ReturnType>(apiFunc: (...args: FunArgsType) => Promise<ReturnType>):
-    { data: ReturnType | undefined, error: string, loading: boolean, request: (...args: FunArgsType) => Promise<void>}
-{
-    const [data, setData] = useState<ReturnType>();
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-
-    const request = async (...argsList: FunArgsType) => {
-        setLoading(true);
-        try {
-            const dataResponse = await apiFunc(...argsList);
-            setData(dataResponse);
-        } catch (error) {
-            setError(error instanceof FetchError ? error.data.message:"Unexpected error: "+error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return {
-        data,
-        error,
-        loading,
-        request
-    };
-}*/
+export async function modifySniffer(idSniffer: string,id_building: string, name: string, xPosition: string, yPosition: string): Promise<User> {
+    const body = {
+        idSniffer,
+        id_building,
+        name,
+        xPosition,
+        yPosition,
+    }
+    return fetchJson(REST_API_MODIFY_SNIFFER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+}
