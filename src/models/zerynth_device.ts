@@ -1,5 +1,5 @@
 export type ZerynthDevice = {
-    id: string,
+    id: string,    // id_zerynth
     name: string,
     is_connected: boolean,
     last_connected_at: string,

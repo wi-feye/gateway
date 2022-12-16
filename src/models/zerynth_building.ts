@@ -1,5 +1,5 @@
 export type ZerynthBuilding = {
-    id: string,
+    id: string,    // id_zerynth
     name: string,
     description: string
 }
