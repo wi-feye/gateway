@@ -1,7 +1,7 @@
 // material-ui
 import {
     Alert,
-    Box,
+    Box, Button,
     LinearProgress,
     Table,
     TableBody,
@@ -68,6 +68,7 @@ function buildDeviceRow(key: number, device:Device) {
                 {device.status}
             </Alert></TableCell>
             <TableCell align="center">{device.lastRequest}</TableCell>
+            <TableCell align="center"><Button variant="contained">Modifica</Button> {" "} <Button variant="contained" color="error">Elimina</Button></TableCell>
         </TableRow>
     );
 }

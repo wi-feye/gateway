@@ -1,8 +1,10 @@
 export type PointOfInterest = {
     id: number,
     idArea: number,
-    time: string,
-    pointOfInterest: [{ x:number,y:number }]
+    id_building:number,
+    likelihood: number,
+    x:number,
+    y:number
 }
 
 export default PointOfInterest;

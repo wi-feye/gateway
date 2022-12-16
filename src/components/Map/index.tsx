@@ -17,6 +17,7 @@ import {CheckCircleOutlined, ExclamationCircleOutlined} from "@ant-design/icons"
 import {Typography} from "@mui/material";
 import * as React from "react";
 import CrowdPosition from "../../models/crowdposition";
+import PointOfInterest from "../../models/pointOfInterest";
 
 function buildDeviceMarkerPopup(device: Device) {
     return (
@@ -51,12 +52,14 @@ type MapPropType = {
     areas?: Area[],
     fitAreasBounds?: boolean,
     devices?: Device[]
+    pointOfInterest?: PointOfInterest[]
 }
-export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatmapPoints, areas, fitAreasBounds, devices }: MapPropType) {
+export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatmapPoints, areas, fitAreasBounds, devices, pointOfInterest }: MapPropType) {
     const [map, setMap] = useState<LeafletMap>();
     const [heatmapLayer, setHeatmapLayer] = useState<Leaflet.HeatLayer>();
     const [polygons, setPolygons] = useState<Polygon[]>([]);
     const [devicesMarkers, setDevicesMarkers] = useState<Marker[]>([]);
+    const [pointsMarkers, setPointsMarkers] = useState<Marker[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const onMapReady = () => {
@@ -64,6 +67,7 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         if (whenReady != null) whenReady();
     }
 
+    console.log("MAAAAPPP",pointOfInterest)
     const POLYGON_PANE = "heatmap_pane";
     const DEVICES_PANE = "devices_pane";
     const DEVICES_SHADOW_PANE = "devices_shadow_pane";
@@ -208,6 +212,8 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         shadowSize: shadowSize, // size of the shadow
         shadowAnchor: [shadowSize[0]/2, shadowSize[1]/2],  // point of the icon which will correspond to shadow's location
     });
+
+
     const addMarkerDevice = (map: LeafletMap, device: Device, icon: Icon, iconYSize: number): LeafletMap => {
         const markerLayer = new Marker(xy(device.x, device.y), {
             icon: icon,
@@ -226,15 +232,44 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         return map.addLayer(markerLayer);
     }
 
+    const interestPointMarkerIcon = new Icon({
+        iconSize: iconSize, // size of the icon
+        iconAnchor: [iconSize[0]/2, iconSize[1]], // point of the icon which will correspond to marker's location
+        iconUrl: '/assets/images/point_of_interest.png',
+        shadowUrl: '/assets/images/device_icon_shadow.png',
+        shadowSize: shadowSize, // size of the shadow
+        shadowAnchor: [shadowSize[0]/2, shadowSize[1]/2],  // point of the icon which will correspond to shadow's location
+    });
+
+    const addMarkerInterestPoint = (map: LeafletMap, point: PointOfInterest, icon: Icon, iconYSize: number): LeafletMap => {
+        const markerLayer = new Marker(xy(point.x, point.y), {
+            icon: icon,
+            pane: DEVICES_PANE,
+            shadowPane: DEVICES_SHADOW_PANE,
+        });
+
+        pointsMarkers.push(markerLayer);
+        setPointsMarkers(pointsMarkers);
+
+        return map.addLayer(markerLayer);
+    }
+
     useEffect(() => {
-        if (devices && map) {
+        if (devices && map && pointOfInterest) {
             devicesMarkers.forEach((marker) => marker.remove());
+            pointsMarkers.forEach((marker) => marker.remove());
             setDevicesMarkers([]);
+            setPointsMarkers([]);
 
             let mapObj = map;
             devices?.forEach((d: Device) => {
                 mapObj = addMarkerDevice(mapObj, d, deviceMarkerIcon, iconSize[1]);
             });
+
+            pointOfInterest?.forEach((p: PointOfInterest) => {
+                mapObj = addMarkerInterestPoint(mapObj, p, interestPointMarkerIcon, iconSize[1]);
+            });
+
             setMap(mapObj);
         }
     }, [devices, map]);
