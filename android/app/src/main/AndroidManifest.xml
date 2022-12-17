@@ -12,9 +12,8 @@
 
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
-            android:name="it.smartapp.wifeye.MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBarLaunch"
+            android:name="it.smartapp.wifeye.Splash"
+            android:label="splash"
             android:launchMode="singleTask"
             android:exported="true">
 
@@ -22,6 +21,15 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+
+        <activity
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
+            android:name="it.smartapp.wifeye.MainActivity"
+            android:label="@string/title_activity_main"
+            android:launchMode="singleTask"
+            android:exported="true">
 
         </activity>
 
