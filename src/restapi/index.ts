@@ -14,6 +14,7 @@ const REST_API_GET_BUILDINGS_URL = "/api/building/list";
 const REST_API_GET_AREAS_URL = "/api/area/list";
 const REST_API_GET_DEVICES_URL = "/api/device/list";
 const REST_API_GET_CROWDBEHAVIOR_URL = "/api/crowdbehavior";
+const REST_API_GET_MAXDATE_URL = "/api/crowdbehavior/maxdate";
 const REST_API_GET_POINTINTEREST_URL = "/api/pointofinterest";
 const REST_API_GET_ATTENDANCE_URL = "/api/attendance";
 const REST_API_GET_ATTENDANCE_PERHOUR_URL = "/api/attendance/perhour";
@@ -222,8 +223,8 @@ export function useCrowdBehavior(buildingId: number | undefined, from: Date, to:
 export function usePointOfInterest(buildingId: number, from: Date, to: Date) {
     const fromTimestamp = from.toISOString();
     const toTimestamp = to.toISOString();
-    const { data, error } = useSWR<PointOfInterest[]>(
-        buildingId ? `${REST_API_GET_POINTINTEREST_URL}?buildingId=${buildingId}&from=${fromTimestamp}&to=${toTimestamp}`:null,
+    const {data, error} = useSWR<PointOfInterest[]>(
+        buildingId ? `${REST_API_GET_POINTINTEREST_URL}?buildingId=${buildingId}&from=${fromTimestamp}&to=${toTimestamp}` : null,
         fetchJson
     );
 
@@ -231,6 +232,24 @@ export function usePointOfInterest(buildingId: number, from: Date, to: Date) {
     if (isLoading) console.log("Fetching point of interest...");
     return {
         pointOfInterest: data,
+        isLoading,
+        isError: error
+    }
+}
+
+type MaxDateResponse = {
+    maxDate: string
+}
+export function useMaxDate(buildingId: number | undefined) {
+    const { data, error } = useSWR<Date>(
+        buildingId ? `${REST_API_GET_MAXDATE_URL}?buildingId=${buildingId}`:null,
+        (url) => fetchJson<MaxDateResponse>(url).then(r => new Date(r.maxDate))
+    );
+
+    const isLoading = !error && !data;
+    if (isLoading) console.log("Fetching max date...");
+    return {
+        maxDate: data,
         isLoading,
         isError: error
     }

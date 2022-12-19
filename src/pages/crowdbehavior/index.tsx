@@ -1,6 +1,7 @@
 import { useSelector } from "react-redux";
 import { RootState } from "../../store";
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
+import CrowdBehavior from "../../models/crowdbehavior";
 
 // material-ui
 import {
@@ -13,26 +14,19 @@ import {
 // assets
 import { LocalizationProvider, MobileDatePicker, MobileTimePicker } from "@mui/x-date-pickers";
 import CrowdsGridContainer from "../../components/CrowdsGridContainer";
-import { useAreas, useCrowdBehavior } from "../../restapi";
+import {useAreas, useCrowdBehavior, useMaxDate} from "../../restapi";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
-const CrowdBehavior = () => {
+const CrowdBehaviorPageContent = () => {
     const DEFAULT_MILLISECONDS = 300;
 
-    const [date, setDate] = useState<Date>(
-        new Date("2022-11-09T13:20:00Z")
-    );
-    const [timeFrom, setTimeFrom] = useState<Date>(
-        new Date("2022-11-09T13:20:00Z")
-    );
-    let [timeTo, setTimeTo] = useState<Date>(
-        new Date("2022-11-09T17:16:40Z")
-    );
-    let [gap, setGap] = useState<number>(
-        1
-    );
+    const [date, setDate] = useState<Date>(new Date("2022-11-09T13:20:00Z"));
+    const [timeFrom, setTimeFrom] = useState<Date>(new Date("2022-11-09T13:20:00Z"));
+    const [timeTo, setTimeTo] = useState<Date>(new Date("2022-11-09T17:16:40Z"));
+    const [gap, setGap] = useState<number>(1);
+
     let [milliseconds, setMilliseconds] = useState<number>(DEFAULT_MILLISECONDS);
     let [index, setIndex] = useState<number>(2);
     const buildingState = useSelector((state: RootState) => state.building);
@@ -45,8 +39,21 @@ const CrowdBehavior = () => {
         gap
     );
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
+    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
 
     //const { pointOfInterest } = usePointOfInterest(selectedBuilding.id,timeFrom, timeTo);
+
+    useEffect(() => {
+        if (!isLoadingMaxDate) {
+            if (maxDate) {
+                const fromDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate(), 0, 0, 0);
+                const toDate = new Date(maxDate);
+                setDate(fromDate);
+                setTimeFrom(fromDate);
+                setTimeTo(toDate);
+            }
+        }
+    }, [maxDate, isLoadingMaxDate]);
 
     const handleChangeDate = (newValue: Date | null, keyboardInputValue?: string | undefined) => {
         if (newValue) {
@@ -204,4 +211,4 @@ const CrowdBehavior = () => {
     );
 };
 
-export default CrowdBehavior;
+export default CrowdBehaviorPageContent;

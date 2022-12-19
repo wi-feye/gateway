@@ -24,37 +24,24 @@ async function route(req: NextApiRequest, res: NextApiResponse<Attendance[]>) {
         res.status(400).end();
         return;
     }
-    const fromDate = from ? (Array.isArray(from) ? from[0] : from):undefined;
-    const toDate = to ? (Array.isArray(to) ? to[0] : to): undefined;
+    let fromDate = from ? new Date(Array.isArray(from) ? from[0] : from):undefined;
+    let toDate = to ? new Date(Array.isArray(to) ? to[0] : to): undefined;
+    if (!fromDate || !toDate) {
+        const maxDate = await DataManagerAPI.maxDate(
+            Array.isArray(buildingId) ? buildingId[0] : buildingId,
+        );
+        console.log("Max date: "+maxDate);
+        fromDate = new Date(maxDate);
+        fromDate.setUTCHours(0,0,0);
+        toDate = new Date(maxDate);
+        toDate.setUTCHours(23,59,59);
+    }
 
-    /*const crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
+    const crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
         Array.isArray(buildingId) ? buildingId[0] : buildingId,
-        fromDate,
-        toDate
-    );*/
-
-    let crowdBehaviorResponse: CrowdPosition[] = [];
-    /*if (!fromDate && !toDate) {
-        crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
-            Array.isArray(buildingId) ? buildingId[0] : buildingId,
-            new Date(new Date().setUTCHours(0,0,0,0)).toISOString(),
-            new Date(new Date().setUTCHours(24,0,0,0)).toISOString(),
-        );
-
-        if (crowdBehaviorResponse.length == 0) {
-            crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
-                Array.isArray(buildingId) ? buildingId[0] : buildingId,
-                fromDate,
-                toDate,
-            );
-        }
-    } else {*/
-        crowdBehaviorResponse = await DataManagerAPI.crowdBehavior(
-            Array.isArray(buildingId) ? buildingId[0] : buildingId,
-            fromDate,
-            toDate
-        );
-    //}
+        fromDate.toISOString(),
+        toDate.toISOString()
+    );
 
     // hashmap area id -> list of positions
     const positionsPerAreaHashMap: { [areaId: number] : CrowdPosition[]; }  = {};
