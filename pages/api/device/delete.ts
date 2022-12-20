@@ -6,17 +6,13 @@ import UserManagerAPI from "../../../src/restapi/gateway/usermanagerapi";
 import {FetchError} from "../../../src/restapi";
 import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 
-async function modifySnifferRoute(req: NextApiRequest, res: NextApiResponse) {
+async function deleteSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
     gateway_logger(req);
-    const { idSniffer, id_building, name,
-        xPosition,
-        yPosition } = await req.body
+    const { idSniffer } = await req.body
 
     try {
-        console.log( idSniffer, id_building, name,
-            xPosition,
-            yPosition )
-        await DataManagerAPI.modifySniffer(idSniffer,id_building, name,xPosition,yPosition);
+        console.log( idSniffer)
+        await DataManagerAPI.deleteSniffer(idSniffer);
 
     } catch (error) {
         if (error instanceof FetchError) {
@@ -30,4 +26,4 @@ async function modifySnifferRoute(req: NextApiRequest, res: NextApiResponse) {
     }
 }
 
-export default withIronSessionApiRoute(modifySnifferRoute, sessionOptions)
+export default withIronSessionApiRoute(deleteSnifferRoute, sessionOptions)

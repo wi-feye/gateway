@@ -22,6 +22,8 @@ const REST_API_AUTH_LOGIN_URL = "/api/auth/login";
 const REST_API_AUTH_LOGOUT_URL = "/api/auth/logout";
 
 const REST_API_MODIFY_SNIFFER_URL = "/api/device/modify";
+const REST_API_DELETE_SNIFFER_URL = "/api/device/delete";
+const REST_API_CREATE_SNIFFER_URL = "/api/device/create";
 
 export class FetchError extends Error {
     response: Response
@@ -267,6 +269,27 @@ export async function modifySniffer(idSniffer: string,id_building: string, name:
         yPosition,
     }
     return fetchJson(REST_API_MODIFY_SNIFFER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+}
+
+export async function deleteSniffer(idSniffer: string): Promise<User> {
+
+    return fetchJson(`${REST_API_DELETE_SNIFFER_URL}/${idSniffer}`, {
+        method: 'DELETE',
+    });
+}
+
+export async function createSniffer(id_building: string, name: string, xPosition: string, yPosition: string): Promise<User> {
+    const body = {
+        id_building,
+        name,
+        xPosition,
+        yPosition,
+    }
+    return fetchJson(REST_API_CREATE_SNIFFER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

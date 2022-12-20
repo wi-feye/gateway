@@ -11,6 +11,8 @@ const DATA_MANAGER_BUILDINGS_URL = ENDPOINT + "/api/buildings/pull";
 const DATA_MANAGER_AREAS_URL = ENDPOINT + "/api/areas/pull";
 const DATA_MANAGER_DEVICES_URL = ENDPOINT + "/api/sniffers/pull";
 const DATA_MANAGER_SNIFFER_UPDATE_URL = ENDPOINT + "/api/sniffers/update";
+const DATA_MANAGER_SNIFFER_CREATE_URL = ENDPOINT + "/api/sniffers/push";
+const DATA_MANAGER_SNIFFER_DELETE_URL = ENDPOINT + "/api/sniffers/delete";
 const DATA_MANAGER_POSITION_DETECTION_URL = ENDPOINT + "/api/position-detection/pull";
 const DATA_MANAGER_POSITION_DETECTION_MAX_DATE_URL = ENDPOINT + "/api/position-detection/maxdate";
 
@@ -59,10 +61,31 @@ function modifySniffer(idSniffer: string, id_building:string, name: string, xPos
         xPosition,
         yPosition
     }
-    fetchJson(`${DATA_MANAGER_SNIFFER_UPDATE_URL}/${idSniffer}?`, {
+    fetchJson(`${DATA_MANAGER_SNIFFER_UPDATE_URL}/${idSniffer}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
+    });
+}
+
+function createSniffer(id_building:string, name: string, xPosition: string, yPosition: string){
+    const body = {
+        name,
+        id_building,
+        xPosition,
+        yPosition
+    }
+    fetchJson(`${DATA_MANAGER_SNIFFER_CREATE_URL}/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+}
+
+function deleteSniffer(idSniffer:string){
+
+    fetchJson(`${DATA_MANAGER_SNIFFER_DELETE_URL}/${idSniffer}`, {
+        method: 'DELETE',
     });
 }
 
@@ -73,7 +96,9 @@ const DataManagerAPI = {
     crowdBehavior,
     poi,
     maxDate,
-    modifySniffer
+    modifySniffer,
+    createSniffer,
+    deleteSniffer
 };
 
 export default DataManagerAPI;
