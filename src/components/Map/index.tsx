@@ -14,7 +14,7 @@ import Area from "../../models/area";
 import Device from "../../models/device";
 import {renderToString} from "react-dom/server";
 import {CheckCircleOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
-import {Typography} from "@mui/material";
+import {Box, CircularProgress, Typography} from "@mui/material";
 import * as React from "react";
 import CrowdPosition from "../../models/crowdposition";
 import PointOfInterest from "../../models/pointOfInterest";
@@ -31,6 +31,16 @@ function buildDeviceMarkerPopup(device: Device) {
                 { device.name }
             </Typography>
         </div>
+    );
+}
+
+function buildPOIMarkerPopup(poi: PointOfInterest) {
+    return (
+        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <Typography variant="h3" sx={{ mt: 0 }}>
+                Point of Interest affidability: {poi.likelihood*100}%
+            </Typography>
+        </Box>
     );
 }
 
@@ -247,7 +257,11 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
             pane: DEVICES_PANE,
             shadowPane: DEVICES_SHADOW_PANE,
         });
-
+        const markerPopup = buildPOIMarkerPopup(point);
+        markerLayer.bindPopup(renderToString(markerPopup), { // some options for the bind popup
+            offset: new Point(0, -iconYSize / 4),
+            minWidth: 80
+        });
         pointsMarkers.push(markerLayer);
         setPointsMarkers(pointsMarkers);
 
