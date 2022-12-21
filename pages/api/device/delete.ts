@@ -2,7 +2,6 @@ import { withIronSessionApiRoute } from 'iron-session/next'
 import { sessionOptions } from '../../../src/auth/session'
 import { NextApiRequest, NextApiResponse } from 'next'
 import gateway_logger from "../../../src/restapi/gateway/gateway_logger";
-import UserManagerAPI from "../../../src/restapi/gateway/usermanagerapi";
 import {FetchError} from "../../../src/restapi";
 import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 

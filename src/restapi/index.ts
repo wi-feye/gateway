@@ -261,37 +261,34 @@ export function useMaxDate(buildingId: number | undefined) {
 }
 
 export async function modifySniffer(idSniffer: string,id_building: string, name: string, xPosition: string, yPosition: string): Promise<User> {
-    const body = {
-        idSniffer,
-        id_building,
-        name,
-        xPosition,
-        yPosition,
-    }
     return fetchJson(REST_API_MODIFY_SNIFFER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+            idSniffer,
+            id_building,
+            name,
+            xPosition,
+            yPosition,
+        }),
     });
 }
 
 export async function deleteSniffer(idSniffer: string): Promise<User> {
-
     return fetchJson(`${REST_API_DELETE_SNIFFER_URL}/${idSniffer}`, {
         method: 'DELETE',
     });
 }
 
 export async function createSniffer(id_building: string, name: string, xPosition: string, yPosition: string): Promise<User> {
-    const body = {
-        id_building,
-        name,
-        xPosition,
-        yPosition,
-    }
     return fetchJson(REST_API_CREATE_SNIFFER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+            id_building,
+            name,
+            xPosition,
+            yPosition,
+        }),
     });
 }

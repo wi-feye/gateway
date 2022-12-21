@@ -4,7 +4,6 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "../../../src/auth/session";
 import Device from "../../../src/models/device";
 import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
-import { fetchJson } from '../../../src/restapi';
 import ZerynthAPI from '../../../src/restapi/gateway/zerynthapi';
 
 async function listRoute(req: NextApiRequest, res: NextApiResponse<Device[]>) {
