@@ -6,13 +6,13 @@ import {
 // project import
 import MainCard from '../../components/MainCard';
 import AreasTableComponent from './AreasTableComponent';
-import {useAreas, useDevices, usePointOfInterest} from "../../restapi";
+import {useAreas, useDevices, useMaxDate, usePointOfInterest} from "../../restapi";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
 import dynamic from "next/dynamic";
 import {LocalizationProvider, MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 const Map = dynamic(() => import('../../../src/components/Map'), {
     ssr: false
@@ -25,6 +25,7 @@ const Areas = () => {
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
     const { devices, isLoading } = useDevices(selectedBuilding.id);
     const { areas, isLoading: areasIsLoading } = useAreas(selectedBuilding.id);
+    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
 
     const [date, setDate] = useState<Date>(
         new Date("2022-11-09T13:20:00Z")
@@ -35,6 +36,19 @@ const Areas = () => {
     let [timeTo, setTimeTo] = useState<Date>(
         new Date("2022-11-09T17:16:40Z")
     );
+
+    useEffect(() => {
+        if (!isLoadingMaxDate) {
+            if (maxDate) {
+                const fromDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate(), 0, 0, 0);
+                const toDate = new Date(maxDate);
+                setDate(fromDate);
+                setTimeFrom(fromDate);
+                setTimeTo(toDate);
+            }
+        }
+    }, [maxDate, isLoadingMaxDate]);
+
     const handleChangeDate = (newValue: Date | null, keyboardInputValue?: string | undefined) => {
         if (newValue) {
             setDate(newValue);

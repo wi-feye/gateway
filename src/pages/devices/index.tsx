@@ -41,7 +41,7 @@ const Devices = () => {
         createSniffer(selectedBuilding.id.toString(), nameSniffer, xPosition.toString(), yPosition.toString())
         setOpen(false);
     };
-    const handleNameSniffer = (event) => {
+    const handleNameSniffer = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setNameSniffer(event.target.value);
     };
     return (
@@ -61,7 +61,7 @@ const Devices = () => {
             </Grid>
             <Grid item xs={12}>
                 <MainCard content={false}>
-                    <DevicesTableComponent devices={devices} loading={isLoading} selectedBuilding={selectedBuilding.id}/>
+                    <DevicesTableComponent devices={devices} loading={isLoading} selectedBuildingId={selectedBuilding.id}/>
                 </MainCard>
             </Grid>
             <Grid item xs={12}>
