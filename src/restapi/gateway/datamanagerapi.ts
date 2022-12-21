@@ -1,15 +1,18 @@
 import Building from "../../models/building";
-import {FetchError, fetchJson} from "../index";
+import { FetchError, fetchJson } from "../index";
 import Area from "../../models/area";
 import Device from "../../models/device";
 import CrowdPosition from "../../models/crowdposition";
 
-const ENDPOINT = process.env.DATA_MANAGER_HOST ? process.env.DATA_MANAGER_HOST:"http://localhost:10002";
+const ENDPOINT = process.env.DATA_MANAGER_HOST ? process.env.DATA_MANAGER_HOST:"http://localhost:10001";
 const DATA_MANAGER_BUILDINGS_URL = ENDPOINT + "/api/buildings/pull";
 const DATA_MANAGER_AREAS_URL = ENDPOINT + "/api/areas/pull";
 const DATA_MANAGER_DEVICES_URL = ENDPOINT + "/api/sniffers/pull";
 const DATA_MANAGER_POSITION_DETECTION_URL = ENDPOINT + "/api/position-detection/pull";
 const DATA_MANAGER_POSITION_DETECTION_MAX_DATE_URL = ENDPOINT + "/api/position-detection/maxdate";
+const DATA_MANAGER_CREATE_AREA_URL = ENDPOINT + "/api/areas/push/";
+const DATA_MANAGER_DELETE_AREA_URL = ENDPOINT + "/api/areas/delete";
+const DATA_MANAGER_UPDATE_AREA_URL = ENDPOINT + "/api/areas/update/";
 
 function buildings(userId: number): Promise<Building[]> {
     return fetchJson<Building[]>(`${DATA_MANAGER_BUILDINGS_URL}/${userId}`);
@@ -41,12 +44,53 @@ function maxDate(buildingId: string): Promise<Date> {
         .then(res => new Date(res.maxDate) );
 }
 
+function createArea(buildingId: string, location: number[][], name: string, description: string): Promise<any> {
+    return fetch(`${DATA_MANAGER_CREATE_AREA_URL}`, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id_building: buildingId,
+            location: location,
+            name: name,
+            description: description
+        }),
+    });
+}
+
+function deleteArea(areaId: string): Promise<any> {
+    return fetch(`${DATA_MANAGER_DELETE_AREA_URL}/${areaId}`, {
+        method: "DELETE",
+    });
+}
+
+function updateArea(buildingId: string, areaId: string, areaLocation: number[][], areaName: string, areaDescription: string): Promise<any> {
+    return fetch(`${DATA_MANAGER_UPDATE_AREA_URL}/${areaId}`, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id_building: buildingId,
+            location: areaLocation,
+            name: areaName,
+            description: areaDescription
+        }),
+    });
+}
+
 const DataManagerAPI = {
     buildings,
     areas,
     devices,
     crowdBehavior,
-    maxDate
+    maxDate,
+    createArea,
+    deleteArea,
+    updateArea
 };
 
 export default DataManagerAPI;

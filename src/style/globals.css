@@ -15,6 +15,10 @@
     background-color: /*rgba(0,0,0,0.0)*/ #f8f9fa !important;
 }
 
+.leaflet-map .leaflet-div-icon.leaflet-editing-icon {
+    border-radius: 50%;
+}
+
 .disable-bar-transition .MuiLinearProgress-bar {
     transition: none;
 }
