@@ -197,7 +197,6 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
             if (fitAreasBounds && areas.length > 0) {
                 // min x, min y, max x, max y
                 const newBounds = computeAreasBounds(areas);
-                console.log(newBounds);
                 const centerXY = xy(
                     (newBounds[0] + newBounds[2]) / 2,
                     (newBounds[1] + newBounds[3]) / 2,
@@ -242,15 +241,28 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         return map.addLayer(markerLayer);
     }
 
+    useEffect(() => {
+        if (devices && map) {
+            devicesMarkers.forEach((marker) => marker.remove());
+            setDevicesMarkers([]);
+
+            let mapObj = map;
+            devices?.forEach((d: Device) => {
+                mapObj = addMarkerDevice(mapObj, d, deviceMarkerIcon, iconSize[1]);
+            });
+
+            setMap(mapObj);
+        }
+    }, [devices, map]);
+
     const interestPointMarkerIcon = new Icon({
         iconSize: iconSize, // size of the icon
         iconAnchor: [iconSize[0]/2, iconSize[1]], // point of the icon which will correspond to marker's location
         iconUrl: '/assets/images/point_of_interest.png',
         shadowUrl: '/assets/images/device_icon_shadow.png',
         shadowSize: shadowSize, // size of the shadow
-        shadowAnchor: [shadowSize[0]/2, shadowSize[1]/2],  // point of the icon which will correspond to shadow's location
+        shadowAnchor: [shadowSize[0], shadowSize[1]/2],  // point of the icon which will correspond to shadow's location
     });
-
     const addMarkerInterestPoint = (map: LeafletMap, point: PointOfInterest, icon: Icon, iconYSize: number): LeafletMap => {
         const markerLayer = new Marker(xy(point.x, point.y), {
             icon: icon,
@@ -269,24 +281,17 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
     }
 
     useEffect(() => {
-        if (devices && map && pointOfInterest) {
-            devicesMarkers.forEach((marker) => marker.remove());
+        if (map && pointOfInterest) {
             pointsMarkers.forEach((marker) => marker.remove());
-            setDevicesMarkers([]);
             setPointsMarkers([]);
-
             let mapObj = map;
-            devices?.forEach((d: Device) => {
-                mapObj = addMarkerDevice(mapObj, d, deviceMarkerIcon, iconSize[1]);
-            });
-
             pointOfInterest?.forEach((p: PointOfInterest) => {
                 mapObj = addMarkerInterestPoint(mapObj, p, interestPointMarkerIcon, iconSize[1]);
             });
 
             setMap(mapObj);
         }
-    }, [devices, map]);
+    }, [pointOfInterest, map]);
 
     return (
         <div style={{ height: `${height}px` }}>

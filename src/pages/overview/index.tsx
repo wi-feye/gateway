@@ -124,7 +124,7 @@ const Overview = () => {
             {/* row 3 */}
             <Grid item xs={12} md={7} lg={8}>
                 <MainCard sx={{ mt: 2 }} content={false}>
-                    <DevicesTableComponent devices={devices} loading={isLoading}/>
+                    <DevicesTableComponent devices={devices} loading={isLoading} selectedBuildingId={selectedBuilding.id}/>
                 </MainCard>
             </Grid>
             <Grid item xs={12} md={5} lg={4}>
