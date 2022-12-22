@@ -1,14 +1,18 @@
 import {useCallback, useEffect, useState} from "react";
 
 import {
+    FeatureGroup,
     HeatMapOptions, Icon,
-    LatLng, LatLngBounds,
-    Map as LeafletMap, Marker, Point, PointExpression, Polygon, polygon,
+    LatLng, LatLngBounds, LatLngExpression,
+    Map as LeafletMap, Marker, Point, PointExpression, Polygon, Polyline, PolylineOptions, Rectangle,
     TileLayer
 } from "leaflet";
 import * as Leaflet from 'leaflet'; // this is needed to call Leaflet.heatLayer() function
 import "leaflet/dist/leaflet.css"; // style for leaflet
 import "leaflet.heat"; // add heatLayer function to leaflet
+import "leaflet-draw"; // add draw plugin
+import "leaflet-draw/dist/leaflet.draw-src.css"
+import "leaflet-draw/dist/leaflet.draw.css"
 import LoadingComponent from "../LoadingComponent";
 import Area from "../../models/area";
 import Device from "../../models/device";
@@ -17,6 +21,10 @@ import {CheckCircleOutlined, ExclamationCircleOutlined} from "@ant-design/icons"
 import {Typography} from "@mui/material";
 import * as React from "react";
 import CrowdPosition from "../../models/crowdposition";
+
+const BUTTON_TITLE_CREATE_AREA = "Create areas";
+const BUTTON_TITLE_EDIT_AREA = "Edit areas";
+const BUTTON_TITLE_REMOVE_AREA = "Delete areas";
 
 function buildDeviceMarkerPopup(device: Device) {
     return (
@@ -41,6 +49,39 @@ function xy(x: any, y: any) {
     return new LatLng(y, x);  // When doing xy(x, y);
 }
 
+function getPolygonXYCoords(poly: Polygon): number[][] {
+    const result: number[][] = [];
+
+    poly.getLatLngs().forEach(latlng => {
+        if (latlng instanceof LatLng) {
+            result.push([latlng.lng, latlng.lat]);
+        } else {
+            latlng.forEach(latlng => {
+                if (latlng instanceof LatLng) {
+                    result.push([latlng.lng, latlng.lat]);
+                } else {
+                    latlng.forEach(latlng => result.push([latlng.lng, latlng.lat]));
+                }
+            });
+        }
+    });
+
+    return result;
+}
+
+class PolygonArea extends Polygon {
+    area: Area
+
+    constructor(latlngs: LatLngExpression[] | LatLngExpression[][] | LatLngExpression[][][], options: PolylineOptions, area: Area) {
+        super(latlngs, options);
+        this.area = area;
+    }
+}
+
+export type EditedArea = {
+    area: Area,
+    newLocation: number[][]
+}
 type MapPropType = {
     height: number,
     center?: number[],
@@ -50,12 +91,22 @@ type MapPropType = {
     heatmapPoints?: CrowdPosition[],
     areas?: Area[],
     fitAreasBounds?: boolean,
-    devices?: Device[]
+    devices?: Device[],
+    editable?: {
+        devices?: boolean,
+        areas?: boolean
+    },
+    onCreateAreas?: (points: number[][][]) => void,
+    onCreateDevices?: (points: number[][]) => void,
+    onEditAreas?: (editedAreas: EditedArea[]) => void,
+    onDeleteAreas?: (areas: Area[]) => void,
+    onEditDevices?: (points: number[][]) => void,
+    onDeleteDevices?: (points: number[][]) => void,
 }
-export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatmapPoints, areas, fitAreasBounds, devices }: MapPropType) {
+export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatmapPoints, areas, fitAreasBounds, devices, editable, onCreateAreas, onCreateDevices, onEditAreas, onDeleteAreas, onEditDevices, onDeleteDevices }: MapPropType) {
     const [map, setMap] = useState<LeafletMap>();
     const [heatmapLayer, setHeatmapLayer] = useState<Leaflet.HeatLayer>();
-    const [polygons, setPolygons] = useState<Polygon[]>([]);
+    const [editableLayer, setEditableLayer] = useState<FeatureGroup>(new FeatureGroup());
     const [devicesMarkers, setDevicesMarkers] = useState<Marker[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -81,6 +132,59 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
             if (mapUrl) {
                 const tileLayer = new TileLayer(mapUrl)
                 newMap = newMap.addLayer(tileLayer);
+            }
+
+            newMap = newMap.addLayer(editableLayer);
+            const polygonOptions: Leaflet.DrawOptions.PolygonOptions = {
+                showArea: false,
+                metric: true,
+                showLength: true,
+                precision: {
+                    m: 2,
+                    ft: 0,
+                    km: 4,
+                },
+                factor: 0.001,
+                allowIntersection: false, // disallow intersection of the polygon with itself. It is not to avoid intersections with other polygons
+                zIndexOffset: 390,
+                shapeOptions: {
+                    stroke: true,
+                    color: '#dcdee2',
+                    weight: 2,
+                    opacity: 0.5,
+                    fill: true,
+                    fillColor: "#f1f3f4",
+                    fillOpacity: 1,
+                    clickable: true
+                },
+                icon: new Leaflet.DivIcon({
+                    iconSize: new Leaflet.Point(10, 10),
+                    className: 'leaflet-div-icon leaflet-editing-icon'
+                }),
+            };
+            const markerOptions: Leaflet.DrawOptions.MarkerOptions = {
+
+            }
+            if (editable?.areas || editable?.devices) {
+                const drawControl = new Leaflet.Control.Draw({
+                    position: "topleft",
+                    draw: {
+                        polygon: editable.areas ? polygonOptions:false,
+                        circle: false,
+                        marker: editable.devices ? markerOptions:false,
+                        polyline: false,
+                        rectangle: false,
+                        circlemarker: false
+                    },
+                    edit: {
+                        featureGroup: editableLayer,
+                    }
+                });
+                // Set the title to show on the polygon button and editing button
+                Leaflet.drawLocal.draw.toolbar.buttons.polygon = BUTTON_TITLE_CREATE_AREA;
+                Leaflet.drawLocal.edit.toolbar.buttons.edit = BUTTON_TITLE_EDIT_AREA;
+                Leaflet.drawLocal.edit.toolbar.buttons.remove = BUTTON_TITLE_REMOVE_AREA;
+                newMap = newMap.addControl(drawControl);
             }
 
             if (center != null && zoom != null) {
@@ -130,26 +234,108 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
 
     const buildPolygons = (map: LeafletMap, areas: Area[]): LeafletMap => {
         let retMap = map;
+
         areas.forEach(area => {
             const pointsLatLng = area.location.map(coord => xy(coord[0], coord[1]));
-            const poly = new Polygon(pointsLatLng, {
+
+            const poly = new PolygonArea(pointsLatLng, {
                 // polygon options
                 color: "#dcdee2",
                 fillColor: "#f1f3f4",
                 fillOpacity: 1,
                 weight: 2,
-                pane: POLYGON_PANE
-            });
+                pane: POLYGON_PANE,
+            }, area);
             poly.bindTooltip(area.name,{
                 permanent: true,
                 direction: "center",
                 className: "leaflet-area-tooltip"
             }).openTooltip();
+            console.log(poly.area);
+            editableLayer.addLayer(poly);
+        });
 
-            polygons.push(poly);
-            setPolygons(polygons);
+        retMap = retMap.removeEventListener(Leaflet.Draw.Event.CREATED); // Ensure only one handler
+        retMap = retMap.addEventListener(Leaflet.Draw.Event.CREATED, function (event) {
+            // @ts-ignore
+            const type = event.layerType,
+                layer = event.layer;
+            console.log('Something was created!', event);
 
-            retMap = map.addLayer(poly);
+            if (type === 'marker') { // Do marker specific actions
+                const marker = layer as Marker;
+                const coordLatLng = marker.getLatLng();
+                if (onCreateDevices) onCreateDevices([[coordLatLng.lng, coordLatLng.lat]]);
+            } else if (type === 'polygon') {
+                const poly = layer as PolygonArea;
+                poly.bindTooltip("New area",{
+                    permanent: true,
+                    direction: "center",
+                    className: "leaflet-area-tooltip"
+                }).openTooltip();
+                const coords = getPolygonXYCoords(poly);
+                if (onCreateAreas && coords.length > 0) onCreateAreas([coords]);
+            }
+            editableLayer.addLayer(layer);
+        });
+
+        retMap = retMap.removeEventListener(Leaflet.Draw.Event.DELETED); // Ensure only one handler
+        retMap = retMap.addEventListener(Leaflet.Draw.Event.DELETED, function (event) {
+            // @ts-ignore
+            let layers = event.layers; // deleted layers
+
+            const deletedAreas: Area[] = [];
+            // @ts-ignore
+            layers.eachLayer(function(layer) {
+                if (layer instanceof Rectangle ||
+                    layer instanceof Polygon ||
+                    layer instanceof Polyline) {
+                    const poly = layer as PolygonArea;
+                    deletedAreas.push(poly.area);
+                }
+            });
+            if (deletedAreas.length == 0) console.log('Nothing was deleted!');
+            else console.log('Something was deleted!');
+
+            if (onDeleteAreas && deletedAreas.length > 0) onDeleteAreas(deletedAreas);
+        })
+
+        // Move the name of the area to the center of polygon when editing a vertex
+        retMap = retMap.removeEventListener(Leaflet.Draw.Event.EDITVERTEX); // Ensure only one handler
+        retMap = retMap.addEventListener(Leaflet.Draw.Event.EDITVERTEX, function (event) {
+            // @ts-ignore
+            const poly = event.poly as PolygonArea;
+            console.log(poly.area.name)
+            poly.closeTooltip();
+            poly.openTooltip();
+        });
+
+        // handle edited event
+        retMap = retMap.removeEventListener(Leaflet.Draw.Event.EDITED); // Ensure only one handler
+        retMap = retMap.addEventListener(Leaflet.Draw.Event.EDITED, function (event) {
+            // @ts-ignore
+            let layers = event.layers; // edited layers
+
+            const areasPoints: EditedArea[] = [];
+            // @ts-ignore
+            layers.eachLayer(function(layer) {
+                if (layer instanceof Rectangle ||
+                    layer instanceof Polygon ||
+                    layer instanceof Polyline) {
+                    const poly = layer as PolygonArea;
+                    poly.closeTooltip();
+                    poly.openTooltip();
+                    const coords = getPolygonXYCoords(poly);
+                    areasPoints.push({
+                        area: poly.area,
+                        newLocation: coords
+                    });
+                }
+            });
+            if (areasPoints.length == 0) console.log('Nothing was edited!');
+            else console.log('Something was edited!');
+
+            if (onEditAreas && areasPoints.length > 0) onEditAreas(areasPoints);
         });
 
         return retMap;
@@ -160,7 +346,7 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         if (areas && areas.length > 0) {
             // min x, min y, max x, max y
             newBounds = [areas[0].location[0][0], areas[0].location[0][1], areas[0].location[0][0], areas[0].location[0][1]];
-            areas?.forEach(area => {
+            areas.forEach(area => {
                 area.location.forEach(loc => {
                     if (loc[0] < newBounds[0]) newBounds[0] = loc[0]; // min x
                     if (loc[1] < newBounds[1]) newBounds[1] = loc[1]; // min y
@@ -176,14 +362,16 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
     const boundsGap = 1;
     useEffect(() => {
         if (areas && map) {
-            polygons.forEach((poly) => poly.remove());
-            setPolygons([]);
+            editableLayer.eachLayer(layer => layer.remove());
 
-            let newMap = buildPolygons(map, areas);
+            let newMap = map;
+            if (areas.length > 0) newMap = buildPolygons(newMap, areas);
+
             if (fitAreasBounds && areas.length > 0) {
+                console.log("FITTING AREAS BOUNDS");
                 // min x, min y, max x, max y
                 const newBounds = computeAreasBounds(areas);
-                console.log(newBounds);
+
                 const centerXY = xy(
                     (newBounds[0] + newBounds[2]) / 2,
                     (newBounds[1] + newBounds[3]) / 2,

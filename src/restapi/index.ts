@@ -12,6 +12,9 @@ import PointOfInterest from "../models/pointOfInterest";
 const REST_API_AUTH_USER_URL = "/api/auth/user";
 const REST_API_GET_BUILDINGS_URL = "/api/building/list";
 const REST_API_GET_AREAS_URL = "/api/area/list";
+const REST_API_POST_CREATE_AREAS_URL = "/api/area/create";
+const REST_API_DELETE_AREAS_URL = "/api/area/delete";
+const REST_API_POST_UPDATE_AREAS_URL = "/api/area/update";
 const REST_API_GET_DEVICES_URL = "/api/device/list";
 const REST_API_GET_CROWDBEHAVIOR_URL = "/api/crowdbehavior";
 const REST_API_GET_MAXDATE_URL = "/api/crowdbehavior/maxdate";
@@ -140,7 +143,7 @@ export function useBuildings(user?: User): { buildings: Building[] | undefined, 
 }
 
 export function useAreas(buildingId: number | undefined, validOnly: boolean = true) {
-    const { data, error } = useSWR<Area[]>(
+    const { data, error, mutate } = useSWR<Area[]>(
         buildingId ? `${REST_API_GET_AREAS_URL}?buildingId=${buildingId}&validOnly=${validOnly}`:null,
         fetchJson
     );
@@ -150,7 +153,8 @@ export function useAreas(buildingId: number | undefined, validOnly: boolean = tr
     return {
         areas: data,
         isLoading,
-        isError: error
+        isError: error,
+        mutate
     }
 }
 
@@ -255,29 +259,63 @@ export function useMaxDate(buildingId: number | undefined) {
     }
 }
 
+export function createArea(buildingId: number, location: number[][]) {
+    return fetch(`${REST_API_POST_CREATE_AREAS_URL}?buildingId=${buildingId}`, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            location: location
+        }),
+    })
+}
+
+export function deleteArea(buildingId: number, area: Area) {
+    return fetch(`${REST_API_DELETE_AREAS_URL}?buildingId=${buildingId}&areaId=${area.id}`, {
+        method: "DELETE",
+    })
+}
+
+export function updateArea(buildingId: number, areaId: number, areaName: string, areaDescr: string, areaLocation: number[][]) {
+    return fetch(`${REST_API_POST_UPDATE_AREAS_URL}?buildingId=${buildingId}&areaId=${areaId}`, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name: areaName,
+            description: areaDescr,
+            location: areaLocation
+        }),
+    })
+}
+
 /*export function useApi<FunArgsType extends any[], ReturnType>(apiFunc: (...args: FunArgsType) => Promise<ReturnType>):
-    { data: ReturnType | undefined, error: string, loading: boolean, request: (...args: FunArgsType) => Promise<void>}
+{ data: ReturnType | undefined, error: string, loading: boolean, request: (...args: FunArgsType) => Promise<void>}
 {
-    const [data, setData] = useState<ReturnType>();
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
+const [data, setData] = useState<ReturnType>();
+const [error, setError] = useState("");
+const [loading, setLoading] = useState(false);
 
-    const request = async (...argsList: FunArgsType) => {
-        setLoading(true);
-        try {
-            const dataResponse = await apiFunc(...argsList);
-            setData(dataResponse);
-        } catch (error) {
-            setError(error instanceof FetchError ? error.data.message:"Unexpected error: "+error);
-        } finally {
-            setLoading(false);
-        }
-    };
+const request = async (...argsList: FunArgsType) => {
+    setLoading(true);
+    try {
+        const dataResponse = await apiFunc(...argsList);
+        setData(dataResponse);
+    } catch (error) {
+        setError(error instanceof FetchError ? error.data.message:"Unexpected error: "+error);
+    } finally {
+        setLoading(false);
+    }
+};
 
-    return {
-        data,
-        error,
-        loading,
-        request
-    };
+return {
+    data,
+    error,
+    loading,
+    request
+};
 }*/
