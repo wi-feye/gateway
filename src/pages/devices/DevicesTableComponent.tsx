@@ -87,7 +87,7 @@ export type DevicesTableComponentType = {
     devices: Device[] | undefined,
     loading: boolean,
     selectedBuildingId: number
-    mutate:any
+    mutate?: any
 }
 export default function DevicesTableComponent({devices, loading, selectedBuildingId, mutate}: DevicesTableComponentType) {
 
@@ -106,10 +106,12 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
         setOpen(false);
     };
     const handleConfirm = async () => {
+        if (!dev) return;
+
         console.log(xPosition,"XXXXXX")
         console.log(yPosition,"YYYYY")
         await modifySniffer(dev.id, selectedBuildingId.toString(), nameSniffer,xPosition == '' ? dev.x.toString(): xPosition, yPosition==''? dev.y.toString(): yPosition)
-        mutate()
+        if (mutate) mutate();
         setOpen(false);
     };
     const handlexPosition = (event: { target: { value: React.SetStateAction<string>; }; }) => {
@@ -124,9 +126,8 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
 
     const handleEliminaSniffer = async (device:Device) => {
         await deleteSniffer(device.id);
-        mutate()
+        if (mutate) mutate();
     };
-
 
     return (
         <Box>

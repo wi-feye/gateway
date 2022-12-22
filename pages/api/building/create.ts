@@ -2,7 +2,6 @@ import { withIronSessionApiRoute } from 'iron-session/next'
 import { sessionOptions } from '../../../src/auth/session'
 import { NextApiRequest, NextApiResponse } from 'next'
 import gateway_logger from "../../../src/restapi/gateway/gateway_logger";
-import UserManagerAPI from "../../../src/restapi/gateway/usermanagerapi";
 import {FetchError} from "../../../src/restapi";
 import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 
@@ -16,7 +15,7 @@ async function createSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
         console.log( id_building, name,
             xPosition,
             yPosition )
-        await DataManagerAPI.createBuilding(id_building, name,xPosition,yPosition);
+        //await DataManagerAPI.createBuilding(id_building, name,xPosition,yPosition);
         res.status(200).end()
     } catch (error) {
         if (error instanceof FetchError) {

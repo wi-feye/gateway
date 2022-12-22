@@ -95,13 +95,13 @@ const Devices = () => {
                 <Autocomplete
                     value={idZerynt}
                     onChange={(event: any, newValue: string | null) => {
-                        setidZerynt(newValue);
+                        if (newValue) setidZerynt(newValue);
                     }}
                     onInputChange={(event, newInputValue) => {
                         setidZerynt(newInputValue);
                     }}
                     id="controllable-states-demo"
-                    options={idZer}
+                    options={idZer || []}
                     sx={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="ID ZERYNTH" />}
                 />

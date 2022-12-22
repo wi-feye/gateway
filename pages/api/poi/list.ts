@@ -2,10 +2,8 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import gateway_logger from "../../../src/restapi/gateway/gateway_logger";
 import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "../../../src/auth/session";
-import Device from "../../../src/models/device";
-import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
-import { fetchJson } from '../../../src/restapi';
 import PointOfInterest from "../../../src/models/pointOfInterest";
+import AIServerAPI from "../../../src/restapi/gateway/aiserverapi";
 
 async function listRoute(req: NextApiRequest, res: NextApiResponse<PointOfInterest[]>) {
     gateway_logger(req);
@@ -25,7 +23,7 @@ async function listRoute(req: NextApiRequest, res: NextApiResponse<PointOfIntere
         res.json([]);
         return;
     }
-    const pointOfInterests = await DataManagerAPI.poi(buildingId,start,end,k);
+    const pointOfInterests = await AIServerAPI.poi(buildingId,start,end,k);
 
     res.json(pointOfInterests);
 }
