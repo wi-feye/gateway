@@ -97,30 +97,32 @@ function updateArea(buildingId: string, areaId: string, areaLocation: number[][]
 
 function modifySniffer(idSniffer: string, id_building:string, name: string, xPosition: string, yPosition: string){
     const body = {
-        name,
-        id_building,
-        xPosition,
-        yPosition
+        'name':name,
+        'id_building':id_building,
+        'x':xPosition,
+        'y':yPosition
     }
-    fetchJson(`${DATA_MANAGER_SNIFFER_UPDATE_URL}/${idSniffer}`, {
+    console.log(body)
+    fetchJson<any>(`${DATA_MANAGER_SNIFFER_UPDATE_URL}/${idSniffer}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-    });
+    }).then(response => console.log(response));
 }
 
 function createSniffer(id_building:string, name: string, xPosition: string, yPosition: string){
     const body = {
         name,
         id_building,
-        xPosition,
-        yPosition
+        'id_zerynth':"prova",
+        'x':xPosition,
+        'y':yPosition
     }
-    fetchJson(`${DATA_MANAGER_SNIFFER_CREATE_URL}/`, {
+    fetchJson<any>(`${DATA_MANAGER_SNIFFER_CREATE_URL}/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-    });
+    }).then(response => console.log(response));
 }
 
 function deleteSniffer(idSniffer:string){

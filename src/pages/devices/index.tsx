@@ -44,6 +44,12 @@ const Devices = () => {
     const handleNameSniffer = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setNameSniffer(event.target.value);
     };
+    const handleXPosition = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setxPosition(event.target.value);
+    };
+    const handleYPosition = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setyPosition(event.target.value);
+    };
     return (
         <>
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
@@ -89,14 +95,16 @@ const Devices = () => {
                     id="name"
                     label="Position X"
                     type="text"
-                    variant="outlined"/>
+                    variant="outlined"
+                    onChange={handleXPosition}/>
                 <TextField
                     autoFocus
                     margin="dense"
                     id="name"
                     label="Position Y"
                     type="text"
-                    variant="outlined"/>
+                    variant="outlined"
+                    onChange={handleYPosition}/>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>Cancel</Button>

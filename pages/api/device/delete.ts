@@ -7,7 +7,7 @@ import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 
 async function deleteSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
     gateway_logger(req);
-    const { idSniffer } = await req.body
+    const idSniffer = Array.isArray(req.query.idSniffer) ? req.query.idSniffer[0] : req.query.idSniffer;
 
     try {
         console.log( idSniffer)

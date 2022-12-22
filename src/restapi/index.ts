@@ -339,7 +339,7 @@ export async function modifySniffer(idSniffer: string,id_building: string, name:
 }
 
 export async function deleteSniffer(idSniffer: string): Promise<User> {
-    return fetchJson(`${REST_API_DELETE_SNIFFER_URL}/${idSniffer}`, {
+    return fetchJson(`${REST_API_DELETE_SNIFFER_URL}?idSniffer=${idSniffer}`, {
         method: 'DELETE',
     });
 }
