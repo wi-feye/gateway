@@ -4,7 +4,7 @@ import { withIronSessionApiRoute } from "iron-session/next";
 import { sessionOptions } from "../../../src/auth/session";
 import Device from "../../../src/models/device";
 import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
-import { fetchJson } from '../../../src/restapi';
+import ZerynthAPI from '../../../src/restapi/gateway/zerynthapi';
 
 async function listRoute(req: NextApiRequest, res: NextApiResponse<Device[]>) {
     gateway_logger(req);
@@ -22,14 +22,16 @@ async function listRoute(req: NextApiRequest, res: NextApiResponse<Device[]>) {
     }
     const devices = await DataManagerAPI.devices(buildingId);
     try {
-        const buildings = user.id ? await DataManagerAPI.buildings(user.id):[];
+        const buildings = user.id ? await DataManagerAPI.buildings(user.id) : [];
         const building = buildings.find(b => b.id == Number.parseInt(buildingId));
-        const z_devices = await fetchJson<any>(`https://api.zdm.zerynth.com/v3/workspaces/${building?.id_zerynth}/devices`, {headers: {"X-API-KEY": user.apikey_zerynth}})
+        const z_devices = await ZerynthAPI.zerynthDevices(user.apikey_zerynth, building?.id_zerynth || '');
         devices.forEach((dev, i) => {
-            const z_device = z_devices.devices.find((d: any) => d.id == dev.id_zerynth);
-            const last_connected_at = ((z_device.is_connected ? z_device.last_connected_at : z_device.last_disconnected_at) as string);
-            dev.status = z_device.is_connected ? "Online" : "Offline";
-            dev.lastRequest = new Date(last_connected_at).toLocaleString();
+            const z_device = z_devices.find((d: any) => d.id == dev.id_zerynth);
+            if (z_device) {
+                const last_connected_at = ((z_device.is_connected ? z_device.last_connected_at : z_device.last_disconnected_at) as string);
+                dev.status = z_device.is_connected ? "Online" : "Offline";
+                dev.lastRequest = new Date(last_connected_at).toLocaleString();
+            }
         });
     } catch (e) {
         console.log(e)

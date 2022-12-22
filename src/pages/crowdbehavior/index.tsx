@@ -41,8 +41,6 @@ const CrowdBehaviorPageContent = () => {
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
     const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
 
-    //const { pointOfInterest } = usePointOfInterest(selectedBuilding.id,timeFrom, timeTo);
-
     useEffect(() => {
         if (!isLoadingMaxDate) {
             if (maxDate) {

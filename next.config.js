@@ -7,4 +7,9 @@ module.exports = withPWA({
   reactStrictMode: true,
   swcMinify: true,
   output: 'standalone', // add support for Docker
+  experimental: {
+	  images: {
+		  unoptimized: true
+	  }
+  }
 })

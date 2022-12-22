@@ -18,9 +18,10 @@ import Area from "../../models/area";
 import Device from "../../models/device";
 import {renderToString} from "react-dom/server";
 import {CheckCircleOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
-import {Typography} from "@mui/material";
+import {Box, CircularProgress, Typography} from "@mui/material";
 import * as React from "react";
 import CrowdPosition from "../../models/crowdposition";
+import PointOfInterest from "../../models/pointOfInterest";
 
 const BUTTON_TITLE_CREATE_AREA = "Create areas";
 const BUTTON_TITLE_EDIT_AREA = "Edit areas";
@@ -38,6 +39,16 @@ function buildDeviceMarkerPopup(device: Device) {
                 { device.name }
             </Typography>
         </div>
+    );
+}
+
+function buildPOIMarkerPopup(poi: PointOfInterest) {
+    return (
+        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <Typography variant="h3" sx={{ mt: 0 }}>
+                Point of Interest affidability: {poi.likelihood*100}%
+            </Typography>
+        </Box>
     );
 }
 
@@ -92,6 +103,7 @@ type MapPropType = {
     areas?: Area[],
     fitAreasBounds?: boolean,
     devices?: Device[],
+    pointOfInterest?: PointOfInterest[],
     editable?: {
         devices?: boolean,
         areas?: boolean
@@ -103,11 +115,13 @@ type MapPropType = {
     onEditDevices?: (points: number[][]) => void,
     onDeleteDevices?: (points: number[][]) => void,
 }
-export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatmapPoints, areas, fitAreasBounds, devices, editable, onCreateAreas, onCreateDevices, onEditAreas, onDeleteAreas, onEditDevices, onDeleteDevices }: MapPropType) {
+export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatmapPoints, areas, fitAreasBounds, devices, pointOfInterest, editable, onCreateAreas, onCreateDevices, onEditAreas, onDeleteAreas, onEditDevices, onDeleteDevices }: MapPropType) {
+
     const [map, setMap] = useState<LeafletMap>();
     const [heatmapLayer, setHeatmapLayer] = useState<Leaflet.HeatLayer>();
     const [editableLayer, setEditableLayer] = useState<FeatureGroup>(new FeatureGroup());
     const [devicesMarkers, setDevicesMarkers] = useState<Marker[]>([]);
+    const [pointsMarkers, setPointsMarkers] = useState<Marker[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
     const onMapReady = () => {
@@ -115,6 +129,7 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         if (whenReady != null) whenReady();
     }
 
+    console.log("MAAAAPPP",pointOfInterest)
     const POLYGON_PANE = "heatmap_pane";
     const DEVICES_PANE = "devices_pane";
     const DEVICES_SHADOW_PANE = "devices_shadow_pane";
@@ -396,6 +411,8 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         shadowSize: shadowSize, // size of the shadow
         shadowAnchor: [shadowSize[0]/2, shadowSize[1]/2],  // point of the icon which will correspond to shadow's location
     });
+
+
     const addMarkerDevice = (map: LeafletMap, device: Device, icon: Icon, iconYSize: number): LeafletMap => {
         const markerLayer = new Marker(xy(device.x, device.y), {
             icon: icon,
@@ -423,9 +440,48 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
             devices?.forEach((d: Device) => {
                 mapObj = addMarkerDevice(mapObj, d, deviceMarkerIcon, iconSize[1]);
             });
+
             setMap(mapObj);
         }
     }, [devices, map]);
+
+    const interestPointMarkerIcon = new Icon({
+        iconSize: iconSize, // size of the icon
+        iconAnchor: [iconSize[0]/2, iconSize[1]], // point of the icon which will correspond to marker's location
+        iconUrl: '/assets/images/point_of_interest.png',
+        shadowUrl: '/assets/images/device_icon_shadow.png',
+        shadowSize: shadowSize, // size of the shadow
+        shadowAnchor: [shadowSize[0], shadowSize[1]/2],  // point of the icon which will correspond to shadow's location
+    });
+    const addMarkerInterestPoint = (map: LeafletMap, point: PointOfInterest, icon: Icon, iconYSize: number): LeafletMap => {
+        const markerLayer = new Marker(xy(point.x, point.y), {
+            icon: icon,
+            pane: DEVICES_PANE,
+            shadowPane: DEVICES_SHADOW_PANE,
+        });
+        const markerPopup = buildPOIMarkerPopup(point);
+        markerLayer.bindPopup(renderToString(markerPopup), { // some options for the bind popup
+            offset: new Point(0, -iconYSize / 4),
+            minWidth: 80
+        });
+        pointsMarkers.push(markerLayer);
+        setPointsMarkers(pointsMarkers);
+
+        return map.addLayer(markerLayer);
+    }
+
+    useEffect(() => {
+        if (map && pointOfInterest) {
+            pointsMarkers.forEach((marker) => marker.remove());
+            setPointsMarkers([]);
+            let mapObj = map;
+            pointOfInterest?.forEach((p: PointOfInterest) => {
+                mapObj = addMarkerInterestPoint(mapObj, p, interestPointMarkerIcon, iconSize[1]);
+            });
+
+            setMap(mapObj);
+        }
+    }, [pointOfInterest, map]);
 
     return (
         <div style={{ height: `${height}px` }}>

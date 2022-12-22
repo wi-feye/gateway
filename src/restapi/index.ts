@@ -18,11 +18,15 @@ const REST_API_POST_UPDATE_AREAS_URL = "/api/area/update";
 const REST_API_GET_DEVICES_URL = "/api/device/list";
 const REST_API_GET_CROWDBEHAVIOR_URL = "/api/crowdbehavior";
 const REST_API_GET_MAXDATE_URL = "/api/crowdbehavior/maxdate";
-const REST_API_GET_POINTINTEREST_URL = "/api/pointofinterest";
+const REST_API_GET_POINTINTEREST_URL = "/api/poi/list";
 const REST_API_GET_ATTENDANCE_URL = "/api/attendance";
 const REST_API_GET_ATTENDANCE_PERHOUR_URL = "/api/attendance/perhour";
 const REST_API_AUTH_LOGIN_URL = "/api/auth/login";
 const REST_API_AUTH_LOGOUT_URL = "/api/auth/logout";
+
+const REST_API_MODIFY_SNIFFER_URL = "/api/device/modify";
+const REST_API_DELETE_SNIFFER_URL = "/api/device/delete";
+const REST_API_CREATE_SNIFFER_URL = "/api/device/create";
 
 export class FetchError extends Error {
     response: Response
@@ -224,13 +228,14 @@ export function useCrowdBehavior(buildingId: number | undefined, from: Date, to:
     }
 }
 
-export function usePointOfInterest(buildingId: number, from: Date, to: Date) {
+export function usePointOfInterest(buildingId: number, from: Date, to: Date, kPoint: number) {
     const fromTimestamp = from.toISOString();
     const toTimestamp = to.toISOString();
-    const {data, error} = useSWR<PointOfInterest[]>(
-        buildingId ? `${REST_API_GET_POINTINTEREST_URL}?buildingId=${buildingId}&from=${fromTimestamp}&to=${toTimestamp}` : null,
+    const { data, error } = useSWR<PointOfInterest[]>(
+        buildingId ? `${REST_API_GET_POINTINTEREST_URL}?buildingId=${buildingId}&k=${kPoint}&start=${fromTimestamp}&end=${toTimestamp}`:null,
         fetchJson
     );
+    console.log(data)
 
     const isLoading = !error && !data;
     if (isLoading) console.log("Fetching point of interest...");
@@ -319,3 +324,35 @@ return {
     request
 };
 }*/
+export async function modifySniffer(idSniffer: string,id_building: string, name: string, xPosition: string, yPosition: string): Promise<User> {
+    return fetchJson(REST_API_MODIFY_SNIFFER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            idSniffer,
+            id_building,
+            name,
+            xPosition,
+            yPosition,
+        }),
+    });
+}
+
+export async function deleteSniffer(idSniffer: string): Promise<User> {
+    return fetchJson(`${REST_API_DELETE_SNIFFER_URL}/${idSniffer}`, {
+        method: 'DELETE',
+    });
+}
+
+export async function createSniffer(id_building: string, name: string, xPosition: string, yPosition: string): Promise<User> {
+    return fetchJson(REST_API_CREATE_SNIFFER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            id_building,
+            name,
+            xPosition,
+            yPosition,
+        }),
+    });
+}

@@ -45,28 +45,28 @@ type CrowdBarChartType = {
     areas: Area[]
 };
 
-const p: PointOfInterest[] = [{
-    id: 1233,
-    idArea: 100001,
-    time: "2022-11-09T17:40:40Z",
-    pointOfInterest: [{x: 12, y: 22}]
-}, {
-    id: 123,
-    idArea: 100001,
-    time: "2022-11-09T17:50:40Z",
-    pointOfInterest: [{x: 4, y: 5}]
-}, {
-    id: 123,
-    idArea: 100002,
-    time: "2022-11-09T17:50:40Z",
-    pointOfInterest: [{x: 4, y: 5}]
-}]
+// const p: PointOfInterest[] = [{
+//     id: 1233,
+//     idArea: 100001,
+//     time: "2022-11-09T17:40:40Z",
+//     pointOfInterest: [{x: 12, y: 22}]
+// }, {
+//     id: 123,
+//     idArea: 100001,
+//     time: "2022-11-09T17:50:40Z",
+//     pointOfInterest: [{x: 4, y: 5}]
+// }, {
+//     id: 123,
+//     idArea: 100002,
+//     time: "2022-11-09T17:50:40Z",
+//     pointOfInterest: [{x: 4, y: 5}]
+// }]
 const CrowdBarChart = ({ pointOfInterest, areas }: CrowdBarChartType) => {
     const theme = useTheme();
 
     const { secondary } = theme.palette.text;
     const info = theme.palette.info.light;
-    pointOfInterest=p; //da eliminare
+    // pointOfInterest=p; //da eliminare
     const association = {}
     areas.map(a =>{
         let i = 0
