@@ -2,16 +2,21 @@ import { withIronSessionApiRoute } from 'iron-session/next'
 import { sessionOptions } from '../../../src/auth/session'
 import { NextApiRequest, NextApiResponse } from 'next'
 import gateway_logger from "../../../src/restapi/gateway/gateway_logger";
+import UserManagerAPI from "../../../src/restapi/gateway/usermanagerapi";
 import {FetchError} from "../../../src/restapi";
 import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 
-async function deleteSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
+async function createSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
     gateway_logger(req);
-    const idSniffer = Array.isArray(req.query.idSniffer) ? req.query.idSniffer[0] : req.query.idSniffer;
+    const { id_building, name,
+        xPosition,
+        yPosition } = await req.body
 
     try {
-        console.log( idSniffer)
-        await DataManagerAPI.deleteSniffer(idSniffer);
+        console.log( id_building, name,
+            xPosition,
+            yPosition )
+        await DataManagerAPI.createBuilding(id_building, name,xPosition,yPosition);
         res.status(200).end()
     } catch (error) {
         if (error instanceof FetchError) {
@@ -25,4 +30,4 @@ async function deleteSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
     }
 }
 
-export default withIronSessionApiRoute(deleteSnifferRoute, sessionOptions)
+export default withIronSessionApiRoute(createSnifferRoute, sessionOptions)

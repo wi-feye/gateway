@@ -5,6 +5,7 @@ import Device from "../../models/device";
 import CrowdPosition from "../../models/crowdposition";
 import PointOfInterest from "../../models/pointOfInterest";
 import {User} from "../../models/user";
+import {response} from "express";
 
 const ENDPOINT = process.env.DATA_MANAGER_HOST ? process.env.DATA_MANAGER_HOST:"http://localhost:10001";
 const DATA_MANAGER_BUILDINGS_URL = ENDPOINT + "/api/buildings/pull";
@@ -103,31 +104,32 @@ function modifySniffer(idSniffer: string, id_building:string, name: string, xPos
         'y':yPosition
     }
     console.log(body)
-    fetchJson<any>(`${DATA_MANAGER_SNIFFER_UPDATE_URL}/${idSniffer}`, {
+    return fetchJson<any>(`${DATA_MANAGER_SNIFFER_UPDATE_URL}/${idSniffer}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
     }).then(response => console.log(response));
 }
 
-function createSniffer(id_building:string, name: string, xPosition: string, yPosition: string){
+function createSniffer(id_building:string,idZerynt:string, name: string, xPosition: string, yPosition: string){
     const body = {
         name,
         id_building,
-        'id_zerynth':"prova",
+        "id_zerynth": idZerynt,
         'x':xPosition,
         'y':yPosition
     }
-    fetchJson<any>(`${DATA_MANAGER_SNIFFER_CREATE_URL}/`, {
+    return fetchJson<any>(`${DATA_MANAGER_SNIFFER_CREATE_URL}/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
     }).then(response => console.log(response));
+
 }
 
 function deleteSniffer(idSniffer:string){
 
-    fetchJson(`${DATA_MANAGER_SNIFFER_DELETE_URL}/${idSniffer}`, {
+    return fetchJson(`${DATA_MANAGER_SNIFFER_DELETE_URL}/${idSniffer}`, {
         method: 'DELETE',
     });
 }

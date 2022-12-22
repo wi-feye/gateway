@@ -1,5 +1,6 @@
 // material-ui
 import {
+    Box, Button,
     Fade,
     ListItemButton,
     ListItemIcon,
@@ -16,7 +17,6 @@ import {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../../store";
 import {selectBuilding} from "../../../../store/reducers/building";
-
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
 const BuildingItem = () => {
@@ -133,9 +133,12 @@ const BuildingItem = () => {
                         {build.name}
                     </MenuItem>
                 ))}
+                <MenuItem onClick={handleClose} disableRipple>
+
+                    <Button variant="text">ADD BUILDING</Button>
+                </MenuItem>
             </Menu>
         </div>
     );
 };
-
 export default BuildingItem;

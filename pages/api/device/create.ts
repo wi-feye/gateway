@@ -9,6 +9,7 @@ import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 async function createSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
     gateway_logger(req);
     const { id_building, name,
+        idZerynt,
         xPosition,
         yPosition } = await req.body
 
@@ -16,8 +17,8 @@ async function createSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
         console.log( id_building, name,
             xPosition,
             yPosition )
-        await DataManagerAPI.createSniffer(id_building, name,xPosition,yPosition);
-
+        await DataManagerAPI.createSniffer(id_building,idZerynt, name,xPosition,yPosition);
+        res.status(200).end()
     } catch (error) {
         if (error instanceof FetchError) {
             const fetchError = (error as FetchError);

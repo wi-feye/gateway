@@ -1,6 +1,6 @@
 // material-ui
 import {
-    Alert,
+    Alert, Autocomplete,
     Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
     Grid, TableCell, TableRow, TextField, Typography,
 } from '@mui/material';
@@ -8,7 +8,7 @@ import {
 // project import
 import MainCard from '../../components/MainCard';
 import DevicesTableComponent from './DevicesTableComponent';
-import {createSniffer, modifySniffer, useDevices} from "../../restapi";
+import {createSniffer, modifySniffer, useDevices, useIdZer} from "../../restapi";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
 import dynamic from "next/dynamic";
@@ -23,12 +23,14 @@ const Map = dynamic(() => import('../../../src/components/Map'), {
 const Devices = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
-    const { devices, isLoading } = useDevices(selectedBuilding.id);
-
+    const { devices, isLoading,mutate } = useDevices(selectedBuilding.id);
+    const { idZer } = useIdZer(selectedBuilding.id);
+    console.log(idZer)
     const [open, setOpen] = useState(false);
     const [nameSniffer, setNameSniffer] = useState('');
     const [xPosition, setxPosition] = useState('');
     const [yPosition, setyPosition] = useState('');
+    const [idZerynt, setidZerynt] = useState('');
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -37,9 +39,10 @@ const Devices = () => {
     const handleClose = () => {
         setOpen(false);
     };
-    const handleConfirm = () => {
-        createSniffer(selectedBuilding.id.toString(), nameSniffer, xPosition.toString(), yPosition.toString())
+    const handleConfirm = async () => {
         setOpen(false);
+        await createSniffer(selectedBuilding.id.toString(),idZerynt, nameSniffer, xPosition.toString(), yPosition.toString())
+        mutate();
     };
     const handleNameSniffer = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setNameSniffer(event.target.value);
@@ -67,7 +70,7 @@ const Devices = () => {
             </Grid>
             <Grid item xs={12}>
                 <MainCard content={false}>
-                    <DevicesTableComponent devices={devices} loading={isLoading} selectedBuildingId={selectedBuilding.id}/>
+                    <DevicesTableComponent devices={devices} loading={isLoading} selectedBuildingId={selectedBuilding.id} mutate={mutate}/>
                 </MainCard>
             </Grid>
             <Grid item xs={12}>
@@ -89,6 +92,19 @@ const Devices = () => {
                     type="text"
                     variant="outlined"
                     onChange={handleNameSniffer}/>
+                <Autocomplete
+                    value={idZerynt}
+                    onChange={(event: any, newValue: string | null) => {
+                        setidZerynt(newValue);
+                    }}
+                    onInputChange={(event, newInputValue) => {
+                        setidZerynt(newInputValue);
+                    }}
+                    id="controllable-states-demo"
+                    options={idZer}
+                    sx={{ width: 300 }}
+                    renderInput={(params) => <TextField {...params} label="ID ZERYNTH" />}
+                />
                 <TextField
                     autoFocus
                     margin="dense"

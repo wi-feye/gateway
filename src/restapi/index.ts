@@ -8,6 +8,7 @@ import Device from "../models/device";
 import Attendance from "../models/attendance";
 import CrowdBehavior from "../models/crowdbehavior";
 import PointOfInterest from "../models/pointOfInterest";
+import ZerynthDevice from "../models/zerynth_device";
 
 const REST_API_AUTH_USER_URL = "/api/auth/user";
 const REST_API_GET_BUILDINGS_URL = "/api/building/list";
@@ -16,6 +17,7 @@ const REST_API_POST_CREATE_AREAS_URL = "/api/area/create";
 const REST_API_DELETE_AREAS_URL = "/api/area/delete";
 const REST_API_POST_UPDATE_AREAS_URL = "/api/area/update";
 const REST_API_GET_DEVICES_URL = "/api/device/list";
+const REST_API_GET_IDZER_URL = "/api/device/listIdzerit";
 const REST_API_GET_CROWDBEHAVIOR_URL = "/api/crowdbehavior";
 const REST_API_GET_MAXDATE_URL = "/api/crowdbehavior/maxdate";
 const REST_API_GET_POINTINTEREST_URL = "/api/poi/list";
@@ -163,7 +165,7 @@ export function useAreas(buildingId: number | undefined, validOnly: boolean = tr
 }
 
 export function useDevices(buildingId: number | undefined) {
-    const { data, error } = useSWR<Device[]>(
+    const { data, error, mutate } = useSWR<Device[]>(
         buildingId ? `${REST_API_GET_DEVICES_URL}?buildingId=${buildingId}`:null,
         fetchJson
     );
@@ -173,7 +175,24 @@ export function useDevices(buildingId: number | undefined) {
     return {
         devices: data,
         isLoading,
-        isError: error
+        isError: error,
+        mutate
+    }
+}
+
+export function useIdZer(buildingId: number | undefined) {
+    const { data, error, mutate } = useSWR<string[]>(
+        buildingId ? `${REST_API_GET_IDZER_URL}?buildingId=${buildingId}`:null,
+        fetchJson
+    );
+
+    const isLoading = !error && !data;
+    if (isLoading) console.log("Fetching id ...");
+    return {
+        idZer: data,
+        isLoading,
+        isError: error,
+        mutate
     }
 }
 
@@ -324,8 +343,8 @@ return {
     request
 };
 }*/
-export async function modifySniffer(idSniffer: string,id_building: string, name: string, xPosition: string, yPosition: string): Promise<User> {
-    return fetchJson(REST_API_MODIFY_SNIFFER_URL, {
+export async function modifySniffer(idSniffer: string,id_building: string, name: string, xPosition: string, yPosition: string) {
+    return fetch(REST_API_MODIFY_SNIFFER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -338,21 +357,35 @@ export async function modifySniffer(idSniffer: string,id_building: string, name:
     });
 }
 
-export async function deleteSniffer(idSniffer: string): Promise<User> {
-    return fetchJson(`${REST_API_DELETE_SNIFFER_URL}?idSniffer=${idSniffer}`, {
+export async function deleteSniffer(idSniffer: string) {
+    return fetch(`${REST_API_DELETE_SNIFFER_URL}?idSniffer=${idSniffer}`, {
         method: 'DELETE',
     });
 }
 
-export async function createSniffer(id_building: string, name: string, xPosition: string, yPosition: string): Promise<User> {
-    return fetchJson(REST_API_CREATE_SNIFFER_URL, {
+export async function createSniffer(id_building: string,idZerynt:string, name: string, xPosition: string, yPosition: string) {
+    return fetch(REST_API_CREATE_SNIFFER_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             id_building,
+            idZerynt,
             name,
             xPosition,
             yPosition,
+        }),
+    });
+}
+
+export async function createBuilding(name: string, id_user: string, id_zerynth: string, lastupdate: string) {
+    return fetch(REST_API_CREATE_SNIFFER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            name,
+            id_user,
+            id_zerynth,
+            lastupdate,
         }),
     });
 }

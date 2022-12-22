@@ -17,7 +17,7 @@ async function modifySnifferRoute(req: NextApiRequest, res: NextApiResponse) {
             xPosition,
             yPosition )
         await DataManagerAPI.modifySniffer(idSniffer,id_building, name,xPosition,yPosition);
-
+        res.status(200).end()
     } catch (error) {
         if (error instanceof FetchError) {
             const fetchError = (error as FetchError);
