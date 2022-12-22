@@ -15,7 +15,7 @@ import {
 import {TableCellProps} from "@mui/material/TableCell/TableCell";
 import * as React from "react";
 import Device from "../../models/device";
-import {createSniffer, deleteSniffer, modifySniffer} from "../../restapi";
+import {deleteSniffer, modifySniffer} from "../../restapi";
 import {useState} from "react";
 
 // ==============================|| ORDER TABLE - HEADER CELL ||============================== //
@@ -62,7 +62,7 @@ function DevicesTableHead() {
 
 // ==============================|| TABLE ||============================== //
 
-function buildDeviceRow(key: number, device: Device, selectedBuildingId: string) {
+function BuildDeviceRow(key: number, device: Device, selectedBuildingId: string) {
 
     const [open, setOpen] = useState(false);
     const [nameSniffer, setNameSniffer] = useState('');
@@ -177,7 +177,7 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
                                     <LinearProgress/>
                                 </TableCell>
                             ) : (devices && devices.length > 0 ? devices.map((device, idx) => {
-                                        return buildDeviceRow(idx, device, selectedBuildingId.toString())
+                                        return BuildDeviceRow(idx, device, selectedBuildingId.toString())
                                     })
                                     : <TableCell align="center" colSpan={headCells.length}></TableCell>
                             )
