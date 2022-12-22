@@ -28,6 +28,11 @@ export const areasRoute: Route = {
     url: "/areas"
 }
 
+export const poiRoute: Route = {
+    title: "Points of interest",
+    url: "/pointsofinterest"
+}
+
 export const devicesRoute: Route = {
     title: "Sniffers",
     url: "/devices"

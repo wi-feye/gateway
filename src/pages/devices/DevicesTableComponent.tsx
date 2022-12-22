@@ -62,9 +62,7 @@ function DevicesTableHead() {
 
 // ==============================|| TABLE ||============================== //
 
-function BuildDeviceRow(key: number, device: Device, selectedBuildingId: string, handleClickOpen:any, handleEliminaSniffer:any) {
-
-
+function BuildDeviceRow(key: number, device: Device, handleClickOpen:any, handleEliminaSniffer:any) {
     return (
         <>
             <TableRow hover role="checkbox" tabIndex={-1} key={key}>
@@ -161,9 +159,9 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
                                     <LinearProgress/>
                                 </TableCell>
                             ) : (devices && devices.length > 0 ? devices.map((device, idx) => {
-                                        return BuildDeviceRow(idx, device, selectedBuildingId.toString(), handleClickOpen, handleEliminaSniffer)
-                                    })
-                                    : <TableCell align="center" colSpan={headCells.length}></TableCell>
+                                    return BuildDeviceRow(idx, device, handleClickOpen, handleEliminaSniffer);
+                                })
+                                : <TableCell align="center" colSpan={headCells.length}></TableCell>
                             )
                         }
                     </TableBody>

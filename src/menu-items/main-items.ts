@@ -7,10 +7,12 @@ import {
     ProfileOutlined,
     ShakeOutlined,
     FundOutlined,
-    RadarChartOutlined, AreaChartOutlined
+    RadarChartOutlined,
+    AreaChartOutlined,
+    FlagOutlined
 } from '@ant-design/icons';
 import { MenuGroupType } from "./index";
-import { overviewRoute, attendanceRoute, crowdBehaviorRoute, areasRoute, devicesRoute } from "../routes";
+import { overviewRoute, attendanceRoute, crowdBehaviorRoute, areasRoute, devicesRoute, poiRoute } from "../routes";
 
 // icons
 const icons = {
@@ -22,7 +24,8 @@ const icons = {
     ShakeOutlined,
     RadarChartOutlined,
     FundOutlined,
-    AreaChartOutlined
+    AreaChartOutlined,
+    FlagOutlined
 };
 
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
@@ -62,6 +65,14 @@ const pages: MenuGroupType = {
             type: 'item',
             url: areasRoute.url,
             icon: icons.RadarChartOutlined,
+            breadcrumbs: false
+        },
+        {
+            id: 'pointsofinterest',
+            title: poiRoute.title,
+            type: 'item',
+            url: poiRoute.url,
+            icon: icons.FlagOutlined,
             breadcrumbs: false
         },
         {
