@@ -8,7 +8,7 @@ import {
 // project import
 import MainCard from '../../components/MainCard';
 import DevicesTableComponent from './DevicesTableComponent';
-import {createSniffer, modifySniffer, useDevices, useIdZer} from "../../restapi";
+import {createSniffer, modifySniffer, useDevices, useZerynthDevices} from "../../restapi";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
 import dynamic from "next/dynamic";
@@ -24,8 +24,7 @@ const Devices = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
     const { devices, isLoading,mutate } = useDevices(selectedBuilding.id);
-    const { idZer } = useIdZer(selectedBuilding.id);
-    console.log(idZer)
+    const { zerynthDevices } = useZerynthDevices(selectedBuilding.id);
     const [open, setOpen] = useState(false);
     const [nameSniffer, setNameSniffer] = useState('');
     const [xPosition, setxPosition] = useState('');
@@ -93,15 +92,11 @@ const Devices = () => {
                     variant="outlined"
                     onChange={handleNameSniffer}/>
                 <Autocomplete
-                    value={idZerynt}
-                    onChange={(event: any, newValue: string | null) => {
-                        if (newValue) setidZerynt(newValue);
-                    }}
                     onInputChange={(event, newInputValue) => {
                         setidZerynt(newInputValue);
                     }}
                     id="controllable-states-demo"
-                    options={idZer || []}
+                    options={zerynthDevices?.map(zd => {return {id: zd.id, label: zd.name}}) || []}
                     sx={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="ID ZERYNTH" />}
                 />

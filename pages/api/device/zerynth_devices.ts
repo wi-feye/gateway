@@ -7,7 +7,7 @@ import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 import ZerynthAPI from '../../../src/restapi/gateway/zerynthapi';
 import ZerynthDevice from "../../../src/models/zerynth_device";
 
-async function listRoute(req: NextApiRequest, res: NextApiResponse<string[]>) {
+async function listRoute(req: NextApiRequest, res: NextApiResponse<ZerynthDevice[]>) {
     gateway_logger(req);
 
     if (!req.session.user || !req.session.user.isLoggedIn) {
@@ -25,10 +25,8 @@ async function listRoute(req: NextApiRequest, res: NextApiResponse<string[]>) {
         const buildings = user.id ? await DataManagerAPI.buildings(user.id) : [];
         const building = buildings.find(b => b.id == Number.parseInt(buildingId));
         const z_devices = await ZerynthAPI.zerynthDevices(user.apikey_zerynth, building?.id_zerynth || '');
-        const id_zer = z_devices.map(z=>{
-            return z.id
-        })
-        res.json(id_zer);
+        
+        res.json(z_devices);
 
     } catch (e) {
         console.log(e)

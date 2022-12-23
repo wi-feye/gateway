@@ -17,7 +17,7 @@ const REST_API_POST_CREATE_AREAS_URL = "/api/area/create";
 const REST_API_DELETE_AREAS_URL = "/api/area/delete";
 const REST_API_POST_UPDATE_AREAS_URL = "/api/area/update";
 const REST_API_GET_DEVICES_URL = "/api/device/list";
-const REST_API_GET_IDZER_URL = "/api/device/listIdzerit";
+const REST_API_GET_IDZER_URL = "/api/device/zerynth_devices";
 const REST_API_GET_CROWDBEHAVIOR_URL = "/api/crowdbehavior";
 const REST_API_GET_MAXDATE_URL = "/api/crowdbehavior/maxdate";
 const REST_API_GET_POINTINTEREST_URL = "/api/poi/list";
@@ -180,8 +180,8 @@ export function useDevices(buildingId: number | undefined) {
     }
 }
 
-export function useIdZer(buildingId: number | undefined) {
-    const { data, error, mutate } = useSWR<string[]>(
+export function useZerynthDevices(buildingId: number | undefined) {
+    const { data, error, mutate } = useSWR<ZerynthDevice[]>(
         buildingId ? `${REST_API_GET_IDZER_URL}?buildingId=${buildingId}`:null,
         fetchJson
     );
@@ -189,7 +189,7 @@ export function useIdZer(buildingId: number | undefined) {
     const isLoading = !error && !data;
     if (isLoading) console.log("Fetching id ...");
     return {
-        idZer: data,
+        zerynthDevices: data,
         isLoading,
         isError: error,
         mutate
