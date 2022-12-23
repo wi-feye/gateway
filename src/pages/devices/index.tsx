@@ -14,6 +14,8 @@ import {RootState} from "../../store";
 import dynamic from "next/dynamic";
 import * as React from "react";
 import {useState} from "react";
+import ZerynthBuilding from '../../models/zerynth_building';
+import ZerynthDevice from '../../models/zerynth_device';
 
 const Map = dynamic(() => import('../../../src/components/Map'), {
     ssr: false
@@ -29,7 +31,7 @@ const Devices = () => {
     const [nameSniffer, setNameSniffer] = useState('');
     const [xPosition, setxPosition] = useState('');
     const [yPosition, setyPosition] = useState('');
-    const [idZerynt, setidZerynt] = useState('');
+    const [idZDevice, setIdZDevice] = useState('');
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -39,9 +41,11 @@ const Devices = () => {
         setOpen(false);
     };
     const handleConfirm = async () => {
-        setOpen(false);
-        await createSniffer(selectedBuilding.id.toString(),idZerynt, nameSniffer, xPosition.toString(), yPosition.toString())
-        mutate();
+        if(idZDevice) {
+            setOpen(false);
+            await createSniffer(selectedBuilding.id.toString(),idZDevice, nameSniffer, xPosition.toString(), yPosition.toString())
+            mutate();
+        }
     };
     const handleNameSniffer = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setNameSniffer(event.target.value);
@@ -92,11 +96,17 @@ const Devices = () => {
                     variant="outlined"
                     onChange={handleNameSniffer}/>
                 <Autocomplete
-                    onInputChange={(event, newInputValue) => {
-                        setidZerynt(newInputValue);
-                    }}
                     id="controllable-states-demo"
-                    options={zerynthDevices?.map(zd => {return {id: zd.id, label: zd.name}}) || []}
+                    value={idZDevice}
+                    onChange={(event: any, newValue: string | null, reason) => {
+                        if (newValue) setIdZDevice(newValue);
+                    }}
+                    onInputChange={(event, newInputValue: string, reason) => {
+                        const filtered = zerynthDevices?.find(zd => zd.name.includes(newInputValue));
+                        setIdZDevice(filtered?.id ?? '');
+                    }}
+                    getOptionLabel={option => zerynthDevices?.find(zd => zd.id == option)?.name ?? ''}
+                    options={zerynthDevices?.map(zd => zd.id) || []}
                     sx={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="ID ZERYNTH" />}
                 />
