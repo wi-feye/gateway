@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import MainLayout from "../src/layout";
-import Overview from "../src/pages/overview";
+import Settings from "../src/pages/settings";
 import {loginRoute} from "../src/routes";
 import LoadingSplashScreen from "../src/components/LoadingSplashScreen";
 import {useUser} from "../src/restapi";
@@ -18,7 +18,7 @@ export default function SettingsPage() {
 
     return (
         <MainLayout>
-            {/*<Overview />*/}
+            <Settings />
             <Head>
                 <title>WiFeye | Settings</title>
                 <meta name="description" content="Crowd Behavior Analysis" />

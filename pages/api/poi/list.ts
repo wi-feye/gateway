@@ -18,7 +18,6 @@ async function listRoute(req: NextApiRequest, res: NextApiResponse<PointOfIntere
     const k = Array.isArray(req.query.k) ? req.query.k[0] : req.query.k;
     const start = Array.isArray(req.query.start) ? req.query.start[0] : req.query.start;
     const end = Array.isArray(req.query.end) ? req.query.end[0] : req.query.end;
-    console.log("SONO QUIIII");
     if (!buildingId) {
         res.json([]);
         return;

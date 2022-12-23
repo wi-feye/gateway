@@ -3,6 +3,8 @@ import { FetchError, fetchJson } from "../index";
 import Area from "../../models/area";
 import Device from "../../models/device";
 import CrowdPosition from "../../models/crowdposition";
+import TmpCode from "../../models/tmpcode";
+import UserTelegram from "../../models/user_telegram";
 
 const ENDPOINT = process.env.DATA_MANAGER_HOST ? process.env.DATA_MANAGER_HOST:"http://localhost:10001";
 const DATA_MANAGER_BUILDINGS_URL = ENDPOINT + "/api/buildings/pull";
@@ -16,6 +18,10 @@ const DATA_MANAGER_POSITION_DETECTION_MAX_DATE_URL = ENDPOINT + "/api/position-d
 const DATA_MANAGER_CREATE_AREA_URL = ENDPOINT + "/api/areas/push/";
 const DATA_MANAGER_DELETE_AREA_URL = ENDPOINT + "/api/areas/delete";
 const DATA_MANAGER_UPDATE_AREA_URL = ENDPOINT + "/api/areas/update/";
+const DATA_MANAGER_GEN_TMPCODE = ENDPOINT + "/api/user_telegram/gen_tmpcode/";
+const DATA_MANAGER_UT_GET = ENDPOINT + "/api/user_telegram/get/";
+const DATA_MANAGER_UT_DEL = ENDPOINT + "/api/user_telegram/delete/";
+const DATA_MANAGER_UT_TOGGLE = ENDPOINT + "/api/user_telegram/enabled_toggle/";
 
 function buildings(userId: number): Promise<Building[]> {
     return fetchJson<Building[]>(`${DATA_MANAGER_BUILDINGS_URL}/${userId}`);
@@ -92,12 +98,11 @@ function modifySniffer(idSniffer: string, id_building:string, name: string, xPos
         'x':xPosition,
         'y':yPosition
     }
-    console.log(body)
-    return fetchJson<any>(`${DATA_MANAGER_SNIFFER_UPDATE_URL}/${idSniffer}`, {
+    return fetchJson(`${DATA_MANAGER_SNIFFER_UPDATE_URL}/${idSniffer}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-    }).then(response => console.log(response));
+    });
 }
 
 function createSniffer(id_building:string,idZerynt:string, name: string, xPosition: string, yPosition: string){
@@ -108,11 +113,11 @@ function createSniffer(id_building:string,idZerynt:string, name: string, xPositi
         'x':xPosition,
         'y':yPosition
     }
-    return fetchJson<any>(`${DATA_MANAGER_SNIFFER_CREATE_URL}/`, {
+    return fetchJson(`${DATA_MANAGER_SNIFFER_CREATE_URL}/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-    }).then(response => console.log(response));
+    });
 
 }
 
@@ -120,6 +125,26 @@ function deleteSniffer(idSniffer:string){
 
     return fetchJson(`${DATA_MANAGER_SNIFFER_DELETE_URL}/${idSniffer}`, {
         method: 'DELETE',
+    });
+}
+
+function genTmpCode(idUser: number){
+    return fetchJson<TmpCode>(`${DATA_MANAGER_GEN_TMPCODE}/${idUser}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+function userTelegramGet(idUser: number){
+    return fetchJson<UserTelegram>(`${DATA_MANAGER_UT_GET}/${idUser}`);
+}
+function userTelegramDelete(idUser: number){
+    return fetchJson(`${DATA_MANAGER_UT_DEL}/${idUser}`, {
+        method: 'DELETE',
+    });
+}
+function userTelegramToggle(idUser: number){
+    return fetchJson(`${DATA_MANAGER_UT_TOGGLE}/${idUser}`, {
+        method: 'POST',
     });
 }
 
@@ -134,7 +159,11 @@ const DataManagerAPI = {
     updateArea,
     modifySniffer,
     createSniffer,
-    deleteSniffer
+    deleteSniffer,
+    genTmpCode,
+    userTelegramGet,
+    userTelegramDelete,
+    userTelegramToggle
 };
 
 export default DataManagerAPI;

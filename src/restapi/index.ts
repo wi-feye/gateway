@@ -9,6 +9,8 @@ import Attendance from "../models/attendance";
 import CrowdBehavior from "../models/crowdbehavior";
 import PointOfInterest from "../models/pointOfInterest";
 import ZerynthDevice from "../models/zerynth_device";
+import TmpCode from "../models/tmpcode";
+import UserTelegram from "../models/user_telegram";
 
 const REST_API_AUTH_USER_URL = "/api/auth/user";
 const REST_API_GET_BUILDINGS_URL = "/api/building/list";
@@ -29,6 +31,13 @@ const REST_API_AUTH_LOGOUT_URL = "/api/auth/logout";
 const REST_API_MODIFY_SNIFFER_URL = "/api/device/modify";
 const REST_API_DELETE_SNIFFER_URL = "/api/device/delete";
 const REST_API_CREATE_SNIFFER_URL = "/api/device/create";
+
+const REST_API_CREATE_BUILDING_URL = "/api/building/create";
+
+const REST_API_GENTMPCODE = "/api/settings/tmpcode";
+const REST_API_UT_GET = "/api/settings/user_telegram_get";
+const REST_API_UT_DEL = "/api/settings/user_telegram_del";
+const REST_API_UT_TOGGLE = "/api/settings/user_telegram_toggle";
 
 export class FetchError extends Error {
     response: Response
@@ -378,7 +387,7 @@ export async function createSniffer(id_building: string,idZerynt:string, name: s
 }
 
 export async function createBuilding(name: string, id_user: string, id_zerynth: string, lastupdate: string) {
-    return fetch(REST_API_CREATE_SNIFFER_URL, {
+    return fetch(REST_API_CREATE_BUILDING_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -387,5 +396,30 @@ export async function createBuilding(name: string, id_user: string, id_zerynth: 
             id_zerynth,
             lastupdate,
         }),
+    });
+}
+
+
+export async function genTmpCode() {
+    const res = fetch(REST_API_GENTMPCODE, {
+        method: 'POST',
+    });
+    return (await (await res).json()) as TmpCode;
+}
+
+export async function userTelegramGet() {
+    const res = fetch(REST_API_UT_GET);
+    return (await (await res).json()) as UserTelegram;
+}
+
+export async function userTelegramDel() {
+    return fetch(REST_API_UT_DEL, {
+        method: 'DELETE',
+    });
+}
+
+export async function userTelegramToggle() {
+    return fetch(REST_API_UT_TOGGLE, {
+        method: 'POST',
     });
 }
