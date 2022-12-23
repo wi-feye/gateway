@@ -11,6 +11,7 @@ import PointOfInterest from "../models/pointOfInterest";
 import ZerynthDevice from "../models/zerynth_device";
 import TmpCode from "../models/tmpcode";
 import UserTelegram from "../models/user_telegram";
+import ZerynthBuilding from "../models/zerynth_building";
 
 const REST_API_AUTH_USER_URL = "/api/auth/user";
 const REST_API_GET_BUILDINGS_URL = "/api/building/list";
@@ -20,6 +21,7 @@ const REST_API_DELETE_AREAS_URL = "/api/area/delete";
 const REST_API_POST_UPDATE_AREAS_URL = "/api/area/update";
 const REST_API_GET_DEVICES_URL = "/api/device/list";
 const REST_API_GET_IDZER_URL = "/api/device/zerynth_devices";
+const REST_API_GET_IDZER_BUI_URL = "/api/building/zerynth_buildings";
 const REST_API_GET_CROWDBEHAVIOR_URL = "/api/crowdbehavior";
 const REST_API_GET_MAXDATE_URL = "/api/crowdbehavior/maxdate";
 const REST_API_GET_POINTINTEREST_URL = "/api/poi/list";
@@ -199,6 +201,22 @@ export function useZerynthDevices(buildingId: number | undefined) {
     if (isLoading) console.log("Fetching id ...");
     return {
         zerynthDevices: data,
+        isLoading,
+        isError: error,
+        mutate
+    }
+}
+
+export function useZerynthBuildings() {
+    const { data, error, mutate } = useSWR<ZerynthBuilding[]>(
+        `${REST_API_GET_IDZER_BUI_URL}`,
+        fetchJson
+    );
+
+    const isLoading = !error && !data;
+    if (isLoading) console.log("Fetching id ...");
+    return {
+        zerynthBuildings: data,
         isLoading,
         isError: error,
         mutate
@@ -386,13 +404,13 @@ export async function createSniffer(id_building: string,idZerynt:string, name: s
     });
 }
 
-export async function createBuilding(name: string, id_user: string, id_zerynth: string, lastupdate: string) {
+export async function createBuilding(name: string, id_zerynth: string, lastupdate: string) {
+    console.log(id_zerynth)
     return fetch(REST_API_CREATE_BUILDING_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             name,
-            id_user,
             id_zerynth,
             lastupdate,
         }),

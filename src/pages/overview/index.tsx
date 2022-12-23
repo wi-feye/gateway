@@ -43,7 +43,9 @@ const Overview = () => {
     }>();
 
     const buildingState = useSelector((state: RootState) => state.building);
+    console.log(buildingState)
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
+    console.log(selectedBuilding)
     const { attendance, isLoading: isLoadingAttendance } = useAttendance(selectedBuilding.id);
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
     const { devices, isLoading } = useDevices(selectedBuilding.id);

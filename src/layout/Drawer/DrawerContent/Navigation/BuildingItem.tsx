@@ -1,12 +1,13 @@
 // material-ui
 import {
-    Box, Button,
+    Autocomplete,
+    Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
     Fade,
     ListItemButton,
     ListItemIcon,
     ListItemText,
     Menu,
-    MenuItem,
+    MenuItem, TextField,
     Typography,
 } from '@mui/material';
 
@@ -17,13 +18,15 @@ import {useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../../store";
 import {selectBuilding} from "../../../../store/reducers/building";
+import * as React from "react";
+import {createBuilding, createSniffer, useDevices, useZerynthBuildings, useZerynthDevices} from "../../../../restapi";
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
 const BuildingItem = () => {
     const dispatch = useDispatch();
     const building = useSelector((state: RootState) => state.building);
     const selectedBuilding = building.selectedBuildingIndex == -1 ?
-        { name: "", id: -1} : building.availableBuildings[building.selectedBuildingIndex]
+        {name: "", id: -1} : building.availableBuildings[building.selectedBuildingIndex]
 
     const textColor = '#0E4949';
 
@@ -39,7 +42,7 @@ const BuildingItem = () => {
         event: MouseEvent<HTMLElement>,
         index: number,
     ) => {
-        dispatch(selectBuilding({ selectedBuildingIndex: index }));
+        dispatch(selectBuilding({selectedBuildingIndex: index}));
         setAnchorEl(null);
     };
 
@@ -47,98 +50,162 @@ const BuildingItem = () => {
         setAnchorEl(null);
     };
 
-    return (
-        <div>
-            <ListItemButton
-                id="select-building-button"
-                onClick={handleClickListItem}
-                sx={{
-                    zIndex: 1201,
-                    pl: `32px`,
-                    py: 2,
-                    mb: 3,
-                    mt: 1,
-                    bgcolor: "#F6EFDC",
-                    ...({
-                        '&:hover': {
-                            bgcolor: '#F6EFDC'
-                        }
-                    }),
-                }}
-            >
-                <ListItemIcon
-                    sx={{
-                        mr: 2,
-                        minWidth: 36,
-                        color: textColor,
-                        borderRadius: 1.5,
-                        width: 36,
-                        height: 36,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <HomeOutlined style={{ fontSize: '1.25rem' }} />
-                </ListItemIcon>
-                <ListItemText
-                    primary={
-                        <Typography variant="h6" sx={{ color: textColor }}>
-                            { selectedBuilding.name }
-                        </Typography>
-                    }
-                />
-                <ListItemIcon
-                    sx={{
-                        minWidth: 36,
-                        color: textColor,
-                        borderRadius: 1.5,
-                        width: 36,
-                        height: 36,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                >
-                    <CaretDownOutlined style={{ fontSize: '1rem' }} />
-                </ListItemIcon>
-            </ListItemButton>
-            <Menu
-                anchorEl={anchorEl}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                TransitionComponent={Fade}
-                open={open}
-                onClose={handleClose}
-                MenuListProps={{
-                    'aria-labelledby': 'basic-button',
-                }}
-                PaperProps={{
-                    sx: {
-                        ml: -2,
-                        borderRadius: 0,
-                        bgcolor: "#F6EFDC",
-                        filter: 'drop-shadow(0px 4px 0px rgba(0,0,0,0.32))',
-                    },
-                    elevation: 0,
-                    style: {
-                        width: drawerWidth,
-                    },
-                }}
-            >
-                {building.availableBuildings.map((build, index) => (
-                    <MenuItem
-                        key={build.id}
-                        selected={index === building.selectedBuildingIndex}
-                        onClick={(event) => handleMenuItemClick(event, index)}
-                    >
-                        {build.name}
-                    </MenuItem>
-                ))}
-                <MenuItem onClick={handleClose} disableRipple>
+    const { zerynthBuildings,mutate } = useZerynthBuildings();
+    const [openDialog, setOpenDialog] = useState(false);
+    const [nameBuilding, setNameBuilding] = useState('');
+    const [idZDevice, setIdZDevice] = useState('');
 
-                    <Button variant="text">ADD BUILDING</Button>
-                </MenuItem>
-            </Menu>
-        </div>
+    const handleClickOpen = () => {
+        setOpenDialog(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+    };
+    const handleConfirmDialog = async () => {
+        if(idZDevice) {
+            setOpenDialog(false);
+            const now = new Date()
+            console.log("ISSSSSS",idZDevice)
+            await createBuilding(nameBuilding,idZDevice, now.toUTCString())
+            mutate();
+        }
+    };
+    const handleNameBuilding = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setNameBuilding(event.target.value);
+    };
+
+    return (
+        <>
+            <div>
+                <ListItemButton
+                    id="select-building-button"
+                    onClick={handleClickListItem}
+                    sx={{
+                        zIndex: 1201,
+                        pl: `32px`,
+                        py: 2,
+                        mb: 3,
+                        mt: 1,
+                        bgcolor: "#F6EFDC",
+                        ...({
+                            '&:hover': {
+                                bgcolor: '#F6EFDC'
+                            }
+                        }),
+                    }}
+                >
+                    <ListItemIcon
+                        sx={{
+                            mr: 2,
+                            minWidth: 36,
+                            color: textColor,
+                            borderRadius: 1.5,
+                            width: 36,
+                            height: 36,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <HomeOutlined style={{fontSize: '1.25rem'}}/>
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={
+                            <Typography variant="h6" sx={{color: textColor}}>
+                                {selectedBuilding.name}
+                            </Typography>
+                        }
+                    />
+                    <ListItemIcon
+                        sx={{
+                            minWidth: 36,
+                            color: textColor,
+                            borderRadius: 1.5,
+                            width: 36,
+                            height: 36,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <CaretDownOutlined style={{fontSize: '1rem'}}/>
+                    </ListItemIcon>
+                </ListItemButton>
+                <Menu
+                    anchorEl={anchorEl}
+                    transformOrigin={{horizontal: 'right', vertical: 'top'}}
+                    anchorOrigin={{horizontal: 'right', vertical: 'bottom'}}
+                    TransitionComponent={Fade}
+                    open={open}
+                    onClose={handleClose}
+                    MenuListProps={{
+                        'aria-labelledby': 'basic-button',
+                    }}
+                    PaperProps={{
+                        sx: {
+                            ml: -2,
+                            borderRadius: 0,
+                            bgcolor: "#F6EFDC",
+                            filter: 'drop-shadow(0px 4px 0px rgba(0,0,0,0.32))',
+                        },
+                        elevation: 0,
+                        style: {
+                            width: drawerWidth,
+                        },
+                    }}
+                >
+                    {building.availableBuildings.map((build, index) => (
+                        <MenuItem
+                            key={build.id}
+                            selected={index === building.selectedBuildingIndex}
+                            onClick={(event) => handleMenuItemClick(event, index)}
+                        >
+                            {build.name}
+                        </MenuItem>
+                    ))}
+                    <MenuItem onClick={handleClickOpen} disableRipple>
+
+                        <Button variant="text">ADD BUILDING</Button>
+                    </MenuItem>
+                </Menu>
+            </div>
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>Create Building</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Enter the values:
+                    </DialogContentText>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Name"
+                        type="text"
+                        variant="outlined"
+                        onChange={handleNameBuilding}/>
+                    <Autocomplete
+                        id="controllable-states-demo"
+                        value={idZDevice}
+                        onChange={(event: any, newValue: string | null, reason) => {
+                            if (newValue) setIdZDevice(newValue);
+                        }}
+                        onInputChange={(event, newInputValue: string, reason) => {
+                            const filtered = zerynthBuildings?.filter(zd => zd.name.includes(newInputValue));
+                            if (filtered?.length == 1) {
+                                setIdZDevice(filtered[0].id);
+                            }
+                        }}
+                        getOptionLabel={option => zerynthBuildings?.find(zd => zd.id == option) ? `${zerynthBuildings?.find(zd => zd.id == option)?.name} [${option}]` : ''}
+                        options={zerynthBuildings?.map(zd => zd.id) || []}
+                        sx={{width: 300}}
+                        renderInput={(params) => <TextField {...params} label="ID ZERYNTH"/>}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDialog}>Cancel</Button>
+                    <Button onClick={handleConfirmDialog}>Confirm</Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 };
 export default BuildingItem;

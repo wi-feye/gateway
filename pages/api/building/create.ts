@@ -3,8 +3,9 @@ import { sessionOptions } from '../../../src/auth/session'
 import { NextApiRequest, NextApiResponse } from 'next'
 import gateway_logger from "../../../src/restapi/gateway/gateway_logger";
 import {FetchError} from "../../../src/restapi";
+import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 
-async function createSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
+async function createBuildingRoute(req: NextApiRequest, res: NextApiResponse) {
     gateway_logger(req);
 
     if (!req.session.user || !req.session.user.isLoggedIn) {
@@ -12,15 +13,15 @@ async function createSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
         return;
     }
 
-    const { id_building, name,
-        xPosition,
-        yPosition } = await req.body
+    const { name,
+        id_zerynth,
+        lastupdate } = await req.body
 
     try {
-        console.log( id_building, name,
-            xPosition,
-            yPosition )
-        //await DataManagerAPI.createBuilding(id_building, name,xPosition,yPosition);
+        console.log( name, req.session.user.id.toString(),
+            id_zerynth,
+            lastupdate )
+        await DataManagerAPI.createBuilding(name, req.session.user.id.toString(),id_zerynth,lastupdate);
         res.status(200).end()
     } catch (error) {
         if (error instanceof FetchError) {
@@ -34,4 +35,4 @@ async function createSnifferRoute(req: NextApiRequest, res: NextApiResponse) {
     }
 }
 
-export default withIronSessionApiRoute(createSnifferRoute, sessionOptions)
+export default withIronSessionApiRoute(createBuildingRoute, sessionOptions)

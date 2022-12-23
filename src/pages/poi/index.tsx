@@ -26,6 +26,7 @@ const Map = dynamic(() => import('../../../src/components/Map'), {
 const PoiPageContent = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
+
     const { areas, isLoading: areasIsLoading } = useAreas(selectedBuilding.id);
     const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
 
@@ -66,7 +67,7 @@ const PoiPageContent = () => {
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
             <Grid item xs={12} sx={{mb: -2.25}}>
-                <Typography variant="h5">Areas</Typography>
+                <Typography variant="h5">Points of Interest</Typography>
             </Grid>
             {/* row 1 */}
             <Grid item xs={12} sx={{ mb: -2.25 }}>

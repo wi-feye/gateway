@@ -8,6 +8,7 @@ import UserTelegram from "../../models/user_telegram";
 
 const ENDPOINT = process.env.DATA_MANAGER_HOST ? process.env.DATA_MANAGER_HOST:"http://localhost:10001";
 const DATA_MANAGER_BUILDINGS_URL = ENDPOINT + "/api/buildings/pull";
+const DATA_MANAGER_BUILDINGS_CREATE_URL = ENDPOINT + "/api/buildings/push";
 const DATA_MANAGER_AREAS_URL = ENDPOINT + "/api/areas/pull";
 const DATA_MANAGER_DEVICES_URL = ENDPOINT + "/api/sniffers/pull";
 const DATA_MANAGER_SNIFFER_UPDATE_URL = ENDPOINT + "/api/sniffers/update";
@@ -121,6 +122,21 @@ function createSniffer(id_building:string,idZerynt:string, name: string, xPositi
 
 }
 
+function createBuilding(name: string, id_user:string, id_zerynth: string, lastupdate: string){
+    const body = {
+        name,
+        id_user,
+        id_zerynth,
+        lastupdate
+    }
+    return fetchJson(`${DATA_MANAGER_BUILDINGS_CREATE_URL}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+
+}
+
 function deleteSniffer(idSniffer:string){
 
     return fetchJson(`${DATA_MANAGER_SNIFFER_DELETE_URL}/${idSniffer}`, {
@@ -163,7 +179,8 @@ const DataManagerAPI = {
     genTmpCode,
     userTelegramGet,
     userTelegramDelete,
-    userTelegramToggle
+    userTelegramToggle,
+    createBuilding
 };
 
 export default DataManagerAPI;
