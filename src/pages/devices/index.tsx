@@ -102,10 +102,12 @@ const Devices = () => {
                         if (newValue) setIdZDevice(newValue);
                     }}
                     onInputChange={(event, newInputValue: string, reason) => {
-                        const filtered = zerynthDevices?.find(zd => zd.name.includes(newInputValue));
-                        setIdZDevice(filtered?.id ?? '');
+                        const filtered = zerynthDevices?.filter(zd => zd.name.includes(newInputValue));
+                        if(filtered?.length == 1) {
+                            setIdZDevice(filtered[0].id);
+                        }
                     }}
-                    getOptionLabel={option => zerynthDevices?.find(zd => zd.id == option)?.name ?? ''}
+                    getOptionLabel={option => zerynthDevices?.find(zd => zd.id == option) ? `${zerynthDevices?.find(zd => zd.id == option)?.name} [${option}]` : ''}
                     options={zerynthDevices?.map(zd => zd.id) || []}
                     sx={{ width: 300 }}
                     renderInput={(params) => <TextField {...params} label="ID ZERYNTH" />}
