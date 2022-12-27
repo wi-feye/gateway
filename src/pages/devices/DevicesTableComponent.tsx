@@ -91,7 +91,7 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
 
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
-    const [device, setDevice] = useState<Device>(null);
+    const [device, setDevice] = useState<Device|null>(null);
     const [nameSniffer, setNameSniffer] = useState('');
     const [dev, setDev] = useState<Device>();
     const [xPosition, setxPosition] = useState('');
@@ -122,9 +122,11 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
     };
 
     const handleEliminaSniffer = async () => {
-        await deleteSniffer(device.id);
-        if (mutate) mutate();
-        setOpenDelete(false);
+        if(device) {
+            await deleteSniffer(device.id);
+            if (mutate) mutate();
+            setOpenDelete(false);
+        }
     };
 
     const handleClickOpenDelete = (device:Device) => {

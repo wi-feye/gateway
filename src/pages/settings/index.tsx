@@ -108,26 +108,30 @@ const Settings = () => {
     };
 
     const handleConfirm = async () => {
-        await modifyBuilding(selectedBuilding.id, nameBuilding, selectedBuilding.id_zerynth, openTime, closeTime)
-        // if (mutate) mutate();
-        setopenModify(false);
-        window.location.reload(false);
+        if(selectedBuilding && selectedBuilding.id_zerynth && openTime && closeTime) {
+            await modifyBuilding(selectedBuilding.id.toString(), nameBuilding, selectedBuilding.id_zerynth, openTime, closeTime)
+            // if (mutate) mutate();
+            setopenModify(false);
+            window.location.reload();
+        }
     };
     const handleOpenTime = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-        setopenTime(event.target.value);
+        setopenTime(event.target.value.toString());
     };
     const handleCloseTime = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-        setcloseTime(event.target.value);
+        setcloseTime(event.target.value.toString());
     };
     const handlenameBuilding = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setnameBuilding(event.target.value);
     };
 
     const handleEliminaBuilding = async () => {
-        await deleteBuilding(selectedBuilding.id);
-        window.location.reload(false);
+        if(selectedBuilding) {
+            await deleteBuilding(selectedBuilding.id.toString());
+            window.location.reload();
 
-        // if (mutate) mutate();
+            // if (mutate) mutate();
+        }
     };
 
     return (

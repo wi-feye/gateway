@@ -129,8 +129,8 @@ function BuildingAttendance() {
             <MainCard content={false} sx={{ mt: 1.5 }}>
                 <Box sx={{ pt: 1, pr: 2 }}>
                     <AreaChart
-                        data1={crowdBehavior60Minute}
-                        data2={crowdBehavior1Minute}
+                        data1={crowdBehavior60Minute ?? []}
+                        data2={crowdBehavior1Minute ?? []}
                         isHours={slot== 'hours'}
                         isLoading1={isLoading1}
                         isLoading2={isLoading2}
