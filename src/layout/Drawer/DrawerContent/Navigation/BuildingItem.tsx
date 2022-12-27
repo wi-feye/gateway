@@ -20,6 +20,9 @@ import {RootState} from "../../../../store";
 import {selectBuilding} from "../../../../store/reducers/building";
 import * as React from "react";
 import {createBuilding, createSniffer, useDevices, useZerynthBuildings, useZerynthDevices} from "../../../../restapi";
+import {TimePicker} from "@mui/x-date-pickers";
+import {Time} from "@mui/x-date-pickers/internals/components/icons";
+import {DateTime} from "asn1js";
 // ==============================|| NAVIGATION - LIST ITEM ||============================== //
 
 const BuildingItem = () => {
@@ -53,6 +56,8 @@ const BuildingItem = () => {
     const { zerynthBuildings,mutate } = useZerynthBuildings();
     const [openDialog, setOpenDialog] = useState(false);
     const [nameBuilding, setNameBuilding] = useState('');
+    const [openTime, setOpenTime] = useState("08:30");
+    const [closeTime, setCloseTime] = useState("18:30");
     const [idZDevice, setIdZDevice] = useState('');
 
     const handleClickOpen = () => {
@@ -65,14 +70,19 @@ const BuildingItem = () => {
     const handleConfirmDialog = async () => {
         if(idZDevice) {
             setOpenDialog(false);
-            const now = new Date()
-            console.log("ISSSSSS",idZDevice)
-            await createBuilding(nameBuilding,idZDevice, now.toUTCString())
+
+            await createBuilding(nameBuilding,idZDevice, openTime, closeTime)
             mutate();
         }
     };
     const handleNameBuilding = (event: { target: { value: React.SetStateAction<string>; }; }) => {
         setNameBuilding(event.target.value);
+    };
+    const handleOpenTime = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setOpenTime(event.target.value);
+    };
+    const handleCloseTime = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setCloseTime(event.target.value);
     };
 
     return (
@@ -181,6 +191,7 @@ const BuildingItem = () => {
                         label="Name"
                         type="text"
                         variant="outlined"
+                        sx={{width: 300}}
                         onChange={handleNameBuilding}/>
                     <Autocomplete
                         id="controllable-states-demo"
@@ -198,6 +209,34 @@ const BuildingItem = () => {
                         options={zerynthBuildings?.map(zd => zd.id) || []}
                         sx={{width: 300}}
                         renderInput={(params) => <TextField {...params} label="ID ZERYNTH"/>}
+                    />
+                    <TextField
+                        id="time"
+                        label="Open Time"
+                        type="time"
+                        defaultValue="07:30"
+                        onChange={handleOpenTime}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        inputProps={{
+                            step: 300, // 5 min
+                        }}
+                        sx={{ width: 150 }}
+                    />
+                    <TextField
+                        id="time"
+                        label="Close Time"
+                        type="time"
+                        defaultValue="18:30"
+                        onChange={handleCloseTime}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                        inputProps={{
+                            step: 300, // 5 min
+                        }}
+                        sx={{ width: 150 }}
                     />
                 </DialogContent>
                 <DialogActions>

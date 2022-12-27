@@ -33,12 +33,7 @@ const barChartOptions = {
             show: false
         }
     },
-    yaxis: {
-        show: false
-    },
-    grid: {
-        show: false
-    }
+
 };
 
 // ==============================|| MONTHLY BAR CHART ||============================== //
@@ -75,9 +70,6 @@ const AttendanceBarChart = ({ data, height, categories }: AttendanceBarChartProp
                     }
                 }
             },
-            tooltip: {
-                enabled: false
-            }
         }));
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [info, secondary, categories]);

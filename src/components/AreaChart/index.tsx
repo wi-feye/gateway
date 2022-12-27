@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import dynamic from "next/dynamic";
+import CrowdBehavior from "../../models/crowdbehavior";
 
 // third-party
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -19,28 +20,45 @@ const areaChartOptions = {
     dataLabels: {
         enabled: false
     },
-    stroke: {
-        curve: 'smooth',
-        width: 2
-    },
-    grid: {
-        strokeDashArray: 0
-    }
+
 };
 
 // ==============================|| INCOME AREA CHART ||============================== //
 type IncomeAreaChartType = {
-    isMonth: boolean,
-    categories: string[]
+    data1: CrowdBehavior[],
+    data2: CrowdBehavior[],
+    isHours: boolean,
+    isLoading1: boolean,
+    isLoading2: boolean,
 };
 
-const AreaChart = ({ categories, isMonth }: IncomeAreaChartType) => {
+const AreaChart = ({ data1,data2, isHours, isLoading1, isLoading2 }: IncomeAreaChartType) => {
     const theme = useTheme();
 
     const { primary, secondary } = theme.palette.text;
     const line = theme.palette.divider;
 
     const [options, setOptions] = useState(areaChartOptions);
+
+    const categories1: any[] = [];
+    const cardinality1: any[] = [];
+
+    const categories2: any[] = [];
+    const cardinality2: any[] = [];
+    console.log(isHours)
+
+
+    data1?.forEach(d=>{
+        const date = new Date(d.from)
+        categories1.push((date.getHours()).toString()+':'+ (date.getMinutes() == 0 ? '00': date.getMinutes()))
+        cardinality1.push(d.data.length)
+    })
+    data2?.forEach(d=>{
+        const date = new Date(d.from)
+        categories2.push((date.getHours()).toString()+':'+ (date.getMinutes() == 0 ? '00': date.getMinutes()))
+        cardinality2.push(d.data.length)
+    })
+
     // @ts-ignore
     const darkerPrimary = theme.palette.primary[700]
     useEffect(() => {
@@ -50,7 +68,7 @@ const AreaChart = ({ categories, isMonth }: IncomeAreaChartType) => {
             ...prevState,
             colors: [theme.palette.primary.main, darkerPrimary],
             xaxis: {
-                categories: categories,
+                categories: isHours ? categories1:categories2,
                 labels: {
                     style: {
                         colors: [
@@ -69,42 +87,24 @@ const AreaChart = ({ categories, isMonth }: IncomeAreaChartType) => {
                         ]
                     }
                 },
-                axisBorder: {
-                    show: true,
-                    color: line
-                },
-                tickAmount: isMonth ? 11 : 5
             },
-            yaxis: {
-                labels: {
-                    show: false,
-                    style: {
-                        colors: [secondary]
-                    }
-                }
-            },
-            grid: {
-                borderColor: line
-            },
-            tooltip: {
-                enabled: false
-            }
+
         }));
-    }, [primary, secondary, line, theme, isMonth]);
+    }, [primary, secondary, line, theme, isHours, isLoading1, isLoading2]);
 
     const [series, setSeries] = useState([
         {
-            data: [0, 86, 28, 115, 48, 210, 136]
+            data: cardinality1
         }
     ]);
 
     useEffect(() => {
         setSeries([
             {
-                data: isMonth ? [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35] : [105, 119, 123, 109, 99]
+                data: isHours ? cardinality1 : cardinality2
             }
         ]);
-    }, [isMonth]);
+    }, [isHours, isLoading1,isLoading2]);
 
     // @ts-ignore
     return <ReactApexChart options={options} series={series} type="area" height={450} />;

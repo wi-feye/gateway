@@ -94,6 +94,7 @@ const Devices = () => {
                     label="Name"
                     type="text"
                     variant="outlined"
+                    sx={{ width: 300 }}
                     onChange={handleNameSniffer}/>
                 <Autocomplete
                     id="controllable-states-demo"

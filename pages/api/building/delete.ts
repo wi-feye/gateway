@@ -5,25 +5,22 @@ import gateway_logger from "../../../src/restapi/gateway/gateway_logger";
 import {FetchError} from "../../../src/restapi";
 import DataManagerAPI from "../../../src/restapi/gateway/datamanagerapi";
 
-async function createBuildingRoute(req: NextApiRequest, res: NextApiResponse) {
+async function deleteBuildingRoute(req: NextApiRequest, res: NextApiResponse) {
     gateway_logger(req);
-
     if (!req.session.user || !req.session.user.isLoggedIn) {
         res.status(401).end();
         return;
     }
 
-    const { name,
-        id_zerynth,
-        open_time,
-        close_time} = await req.body
+    const idBuilding = Array.isArray(req.query.idBuilding) ? req.query.idBuilding[0] : req.query.idBuilding;
+    if (!idBuilding) {
+        res.status(400).end();
+        return;
+    }
 
     try {
-        console.log( name, req.session.user.id.toString(),
-            id_zerynth,
-            open_time,
-            close_time)
-        await DataManagerAPI.createBuilding(name, req.session.user.id.toString(),id_zerynth, open_time, close_time);
+        console.log( idBuilding)
+        await DataManagerAPI.deleteBuilding(idBuilding);
         res.status(200).end()
     } catch (error) {
         if (error instanceof FetchError) {
@@ -37,4 +34,4 @@ async function createBuildingRoute(req: NextApiRequest, res: NextApiResponse) {
     }
 }
 
-export default withIronSessionApiRoute(createBuildingRoute, sessionOptions)
+export default withIronSessionApiRoute(deleteBuildingRoute, sessionOptions)

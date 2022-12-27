@@ -90,6 +90,8 @@ export type DevicesTableComponentType = {
 export default function DevicesTableComponent({devices, loading, selectedBuildingId, mutate}: DevicesTableComponentType) {
 
     const [open, setOpen] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+    const [device, setDevice] = useState<Device>(null);
     const [nameSniffer, setNameSniffer] = useState('');
     const [dev, setDev] = useState<Device>();
     const [xPosition, setxPosition] = useState('');
@@ -105,9 +107,6 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
     };
     const handleConfirm = async () => {
         if (!dev) return;
-
-        console.log(xPosition,"XXXXXX")
-        console.log(yPosition,"YYYYY")
         await modifySniffer(dev.id, selectedBuildingId.toString(), nameSniffer,xPosition == '' ? dev.x.toString(): xPosition, yPosition==''? dev.y.toString(): yPosition)
         if (mutate) mutate();
         setOpen(false);
@@ -122,9 +121,18 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
         setNameSniffer(event.target.value);
     };
 
-    const handleEliminaSniffer = async (device:Device) => {
+    const handleEliminaSniffer = async () => {
         await deleteSniffer(device.id);
         if (mutate) mutate();
+        setOpenDelete(false);
+    };
+
+    const handleClickOpenDelete = (device:Device) => {
+        setDevice(device)
+        setOpenDelete(true);
+    };
+    const handleCloseDelete = () => {
+        setOpenDelete(false);
     };
 
     return (
@@ -159,7 +167,7 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
                                     <LinearProgress/>
                                 </TableCell>
                             ) : (devices && devices.length > 0 ? devices.map((device, idx) => {
-                                    return BuildDeviceRow(idx, device, handleClickOpen, handleEliminaSniffer);
+                                    return BuildDeviceRow(idx, device, handleClickOpen, handleClickOpenDelete);
                                 })
                                 : <TableCell align="center" colSpan={headCells.length}></TableCell>
                             )
@@ -175,7 +183,7 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
                     </DialogContentText>
                     <TextField
                         autoFocus
-                        margin="normal"
+                        margin="dense"
                         id="name"
                         label="Name"
                         type="text"
@@ -201,6 +209,27 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
                     <Button onClick={handleConfirm}>Confirm</Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={openDelete}
+                onClose={handleCloseDelete}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Are you sure you want to continue?"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        By clicking on continue you will eliminate the sniffer.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseDelete}>Cancel</Button>
+                    <Button onClick={handleEliminaSniffer} autoFocus>
+                        Continue
+                    </Button>
                 </DialogActions>
             </Dialog>
         </Box>

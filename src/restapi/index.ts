@@ -12,6 +12,8 @@ import ZerynthDevice from "../models/zerynth_device";
 import TmpCode from "../models/tmpcode";
 import UserTelegram from "../models/user_telegram";
 import ZerynthBuilding from "../models/zerynth_building";
+import {Time} from "@mui/x-date-pickers/internals/components/icons";
+import {DateTime} from "asn1js";
 
 const REST_API_AUTH_USER_URL = "/api/auth/user";
 const REST_API_GET_BUILDINGS_URL = "/api/building/list";
@@ -35,6 +37,8 @@ const REST_API_DELETE_SNIFFER_URL = "/api/device/delete";
 const REST_API_CREATE_SNIFFER_URL = "/api/device/create";
 
 const REST_API_CREATE_BUILDING_URL = "/api/building/create";
+const REST_API_MODIFY_BUILDING_URL = "/api/building/modify";
+const REST_API_DELETE_BUILDING_URL = "/api/building/delete";
 
 const REST_API_GENTMPCODE = "/api/settings/tmpcode";
 const REST_API_UT_GET = "/api/settings/user_telegram_get";
@@ -404,7 +408,7 @@ export async function createSniffer(id_building: string,idZerynt:string, name: s
     });
 }
 
-export async function createBuilding(name: string, id_zerynth: string, lastupdate: string) {
+export async function createBuilding(name: string, id_zerynth: string, open_time: string, close_time: string) {
     console.log(id_zerynth)
     return fetch(REST_API_CREATE_BUILDING_URL, {
         method: 'POST',
@@ -412,11 +416,30 @@ export async function createBuilding(name: string, id_zerynth: string, lastupdat
         body: JSON.stringify({
             name,
             id_zerynth,
-            lastupdate,
+            open_time,
+            close_time
+        }),
+    });
+}
+export async function modifyBuilding(idBuilding:string, name: string, id_zerynth: string, open_time: string, close_time: string) {
+    return fetch(REST_API_MODIFY_BUILDING_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            idBuilding,
+            name,
+            id_zerynth,
+            open_time,
+            close_time
         }),
     });
 }
 
+export async function deleteBuilding(idBuilding: string) {
+    return fetch(`${REST_API_DELETE_BUILDING_URL}?idBuilding=${idBuilding}`, {
+        method: 'DELETE',
+    });
+}
 
 export async function genTmpCode() {
     const res = fetch(REST_API_GENTMPCODE, {

@@ -91,6 +91,7 @@ const AttendancePage = () => {
     const { attendancePerHour, isLoading: isLoadingAttendancePerHour } = useAttendancePerHour(selectedBuilding.id);
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
 
+
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
             {/* row 1 */}
