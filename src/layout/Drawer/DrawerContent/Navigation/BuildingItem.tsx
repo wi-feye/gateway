@@ -73,6 +73,7 @@ const BuildingItem = () => {
 
             await createBuilding(nameBuilding,idZDevice, openTime, closeTime)
             mutate();
+            window.location.reload();
         }
     };
     const handleNameBuilding = (event: { target: { value: React.SetStateAction<string>; }; }) => {

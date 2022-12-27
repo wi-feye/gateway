@@ -45,7 +45,6 @@ const AreaChart = ({ data1,data2, isHours, isLoading1, isLoading2 }: IncomeAreaC
 
     const categories2: any[] = [];
     const cardinality2: any[] = [];
-    console.log(isHours)
 
 
     data1?.forEach(d=>{
@@ -92,22 +91,16 @@ const AreaChart = ({ data1,data2, isHours, isLoading1, isLoading2 }: IncomeAreaC
         }));
     }, [primary, secondary, line, theme, isHours, isLoading1, isLoading2]);
 
-    const [series, setSeries] = useState([
-        {
-            data: cardinality1
-        }
-    ]);
-
-    useEffect(() => {
-        setSeries([
+    function formatSeries(data: any) {
+        return [
             {
-                data: isHours ? cardinality1 : cardinality2
+                data
             }
-        ]);
-    }, [isHours, isLoading1,isLoading2]);
+        ]
+    }
 
     // @ts-ignore
-    return <ReactApexChart options={options} series={series} type="area" height={450} />;
+    return <ReactApexChart options={options} series={formatSeries(isHours ? cardinality1 : cardinality2)} type="area" height={450} />;
 };
 
 export default AreaChart;

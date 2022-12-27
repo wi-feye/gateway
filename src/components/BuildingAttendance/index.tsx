@@ -14,7 +14,6 @@ function BuildingAttendance() {
     const [date, setDate] = useState<Date>(new Date("2022-11-09T13:20:00Z"));
     const [timeFrom, setTimeFrom] = useState<Date>(new Date("2022-11-09T14:20:00Z"));
     const [timeTo, setTimeTo] = useState<Date>(new Date("2022-11-09T17:16:40Z"));
-    const [gap, setGap] = useState<number>(1);
 
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
@@ -31,8 +30,6 @@ function BuildingAttendance() {
         new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours()+1, timeTo.getMinutes(), timeTo.getSeconds()),
         5
     );
-    console.log(crowdBehavior60Minute)
-    console.log(crowdBehavior1Minute)
 
     const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
 
