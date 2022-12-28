@@ -34,8 +34,8 @@ const CrowdBehaviorPageContent = () => {
 
     const { crowdBehavior, isLoading: isLoadingCrowdBehavior } = useCrowdBehavior(
         selectedBuilding.id,
-        new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), timeFrom.getSeconds()),
-        new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours(), timeTo.getMinutes(), timeTo.getSeconds()),
+        new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours()+1, timeFrom.getMinutes(), timeFrom.getSeconds()),
+        new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours()+1, timeTo.getMinutes(), timeTo.getSeconds()),
         gap
     );
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
@@ -44,7 +44,7 @@ const CrowdBehaviorPageContent = () => {
     useEffect(() => {
         if (!isLoadingMaxDate) {
             if (maxDate) {
-                const fromDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate(), 0, 0, 0);
+                const fromDate = new Date(maxDate.getFullYear(), maxDate.getMonth(), maxDate.getDate(), timeFrom.getHours(), timeFrom.getMinutes(), timeFrom.getSeconds());
                 const toDate = new Date(maxDate);
                 setDate(fromDate);
                 setTimeFrom(fromDate);
