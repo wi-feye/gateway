@@ -14,6 +14,7 @@ import UserTelegram from "../models/user_telegram";
 import ZerynthBuilding from "../models/zerynth_building";
 import {Time} from "@mui/x-date-pickers/internals/components/icons";
 import {DateTime} from "asn1js";
+import PredictedAttendance from "../models/predictedAttendance";
 
 const REST_API_AUTH_USER_URL = "/api/auth/user";
 const REST_API_GET_BUILDINGS_URL = "/api/building/list";
@@ -29,6 +30,7 @@ const REST_API_GET_MAXDATE_URL = "/api/crowdbehavior/maxdate";
 const REST_API_GET_POINTINTEREST_URL = "/api/poi/list";
 const REST_API_GET_ATTENDANCE_URL = "/api/attendance";
 const REST_API_GET_ATTENDANCE_PERHOUR_URL = "/api/attendance/perhour";
+const REST_API_GET_PREDICTED_ATTENDANCE_URL = "/api/predictions/attendance";
 const REST_API_AUTH_LOGIN_URL = "/api/auth/login";
 const REST_API_AUTH_LOGOUT_URL = "/api/auth/logout";
 
@@ -261,6 +263,22 @@ export function useAttendancePerHour(buildingId: number | undefined, from?: Date
     }
 }
 
+export function usePredictedAttendance(buildingId: number | undefined, from?: Date) {
+    const fromTimestamp = from ? from.toISOString():"";
+    const { data, error } = useSWR<PredictedAttendance[]>(
+        buildingId ? `${REST_API_GET_PREDICTED_ATTENDANCE_URL}?buildingId=${buildingId}&from=${fromTimestamp}`:null,
+        fetchJson
+    );
+
+    const isLoading = !error && !data;
+    if (isLoading) console.log("Fetching predicted attendance...");
+    return {
+        predictedAttendance: data,
+        isLoading,
+        isError: error
+    }
+}
+
 export function useCrowdBehavior(buildingId: number | undefined, from: Date, to: Date, minutesGap: number | undefined = 1) {
     const fromTimestamp = from.toISOString();
     const toTimestamp = to.toISOString();
@@ -348,32 +366,6 @@ export function updateArea(buildingId: number, areaId: number, areaName: string,
     })
 }
 
-/*export function useApi<FunArgsType extends any[], ReturnType>(apiFunc: (...args: FunArgsType) => Promise<ReturnType>):
-{ data: ReturnType | undefined, error: string, loading: boolean, request: (...args: FunArgsType) => Promise<void>}
-{
-const [data, setData] = useState<ReturnType>();
-const [error, setError] = useState("");
-const [loading, setLoading] = useState(false);
-
-const request = async (...argsList: FunArgsType) => {
-    setLoading(true);
-    try {
-        const dataResponse = await apiFunc(...argsList);
-        setData(dataResponse);
-    } catch (error) {
-        setError(error instanceof FetchError ? error.data.message:"Unexpected error: "+error);
-    } finally {
-        setLoading(false);
-    }
-};
-
-return {
-    data,
-    error,
-    loading,
-    request
-};
-}*/
 export async function modifySniffer(idSniffer: string,id_building: string, name: string, xPosition: string, yPosition: string) {
     return fetch(REST_API_MODIFY_SNIFFER_URL, {
         method: 'POST',

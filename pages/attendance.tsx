@@ -1,7 +1,6 @@
 import {loginRoute} from "../src/routes";
 import LoadingSplashScreen from "../src/components/LoadingSplashScreen";
 import MainLayout from "../src/layout";
-import Overview from "../src/pages/overview";
 import Head from "next/head";
 import {useUser} from "../src/restapi";
 import useAvailableBuildings from "../src/building/useAvailableBuildings";

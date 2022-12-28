@@ -11,13 +11,14 @@ import {
 
 // project import
 import MainCard from '../../components/MainCard';
-import {useAreas, useAttendance, useAttendancePerHour} from "../../restapi";
+import {useAreas, useAttendance, useAttendancePerHour, usePredictedAttendance} from "../../restapi";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
 import AttendanceBarChart from "../overview/AttendanceBarChart";
 import Area from "../../models/area";
 import Attendance from "../../models/attendance";
 import BuildingAttendance from "../../components/BuildingAttendance";
+import PredictedAttendance from "../../models/predictedAttendance";
 
 function getAreaNameById(areas: Area[], areaId: number): string {
     // R.I.P. EFFICIENZA
@@ -36,7 +37,7 @@ function AreaAttendance({ slot, area, attendancePerHour }: AreaAttendanceProps) 
     useEffect(() => {
         if (!attendancePerHour || !area) return;
 
-        const newAttendanceData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        const newAttendanceData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         attendancePerHour.forEach((att) => {
             if (att.id_area === area.id) {
                 if (new Date(att.from).getUTCHours() < newAttendanceData.length)
@@ -74,7 +75,7 @@ function AreaAttendance({ slot, area, attendancePerHour }: AreaAttendanceProps) 
                     </Stack>
                 </Box>
                 <AttendanceBarChart
-                    data={attendanceData/*[0, 0, 0, 0, 0, 0, 0, 40, 95, 80, 75, 86, 35, 50, 80, 95, 70, 50, 30, 0, 0, 0, 0, 0] /*attendance ? attendance.map(att => att.count):[]*/}
+                    data={attendanceData}
                     height={410}
                     categories={['', '', '03', '', '', '06', '', '', '09', '', '', '12', '', '', '15', '', '', '18', '', '', '21', '', '', '']}
                 />
@@ -90,7 +91,6 @@ const AttendancePage = () => {
     const { attendance, isLoading: isLoadingAttendance } = useAttendance(selectedBuilding.id);
     const { attendancePerHour, isLoading: isLoadingAttendancePerHour } = useAttendancePerHour(selectedBuilding.id);
     const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
-
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
