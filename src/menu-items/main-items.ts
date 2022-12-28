@@ -12,7 +12,14 @@ import {
     FlagOutlined
 } from '@ant-design/icons';
 import { MenuGroupType } from "./index";
-import { overviewRoute, attendanceRoute, crowdBehaviorRoute, areasRoute, devicesRoute, poiRoute } from "../routes";
+import {
+    overviewRoute,
+    attendanceRoute,
+    futureAttendanceRoute,
+    crowdBehaviorRoute,
+    areasRoute,
+    devicesRoute,
+    poiRoute} from "../routes";
 
 // icons
 const icons = {
@@ -25,7 +32,7 @@ const icons = {
     RadarChartOutlined,
     FundOutlined,
     AreaChartOutlined,
-    FlagOutlined
+    FlagOutlined,
 };
 
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
@@ -49,6 +56,14 @@ const pages: MenuGroupType = {
             type: 'item',
             url: attendanceRoute.url,
             icon: icons.AreaChartOutlined,
+            breadcrumbs: false
+        },
+        {
+            id: 'futureAttendance',
+            title: futureAttendanceRoute.title,
+            type: 'item',
+            url: futureAttendanceRoute.url,
+            icon: icons.LineChartOutlined,
             breadcrumbs: false
         },
         {

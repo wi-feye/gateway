@@ -18,6 +18,11 @@ export const attendanceRoute: Route = {
     url: "/attendance"
 }
 
+export const futureAttendanceRoute: Route = {
+    title: "Future Attendance",
+    url: "/futureAttendance"
+}
+
 export const crowdBehaviorRoute: Route = {
     title: "Crowd Behavior",
     url: "/crowdbehavior"
