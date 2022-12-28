@@ -32,8 +32,7 @@ const barChartOptions = {
         axisTicks: {
             show: false
         }
-    },
-
+    }
 };
 
 // ==============================|| MONTHLY BAR CHART ||============================== //
@@ -49,10 +48,10 @@ const AttendanceBarChart = ({ data, height, categories }: AttendanceBarChartProp
     const { secondary } = theme.palette.text;
     const info = theme.palette.info.light;
 
-    const [series, setSeries] = useState([{ data: data }]);
+    const [series, setSeries] = useState([{ name: "Attendance", data: data }]);
 
     useEffect(() => {
-        setSeries([{ data: data }]);
+        setSeries([{ name: "Attendance", data: data }]);
     }, [data]);
 
     const [options, setOptions] = useState(barChartOptions);

@@ -4,7 +4,7 @@ import AreaChart from "../AreaChart";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
-import {useAreas, useCrowdBehavior, useMaxDate} from "../../restapi";
+import {useCrowdBehavior, useMaxDate} from "../../restapi";
 import {LocalizationProvider, MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 
@@ -66,72 +66,66 @@ function BuildingAttendance() {
 
     return (
         <>
-            <Grid container rowSpacing={4.5} columnSpacing={2.75}>
+            <Grid container>
                 {/* row 1 */}
-                <Grid item xs={12} sx={{ mb: -2.25 }}>
-                    <Typography variant="h5">Building&apos;s attendance</Typography>
+                <Grid item xs={12}>
+                    <Grid container alignItems="center" justifyContent="space-between">
+                        <Grid item>
+                            <Typography variant="h5">Building&apos;s attendance</Typography>
+                        </Grid>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <Button
+                                size="small"
+                                onClick={() => setSlot('hours')}
+                                color={slot === 'hours' ? 'primary' : 'secondary'}
+                                variant={slot === 'hours' ? 'outlined' : 'text'}
+                            >
+                                30 Minutes
+                            </Button>
+                            <Button
+                                size="small"
+                                onClick={() => setSlot('minute')}
+                                color={slot === 'minute' ? 'primary' : 'secondary'}
+                                variant={slot === 'minute' ? 'outlined' : 'text'}
+                            >
+                                5 Minutes
+                            </Button>
+                        </Stack>
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} md={2}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <MobileDatePicker
-                            label="Date"
-                            inputFormat="dd/MM/yyyy"
-                            value={date}
-                            onChange={handleChangeDate}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </LocalizationProvider>
-                </Grid>
-                <Grid item xs={12} md={2}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <MobileTimePicker
-                            label="Time From"
-                            value={timeFrom}
-                            onChange={handleChangeTimeFrom}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </LocalizationProvider>
-                </Grid>
-                <Grid item xs={12} md={2}>
-                    <LocalizationProvider dateAdapter={AdapterDateFns}>
-                        <MobileTimePicker
-                            label="Time To"
-                            value={timeTo}
-                            onChange={handleChangeTimeTo}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </LocalizationProvider>
-                </Grid>
-                <Grid item>
-                    <Stack direction="row" alignItems="center" spacing={0}>
-                        <Button
-                            size="small"
-                            onClick={() => setSlot('hours')}
-                            color={slot === 'hours' ? 'primary' : 'secondary'}
-                            variant={slot === 'hours' ? 'outlined' : 'text'}
-                        >
-                            30 Minute
-                        </Button>
-                        <Button
-                            size="small"
-                            onClick={() => setSlot('minute')}
-                            color={slot === 'minute' ? 'primary' : 'secondary'}
-                            variant={slot === 'minute' ? 'outlined' : 'text'}
-                        >
-                            5 Minute
-                        </Button>
+                <Grid item xs={12} mt={2}>
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <MobileDatePicker
+                                label="Date"
+                                inputFormat="dd/MM/yyyy"
+                                value={date}
+                                onChange={handleChangeDate}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </LocalizationProvider>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <MobileTimePicker
+                                label="From"
+                                value={timeFrom}
+                                onChange={handleChangeTimeFrom}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </LocalizationProvider>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                            <MobileTimePicker
+                                label="To"
+                                value={timeTo}
+                                onChange={handleChangeTimeTo}
+                                renderInput={(params) => <TextField {...params} />}
+                            />
+                        </LocalizationProvider>
                     </Stack>
                 </Grid>
             </Grid>
             <MainCard content={false} sx={{ mt: 1.5 }}>
                 <Box sx={{ pt: 1, pr: 2 }}>
-                    <AreaChart
-                        data1={crowdBehavior60Minute ?? []}
-                        data2={crowdBehavior1Minute ?? []}
-                        isHours={slot== 'hours'}
-                        isLoading1={isLoading1}
-                        isLoading2={isLoading2}
-                    />
+                    <AreaChart crowdBehavior={slot === 'hours' ? crowdBehavior60Minute:crowdBehavior1Minute}/>
                 </Box>
             </MainCard>
         </>

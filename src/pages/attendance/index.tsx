@@ -18,7 +18,6 @@ import AttendanceBarChart from "../overview/AttendanceBarChart";
 import Area from "../../models/area";
 import Attendance from "../../models/attendance";
 import BuildingAttendance from "../../components/BuildingAttendance";
-import PredictedAttendance from "../../models/predictedAttendance";
 
 function getAreaNameById(areas: Area[], areaId: number): string {
     // R.I.P. EFFICIENZA
@@ -27,11 +26,10 @@ function getAreaNameById(areas: Area[], areaId: number): string {
 }
 
 type AreaAttendanceProps = {
-    slot: string,
     area: Area,
     attendancePerHour: Attendance[] | undefined
 }
-function AreaAttendance({ slot, area, attendancePerHour }: AreaAttendanceProps) {
+function AreaAttendance({ area, attendancePerHour }: AreaAttendanceProps) {
     const [ attendanceData, setAttendanceData ] = useState([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
 
     useEffect(() => {
@@ -55,13 +53,8 @@ function AreaAttendance({ slot, area, attendancePerHour }: AreaAttendanceProps) 
                 </Grid>
                 <Grid item>
                     <Stack direction="row" alignItems="center" spacing={0}>
-                        <Button
-                            size="small"
-                            /*onClick={() => setSlot('week')}*/
-                            color={slot === 'week' ? 'primary' : 'secondary'}
-                            variant={slot === 'week' ? 'outlined' : 'text'}
-                        >
-                            Today
+                        <Button size="small" color='secondary' variant='text'>
+
                         </Button>
                     </Stack>
                 </Grid>
@@ -76,7 +69,7 @@ function AreaAttendance({ slot, area, attendancePerHour }: AreaAttendanceProps) 
                 </Box>
                 <AttendanceBarChart
                     data={attendanceData}
-                    height={410}
+                    height={470}
                     categories={['', '', '03', '', '', '06', '', '', '09', '', '', '12', '', '', '15', '', '', '18', '', '', '21', '', '', '']}
                 />
             </MainCard>
@@ -117,14 +110,21 @@ const AttendancePage = () => {
                     { /* [0, 0, 0, 0, 0, 0, 0, 40, 95, 80, 75, 86, 35, 50, 80, 95, 70, 50, 30, 0, 0, 0, 0, 0] */ }
                     <AttendanceBarChart
                         data={ attendance ? attendance.map(att => att.count):[] }
-                        height={410}
+                        height={470}
                         categories={ attendance && areas ? attendance.map(att => getAreaNameById(areas, att.id_area) ):[] }
                     />
                 </MainCard>
             </Grid>
 
             {/* row 2 */}
-            { areas?.map(area => <AreaAttendance key={""} slot={"month"} area={area} attendancePerHour={attendancePerHour}/>) }
+            { areas?.map((area, idx) =>
+                <AreaAttendance
+                    key={idx}
+                    area={area}
+                    attendancePerHour={attendancePerHour}
+                />
+                )
+            }
         </Grid>
     );
 };

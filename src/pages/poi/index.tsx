@@ -1,6 +1,6 @@
 // material-ui
 import {
-    Grid, TextField, Typography,
+    Grid, Stack, TextField, Typography,
 } from '@mui/material';
 
 // project import
@@ -66,46 +66,41 @@ const PoiPageContent = () => {
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
-            <Grid item xs={12} sx={{mb: -2.25}}>
+            <Grid item xs={12}>
                 <Typography variant="h5">Points of Interest</Typography>
             </Grid>
             {/* row 1 */}
-            <Grid item xs={12} sx={{ mb: -2.25 }}>
-                <Typography variant="h6">Select date for point of interest:</Typography>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <MobileDatePicker
-                        label="Date"
-                        inputFormat="dd/MM/yyyy"
-                        value={date}
-                        onChange={handleChangeDate}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
-                </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <MobileTimePicker
-                        label="Time From"
-                        value={timeFrom}
-                        onChange={handleChangeTimeFrom}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
-                </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <MobileTimePicker
-                        label="Time To"
-                        value={timeTo}
-                        onChange={handleChangeTimeTo}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
-                </LocalizationProvider>
+            <Grid item xs={12}>
+                <Stack direction="row" alignItems="center" spacing={2}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileDatePicker
+                            label="Date"
+                            inputFormat="dd/MM/yyyy"
+                            value={date}
+                            onChange={handleChangeDate}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileTimePicker
+                            label="From"
+                            value={timeFrom}
+                            onChange={handleChangeTimeFrom}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileTimePicker
+                            label="To"
+                            value={timeTo}
+                            onChange={handleChangeTimeTo}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                </Stack>
             </Grid>
             <Grid item xs={12}>
-                <MainCard sx={{ mt: 2 }} content={false}>
+                <MainCard content={false}>
                     <Map
                         height={420}
                         areas={areas || []}

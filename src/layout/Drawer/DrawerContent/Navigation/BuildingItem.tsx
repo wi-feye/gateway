@@ -7,7 +7,7 @@ import {
     ListItemIcon,
     ListItemText,
     Menu,
-    MenuItem, TextField,
+    MenuItem, Stack, TextField,
     Typography,
 } from '@mui/material';
 
@@ -180,65 +180,70 @@ const BuildingItem = () => {
                 </Menu>
             </div>
             <Dialog open={openDialog} onClose={handleCloseDialog}>
-                <DialogTitle>Create Building</DialogTitle>
+                <DialogTitle>Add a new building</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Enter the values:
+                        Enter the values
                     </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Name"
-                        type="text"
-                        variant="outlined"
-                        sx={{width: 300}}
-                        onChange={handleNameBuilding}/>
-                    <Autocomplete
-                        id="controllable-states-demo"
-                        value={idZDevice}
-                        onChange={(event: any, newValue: string | null, reason) => {
-                            if (newValue) setIdZDevice(newValue);
-                        }}
-                        onInputChange={(event, newInputValue: string, reason) => {
-                            const filtered = zerynthBuildings?.filter(zd => zd.name.includes(newInputValue));
-                            if (filtered?.length == 1) {
-                                setIdZDevice(filtered[0].id);
-                            }
-                        }}
-                        getOptionLabel={option => zerynthBuildings?.find(zd => zd.id == option) ? `${zerynthBuildings?.find(zd => zd.id == option)?.name} [${option}]` : ''}
-                        options={zerynthBuildings?.map(zd => zd.id) || []}
-                        sx={{width: 300}}
-                        renderInput={(params) => <TextField {...params} label="ID ZERYNTH"/>}
-                    />
-                    <TextField
-                        id="time"
-                        label="Open Time"
-                        type="time"
-                        defaultValue="07:30"
-                        onChange={handleOpenTime}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        inputProps={{
-                            step: 300, // 5 min
-                        }}
-                        sx={{ width: 150 }}
-                    />
-                    <TextField
-                        id="time"
-                        label="Close Time"
-                        type="time"
-                        defaultValue="18:30"
-                        onChange={handleCloseTime}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        inputProps={{
-                            step: 300, // 5 min
-                        }}
-                        sx={{ width: 150 }}
-                    />
+                    <Stack direction="column" alignItems="center" spacing={2}>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Building name"
+                            type="text"
+                            variant="outlined"
+                            sx={{width: 300}}
+                            onChange={handleNameBuilding}
+                        />
+                        <Autocomplete
+                            id="controllable-states-demo"
+                            value={idZDevice}
+                            onChange={(event: any, newValue: string | null, reason) => {
+                                if (newValue) setIdZDevice(newValue);
+                            }}
+                            onInputChange={(event, newInputValue: string, reason) => {
+                                const filtered = zerynthBuildings?.filter(zd => zd.name.includes(newInputValue));
+                                if (filtered?.length == 1) {
+                                    setIdZDevice(filtered[0].id);
+                                }
+                            }}
+                            getOptionLabel={option => zerynthBuildings?.find(zd => zd.id == option) ? `${zerynthBuildings?.find(zd => zd.id == option)?.name} [${option}]` : ''}
+                            options={zerynthBuildings?.map(zd => zd.id) || []}
+                            sx={{width: 300}}
+                            renderInput={(params) => <TextField {...params} label="Zerynth ID"/>}
+                        />
+                        <Stack direction="row" alignItems="center" spacing={2}>
+                            <TextField
+                                id="time"
+                                label="Opening hour"
+                                type="time"
+                                defaultValue="07:30"
+                                onChange={handleOpenTime}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                inputProps={{
+                                    step: 300, // 5 min
+                                }}
+                                sx={{ width: 142 }}
+                            />
+                            <TextField
+                                id="time"
+                                label="Closing hour"
+                                type="time"
+                                defaultValue="18:30"
+                                onChange={handleCloseTime}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                inputProps={{
+                                    step: 300, // 5 min
+                                }}
+                                sx={{ width: 142 }}
+                            />
+                        </Stack>
+                    </Stack>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseDialog}>Cancel</Button>

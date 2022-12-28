@@ -34,7 +34,7 @@ export const areasRoute: Route = {
 }
 
 export const poiRoute: Route = {
-    title: "Points of interest",
+    title: "Points of Interest",
     url: "/pointsofinterest"
 }
 

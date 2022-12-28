@@ -14,6 +14,7 @@ function poi(buildingId: string, fromDate?: string, toDate?: string, k?: string)
 function predictions(buildingId: string, fromDate: Date): Promise<PredictedAttendance[]> {
     const nextHour = new Date(fromDate);
     nextHour.setTime(nextHour.getTime()+60*60*1000); // add one hour
+    nextHour.setTime(nextHour.getTime()+60*60*1000); // add one hour
     console.log(nextHour)
     return fetchJson<{}>(`${AI_GET_PREDICTIONS_URL}/${buildingId}?date=${nextHour.toISOString()}`)
         .then(res => {

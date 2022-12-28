@@ -103,7 +103,6 @@ const Overview = () => {
                     <Grid item>
                         <Typography variant="h5">Attendance</Typography>
                     </Grid>
-                    <Grid item />
                 </Grid>
                 <MainCard sx={{ mt: 2 }} content={false}>
                     <Box sx={{ p: 3, pb: 0 }}>
@@ -117,7 +116,7 @@ const Overview = () => {
                     { /* [0, 0, 0, 0, 0, 0, 0, 40, 95, 80, 75, 86, 35, 50, 80, 95, 70, 50, 30, 0, 0, 0, 0, 0] */ }
                     <AttendanceBarChart
                         data={ attendance ? attendance.map(att => att.count):[] }
-                        height={410}
+                        height={470}
                         categories={ attendance && areas ? attendance.map(att => getAreaNameById(areas, att.id_area) ):[] }
                     />
                 </MainCard>
@@ -125,8 +124,9 @@ const Overview = () => {
 
             {/* row 3 */}
             <Grid item xs={12} md={7} lg={8}>
+                <Typography variant="h5">Sniffers</Typography>
                 <MainCard sx={{ mt: 2 }} content={false}>
-                    <DevicesTableComponent devices={devices} loading={isLoading} selectedBuildingId={selectedBuilding.id}/>
+                    <DevicesTableComponent devices={devices} loading={isLoading} selectedBuildingId={selectedBuilding.id} editable={false}/>
                 </MainCard>
             </Grid>
             <Grid item xs={12} md={5} lg={4}>

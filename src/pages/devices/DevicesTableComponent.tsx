@@ -62,7 +62,7 @@ function DevicesTableHead() {
 
 // ==============================|| TABLE ||============================== //
 
-function BuildDeviceRow(key: number, device: Device, handleClickOpen:any, handleEliminaSniffer:any) {
+function BuildDeviceRow(key: number, device: Device, handleClickOpen:any, handleEliminaSniffer:any, editable: boolean) {
     return (
         <>
             <TableRow hover role="checkbox" tabIndex={-1} key={key}>
@@ -72,9 +72,10 @@ function BuildDeviceRow(key: number, device: Device, handleClickOpen:any, handle
                     {device.status}
                 </Alert></TableCell>
                 <TableCell align="center">{device.lastRequest}</TableCell>
-                <TableCell align="center"><Button variant="contained" onClick={()=>handleClickOpen(device)}>Modify</Button> {" "}
+                {editable && <TableCell align="center"><Button variant="contained" onClick={()=>handleClickOpen(device)}>Modify</Button> {" "}
                     <Button variant="contained" color="error" onClick={() => handleEliminaSniffer(device)}>Delete</Button>
                 </TableCell>
+                }
             </TableRow>
 
         </>
@@ -83,11 +84,12 @@ function BuildDeviceRow(key: number, device: Device, handleClickOpen:any, handle
 
 export type DevicesTableComponentType = {
     devices: Device[] | undefined,
+    editable: boolean,
     loading: boolean,
     selectedBuildingId: number
     mutate?: any
 }
-export default function DevicesTableComponent({devices, loading, selectedBuildingId, mutate}: DevicesTableComponentType) {
+export default function DevicesTableComponent({ devices, loading, selectedBuildingId, mutate, editable }: DevicesTableComponentType) {
 
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
@@ -169,7 +171,7 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
                                     <LinearProgress/>
                                 </TableCell>
                             ) : (devices && devices.length > 0 ? devices.map((device, idx) => {
-                                    return BuildDeviceRow(idx, device, handleClickOpen, handleClickOpenDelete);
+                                    return BuildDeviceRow(idx, device, handleClickOpen, handleClickOpenDelete, editable);
                                 })
                                 : <TableCell align="center" colSpan={headCells.length}></TableCell>
                             )
@@ -177,63 +179,66 @@ export default function DevicesTableComponent({devices, loading, selectedBuildin
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Modify Sniffer</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Enter the values you want to change:
-                    </DialogContentText>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Name"
-                        type="text"
-                        variant="outlined"
-                        onChange={handleNameSniffer}/>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Position X"
-                        type="text"
-                        variant="outlined"
-                        onChange={handlexPosition}/>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
-                        label="Position Y"
-                        type="text"
-                        variant="outlined"
-                        onChange={handleyPosition}/>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleConfirm}>Confirm</Button>
-                </DialogActions>
-            </Dialog>
-            <Dialog
-                open={openDelete}
-                onClose={handleCloseDelete}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    {"Are you sure you want to continue?"}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        By clicking on continue you will eliminate the sniffer.
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseDelete}>Cancel</Button>
-                    <Button onClick={handleEliminaSniffer} autoFocus>
-                        Continue
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            { editable && <>
+                <Dialog open={open} onClose={handleClose}>
+                    <DialogTitle>Modify Sniffer</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Enter the values you want to change:
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Name"
+                            type="text"
+                            variant="outlined"
+                            onChange={handleNameSniffer}/>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Position X"
+                            type="text"
+                            variant="outlined"
+                            onChange={handlexPosition}/>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            label="Position Y"
+                            type="text"
+                            variant="outlined"
+                            onChange={handleyPosition}/>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={handleConfirm}>Confirm</Button>
+                    </DialogActions>
+                </Dialog>
+                <Dialog
+                    open={openDelete}
+                    onClose={handleCloseDelete}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Are you sure you want to continue?"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            By clicking on continue you will eliminate the sniffer.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseDelete}>Cancel</Button>
+                        <Button onClick={handleEliminaSniffer} autoFocus>
+                            Continue
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            </>
+            }
         </Box>
     );
 }

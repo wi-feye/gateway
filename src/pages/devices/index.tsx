@@ -73,7 +73,13 @@ const Devices = () => {
             </Grid>
             <Grid item xs={12}>
                 <MainCard content={false}>
-                    <DevicesTableComponent devices={devices} loading={isLoading} selectedBuildingId={selectedBuilding.id} mutate={mutate}/>
+                    <DevicesTableComponent
+                        devices={devices}
+                        loading={isLoading}
+                        selectedBuildingId={selectedBuilding.id}
+                        mutate={mutate}
+                        editable
+                    />
                 </MainCard>
             </Grid>
             <Grid item xs={12}>

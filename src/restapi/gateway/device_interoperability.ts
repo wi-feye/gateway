@@ -1,7 +1,3 @@
-import PointOfInterest from "../../models/pointOfInterest";
-import {fetchJson} from "../index";
-import PredictedAttendance from "../../models/predictedAttendance";
-
 const ENDPOINT = process.env.DEVICE_INTEROPERABILITY_SERVER_HOST ? process.env.DEVICE_INTEROPERABILITY_SERVER_HOST:"http://localhost:10007";
 
 const DEVICE_INTEROPERABILITY_PUBLISH_URL = ENDPOINT + "/api/publish";

@@ -24,83 +24,53 @@ const areaChartOptions = {
 };
 
 // ==============================|| INCOME AREA CHART ||============================== //
-type IncomeAreaChartType = {
-    data1: CrowdBehavior[],
-    data2: CrowdBehavior[],
-    isHours: boolean,
-    isLoading1: boolean,
-    isLoading2: boolean,
+type AreaChartProps = {
+    crowdBehavior?: CrowdBehavior[]
 };
 
-const AreaChart = ({ data1,data2, isHours, isLoading1, isLoading2 }: IncomeAreaChartType) => {
+const AreaChart = ({ crowdBehavior }: AreaChartProps) => {
     const theme = useTheme();
 
     const { primary, secondary } = theme.palette.text;
     const line = theme.palette.divider;
 
     const [options, setOptions] = useState(areaChartOptions);
-
-    const categories1: any[] = [];
-    const cardinality1: any[] = [];
-
-    const categories2: any[] = [];
-    const cardinality2: any[] = [];
-
-
-    data1?.forEach(d=>{
-        const date = new Date(d.from)
-        categories1.push((date.getHours()).toString()+':'+ (date.getMinutes() == 0 ? '00': date.getMinutes()))
-        cardinality1.push(d.data.length)
-    })
-    data2?.forEach(d=>{
-        const date = new Date(d.from)
-        categories2.push((date.getHours()).toString()+':'+ (date.getMinutes() == 0 ? '00': date.getMinutes()))
-        cardinality2.push(d.data.length)
-    })
+    const [series, setSeries] = useState<{ name: string, data: number[] }[]>([{ name: "Attendance", data:[] }]);
 
     // @ts-ignore
     const darkerPrimary = theme.palette.primary[700]
     useEffect(() => {
+        const colors: string[] = [];
+        const categories: string[] = [];
+        const cardinality: number[] = [];
+        if (crowdBehavior) {
+            crowdBehavior.forEach(d => {
+                const date = new Date(d.from)
+                categories.push((date.getHours()).toString() + ':' + (date.getMinutes() <= 9 ? '0' + date.getMinutes() : date.getMinutes()))
+                cardinality.push(d.data.length)
+                colors.push(secondary)
+            });
+            setSeries([{ name: "Attendance", data: cardinality }])
+        }
 
         // @ts-ignore
         setOptions((prevState) => ({
             ...prevState,
             colors: [theme.palette.primary.main, darkerPrimary],
             xaxis: {
-                categories: isHours ? categories1:categories2,
+                categories: categories,
                 labels: {
                     style: {
-                        colors: [
-                            secondary,
-                            secondary,
-                            secondary,
-                            secondary,
-                            secondary,
-                            secondary,
-                            secondary,
-                            secondary,
-                            secondary,
-                            secondary,
-                            secondary,
-                            secondary
-                        ]
+                        colors: colors
                     }
                 },
             },
 
         }));
-    }, [primary, secondary, line, theme, isHours, isLoading1, isLoading2]);
-
-    function formatSeries(data: any) {
-        return [
-            {
-                data
-            }
-        ]
-    }
+    }, [primary, secondary, line, theme, crowdBehavior]);
 
     // @ts-ignore
-    return <ReactApexChart options={options} series={formatSeries(isHours ? cardinality1 : cardinality2)} type="area" height={450} />;
+    return <ReactApexChart options={options} series={series} type="area" height={450} />;
 };
 
 export default AreaChart;

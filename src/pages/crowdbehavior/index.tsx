@@ -6,7 +6,7 @@ import CrowdBehavior from "../../models/crowdbehavior";
 // material-ui
 import {
     Grid,
-    Slider,
+    Slider, Stack,
     TextField,
     Typography,
 } from '@mui/material';
@@ -16,6 +16,7 @@ import { LocalizationProvider, MobileDatePicker, MobileTimePicker } from "@mui/x
 import CrowdsGridContainer from "../../components/CrowdsGridContainer";
 import {useAreas, useCrowdBehavior, useMaxDate} from "../../restapi";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import * as React from "react";
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
@@ -107,42 +108,38 @@ const CrowdBehaviorPageContent = () => {
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>
             {/* row 1 */}
-            <Grid item xs={12} sx={{ mb: -2.25 }}>
+            <Grid item xs={12}>
                 <Typography variant="h5">Crowd Behavior</Typography>
             </Grid>
-            <Grid item xs={12} md={2}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <MobileDatePicker
-                        label="Date"
-                        inputFormat="dd/MM/yyyy"
-                        value={date}
-                        onChange={handleChangeDate}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
-                </LocalizationProvider>
+            <Grid item xs={12} md={8} >
+                <Stack direction="row" alignItems="center" spacing={2}>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileDatePicker
+                            label="Date"
+                            inputFormat="dd/MM/yyyy"
+                            value={date}
+                            onChange={handleChangeDate}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileTimePicker
+                            label="Time From"
+                            value={timeFrom}
+                            onChange={handleChangeTimeFrom}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                        <MobileTimePicker
+                            label="Time To"
+                            value={timeTo}
+                            onChange={handleChangeTimeTo}
+                            renderInput={(params) => <TextField {...params} />}
+                        />
+                    </LocalizationProvider>
+                </Stack>
             </Grid>
-            <Grid item xs={12} md={2}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <MobileTimePicker
-                        label="Time From"
-                        value={timeFrom}
-                        onChange={handleChangeTimeFrom}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
-                </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} md={2}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                    <MobileTimePicker
-                        label="Time To"
-                        value={timeTo}
-                        onChange={handleChangeTimeTo}
-                        renderInput={(params) => <TextField {...params} />}
-                    />
-                </LocalizationProvider>
-            </Grid>
-
-            <Grid item md={2}></Grid>
             {/* <Grid item xs={12} lg={6}>
                 <Typography id="non-linear-slider">
                     Gap: {gap} minutes
@@ -158,7 +155,7 @@ const CrowdBehaviorPageContent = () => {
                     max={30}
                 />
             </Grid> */}
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4} >
                 <Typography id="non-linear-slider">
                     Speed: {calculateMarksValue(index)}X
                 </Typography>
@@ -173,7 +170,7 @@ const CrowdBehaviorPageContent = () => {
             </Grid>
 
             {/* row 2 */}
-            <Grid item xs={12} sx={{ mt: -4.5 }}>
+            <Grid item xs={12} sx={{ mt: -3.5 }}>
                 <CrowdsGridContainer
                     title=""
                     crowdBehavior={crowdBehavior ? crowdBehavior : []}
