@@ -123,7 +123,7 @@ const BuildingItem = () => {
                     <ListItemText
                         primary={
                             <Typography variant="h6" sx={{color: textColor}}>
-                                {selectedBuilding.name}
+                                {selectedBuilding?.name}
                             </Typography>
                         }
                     />

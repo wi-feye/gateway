@@ -22,19 +22,19 @@ const Map = dynamic(() => import('../../../src/components/Map'), {
 const AreasPageContent = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
-    const { devices, isLoading } = useDevices(selectedBuilding.id);
-    const { areas, isLoading: areasIsLoading, mutate: mutateAreas } = useAreas(selectedBuilding.id);
+    const { devices, isLoading } = useDevices(selectedBuilding?.id);
+    const { areas, isLoading: areasIsLoading, mutate: mutateAreas } = useAreas(selectedBuilding?.id);
 
     const onCreateAreas = async (points: number[][][]) => {
         console.log("Created " + points.length + " areas");
-        const promises = points.map(location => createArea(selectedBuilding.id, location));
+        const promises = points.map(location => createArea(selectedBuilding?.id, location));
         await Promise.all(promises)
         mutateAreas();
     }
 
     const onDeleteAreas = async (areas: Area[]) => {
         console.log("Deleted "+areas.length+" areas");
-        const promises = areas.map(area => deleteArea(selectedBuilding.id, area));
+        const promises = areas.map(area => deleteArea(selectedBuilding?.id, area));
         await Promise.all(promises)
         mutateAreas();
     }
@@ -42,7 +42,7 @@ const AreasPageContent = () => {
     const onEditAreas = async (editedAreas: EditedArea[]) => {
         console.log("Edited "+editedAreas.length+" areas");
         const promises = editedAreas.map(editedArea => updateArea(
-            selectedBuilding.id, editedArea.area.id,
+            selectedBuilding?.id, editedArea.area.id,
             editedArea.area.name, editedArea.area.description,
             editedArea.newLocation)
         );

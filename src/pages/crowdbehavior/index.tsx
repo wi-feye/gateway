@@ -34,13 +34,13 @@ const CrowdBehaviorPageContent = () => {
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
     const { crowdBehavior, isLoading: isLoadingCrowdBehavior } = useCrowdBehavior(
-        selectedBuilding.id,
+        selectedBuilding?.id,
         new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours()+1, timeFrom.getMinutes(), timeFrom.getSeconds()),
         new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours()+1, timeTo.getMinutes(), timeTo.getSeconds()),
         gap
     );
-    const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
-    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
+    const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding?.id);
+    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding?.id);
 
     useEffect(() => {
         if (!isLoadingMaxDate) {

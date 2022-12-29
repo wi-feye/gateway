@@ -27,13 +27,13 @@ const PoiPageContent = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
-    const { areas, isLoading: areasIsLoading } = useAreas(selectedBuilding.id);
-    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
+    const { areas, isLoading: areasIsLoading } = useAreas(selectedBuilding?.id);
+    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding?.id);
 
     const [date, setDate] = useState<Date>(new Date("2022-11-09T13:20:00Z"));
     const [timeFrom, setTimeFrom] = useState<Date>(new Date("2022-11-09T13:20:00Z"));
     const [timeTo, setTimeTo] = useState<Date>(new Date("2022-11-09T17:16:40Z"));
-    const { pointOfInterest } = usePointOfInterest(selectedBuilding.id, timeFrom, timeTo, 5);
+    const { pointOfInterest } = usePointOfInterest(selectedBuilding?.id, timeFrom, timeTo, 5);
 
     useEffect(() => {
         if (!isLoadingMaxDate) {

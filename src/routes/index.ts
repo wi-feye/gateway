@@ -8,6 +8,11 @@ export const loginRoute: Route = {
     url: "/login"
 }
 
+export const signInRoute: Route = {
+    title: "Sign In",
+    url: "/register"
+}
+
 export const overviewRoute: Route = {
     title: "Overview",
     url: "/overview"

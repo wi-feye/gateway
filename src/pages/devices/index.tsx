@@ -25,8 +25,8 @@ const Map = dynamic(() => import('../../../src/components/Map'), {
 const Devices = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
-    const { devices, isLoading,mutate } = useDevices(selectedBuilding.id);
-    const { zerynthDevices } = useZerynthDevices(selectedBuilding.id);
+    const { devices, isLoading,mutate } = useDevices(selectedBuilding?.id);
+    const { zerynthDevices } = useZerynthDevices(selectedBuilding?.id);
     const [open, setOpen] = useState(false);
     const [nameSniffer, setNameSniffer] = useState('');
     const [xPosition, setxPosition] = useState('');
@@ -43,7 +43,7 @@ const Devices = () => {
     const handleConfirm = async () => {
         if(idZDevice) {
             setOpen(false);
-            await createSniffer(selectedBuilding.id.toString(),idZDevice, nameSniffer, xPosition.toString(), yPosition.toString())
+            await createSniffer(selectedBuilding?.id.toString(),idZDevice, nameSniffer, xPosition.toString(), yPosition.toString())
             mutate();
         }
     };
@@ -76,7 +76,7 @@ const Devices = () => {
                     <DevicesTableComponent
                         devices={devices}
                         loading={isLoading}
-                        selectedBuildingId={selectedBuilding.id}
+                        selectedBuildingId={selectedBuilding?.id}
                         mutate={mutate}
                         editable
                     />

@@ -81,9 +81,9 @@ function AreaAttendance({ area, attendancePerHour }: AreaAttendanceProps) {
 const AttendancePage = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
-    const { attendance, isLoading: isLoadingAttendance } = useAttendance(selectedBuilding.id);
-    const { attendancePerHour, isLoading: isLoadingAttendancePerHour } = useAttendancePerHour(selectedBuilding.id);
-    const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
+    const { attendance, isLoading: isLoadingAttendance } = useAttendance(selectedBuilding?.id);
+    const { attendancePerHour, isLoading: isLoadingAttendancePerHour } = useAttendancePerHour(selectedBuilding?.id);
+    const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding?.id);
 
     return (
         <Grid container rowSpacing={4.5} columnSpacing={2.75}>

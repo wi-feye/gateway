@@ -90,9 +90,9 @@ const Settings = () => {
 
     const [openModify, setopenModify] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
-    const [nameBuilding, setnameBuilding] = useState(selectedBuilding.name);
-    const [openTime, setopenTime] = useState(selectedBuilding.open_time);
-    const [closeTime, setcloseTime] = useState(selectedBuilding.close_time);
+    const [nameBuilding, setnameBuilding] = useState(selectedBuilding?.name);
+    const [openTime, setopenTime] = useState(selectedBuilding?.open_time);
+    const [closeTime, setcloseTime] = useState(selectedBuilding?.close_time);
     const handleClickOpenModify = () => {
         setopenModify(true);
     };
@@ -109,7 +109,7 @@ const Settings = () => {
 
     const handleConfirm = async () => {
         if(selectedBuilding && selectedBuilding.id_zerynth && openTime && closeTime) {
-            await modifyBuilding(selectedBuilding.id.toString(), nameBuilding, selectedBuilding.id_zerynth, openTime, closeTime)
+            await modifyBuilding(selectedBuilding?.id.toString(), nameBuilding, selectedBuilding?.id_zerynth, openTime, closeTime)
             // if (mutate) mutate();
             setopenModify(false);
             window.location.reload();
@@ -127,7 +127,7 @@ const Settings = () => {
 
     const handleEliminaBuilding = async () => {
         if(selectedBuilding) {
-            await deleteBuilding(selectedBuilding.id.toString());
+            await deleteBuilding(selectedBuilding?.id.toString());
             window.location.reload();
 
             // if (mutate) mutate();
@@ -180,13 +180,14 @@ const Settings = () => {
                 <Grid item xs={12} sx={{mb: -2.25}}>
                     <Typography variant="h5">Settings building</Typography>
                 </Grid>
-                <Grid item xs={12}>
+                {selectedBuilding ? <Grid item xs={12}>
                     <MainCard sx={{mt: 2}}>
-                        <Button variant="contained" color="info" onClick={handleClickOpenModify} sx={{margin: 3}}>Modify</Button>
+                        <Button variant="contained" color="info" onClick={handleClickOpenModify}
+                                sx={{margin: 3}}>Modify</Button>
 
                         <Button variant="contained" color="error" onClick={handleClickOpenDelete}>Delete</Button>
                     </MainCard>
-                </Grid>
+                </Grid> : ''}
             </Grid>
 
             <Dialog open={openGenTmpCodeDialog} onClose={handleClose}>

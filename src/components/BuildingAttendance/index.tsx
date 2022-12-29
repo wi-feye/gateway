@@ -19,19 +19,19 @@ function BuildingAttendance() {
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
     const { crowdBehavior: crowdBehavior60Minute, isLoading:isLoading1} = useCrowdBehavior(
-        selectedBuilding.id,
+        selectedBuilding?.id,
         new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours()+1, timeFrom.getMinutes(), timeFrom.getSeconds()),
         new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours()+1, timeTo.getMinutes(), timeTo.getSeconds()),
         30
     );
     const { crowdBehavior: crowdBehavior1Minute, isLoading:isLoading2 } = useCrowdBehavior(
-        selectedBuilding.id,
+        selectedBuilding?.id,
         new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeFrom.getHours()+1, timeFrom.getMinutes(), timeFrom.getSeconds()),
         new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeTo.getHours()+1, timeTo.getMinutes(), timeTo.getSeconds()),
         5
     );
 
-    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
+    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding?.id);
 
     useEffect(() => {
         if (!isLoadingMaxDate) {

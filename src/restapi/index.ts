@@ -32,6 +32,7 @@ const REST_API_GET_ATTENDANCE_URL = "/api/attendance";
 const REST_API_GET_ATTENDANCE_PERHOUR_URL = "/api/attendance/perhour";
 const REST_API_GET_PREDICTED_ATTENDANCE_URL = "/api/predictions/attendance";
 const REST_API_AUTH_LOGIN_URL = "/api/auth/login";
+const REST_API_AUTH_SIGNIN_URL = "/api/auth/register";
 const REST_API_AUTH_LOGOUT_URL = "/api/auth/logout";
 
 const REST_API_MODIFY_SNIFFER_URL = "/api/device/modify";
@@ -106,6 +107,21 @@ export async function authLogin(email: string, password: string): Promise<User> 
         password
     }
     return fetchJson(REST_API_AUTH_LOGIN_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+    });
+}
+
+export async function authRegister(email: string, password: string, name: string, surname: string, apikey_zerynth: string): Promise<User> {
+    const body = {
+        email,
+        password,
+        name,
+        surname,
+        apikey_zerynth,
+    }
+    return fetchJson(REST_API_AUTH_SIGNIN_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

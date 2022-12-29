@@ -30,9 +30,9 @@ function getPredictionByAreaId(predictions: PredictedAttendance[], areaId: numbe
 const FutureAttendancePage = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
-    const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding.id);
-    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
-    const { predictedAttendance, isLoading: isLoadingPredictedAttendance } = usePredictedAttendance(selectedBuilding.id, maxDate);
+    const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding?.id);
+    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding?.id);
+    const { predictedAttendance, isLoading: isLoadingPredictedAttendance } = usePredictedAttendance(selectedBuilding?.id, maxDate);
 
     const [buildingAttendance, setBuildingAttendance] = useState<PredictedAttendance>();
     const [categories, setCategories] = useState<string[]>();
