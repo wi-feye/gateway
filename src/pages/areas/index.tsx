@@ -1,6 +1,6 @@
 // material-ui
 import {
-    Grid, TextField, Typography,
+    Grid
 } from '@mui/material';
 
 // project import
@@ -10,9 +10,6 @@ import {useAreas, useDevices, useMaxDate, createArea, deleteArea, updateArea} fr
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
 import dynamic from "next/dynamic";
-import {LocalizationProvider, MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
-import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
-import {useEffect, useState} from "react";
 import Area from "../../models/area";
 import {EditedArea} from "../../components/Map";
 
@@ -27,7 +24,6 @@ const AreasPageContent = () => {
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
     const { devices, isLoading } = useDevices(selectedBuilding.id);
     const { areas, isLoading: areasIsLoading, mutate: mutateAreas } = useAreas(selectedBuilding.id);
-    const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding.id);
 
     const onCreateAreas = async (points: number[][][]) => {
         console.log("Created " + points.length + " areas");
@@ -54,13 +50,8 @@ const AreasPageContent = () => {
         mutateAreas();
     }
 
-    const onCreateDevices = (points: number[][]) => {
-
-
-    }
-
-    const onEditDevices = (points: number[][]) => {
-
+    const onEditAreaFromTable = (id: number, name: string, descr: string, location: number[][]) => {
+        updateArea(selectedBuilding.id, id, name, descr, location).then(() => mutateAreas());
     }
 
     return (
@@ -79,14 +70,12 @@ const AreasPageContent = () => {
                         onCreateAreas={onCreateAreas}
                         onDeleteAreas={onDeleteAreas}
                         onEditAreas={onEditAreas}
-                        onCreateDevices={onCreateDevices}
-                        onEditDevices={onEditDevices}
                     />
                 </MainCard>
             </Grid>
             <Grid item xs={12}>
                 <MainCard content={false}>
-                    <AreasTableComponent areas={areas} loading={isLoading}/>
+                    <AreasTableComponent areas={areas} loading={isLoading} onEditArea={onEditAreaFromTable}/>
                 </MainCard>
             </Grid>
         </Grid>

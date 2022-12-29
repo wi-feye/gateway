@@ -1,20 +1,31 @@
 // material-ui
 import {
-    Box, Button, Chip, Grid, LinearProgress,
+    Box, Button, Chip, FormControl, Grid, IconButton, Input, InputAdornment, LinearProgress, OutlinedInput,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow,
+    TableRow, TextField, Typography,
 } from '@mui/material';
 
 // project
 import {TableCellProps} from "@mui/material/TableCell/TableCell";
-import {FallOutlined, RightSquareOutlined, RiseOutlined} from "@ant-design/icons";
+import {
+    CheckCircleFilled, CheckOutlined,
+    CloseCircleFilled, CloseOutlined,
+    EditFilled,
+    FallOutlined,
+    RightSquareOutlined,
+    RiseOutlined
+} from "@ant-design/icons";
 import * as React from "react";
 import Router from "next/router";
 import Area from "../../models/area";
+import {useRef, useState} from "react";
+import EditableText from "../../components/EditableText";
+import {updateArea} from "../../restapi";
+import {KeyedMutator} from "swr";
 
 const busy = true
 
@@ -66,12 +77,28 @@ function AreasTableHead() {
 }
 
 // ==============================|| TABLE ||============================== //
+type AreaRowProps = {
+    area: Area,
+    onClick: (a: Area) => void,
+    onEditArea: (id: number, name: string, descr: string, location: number[][]) => void
+}
+function AreaRow({area, onClick, onEditArea}: AreaRowProps) {
+    const onNameEdit = (newName: string) => {
+        onEditArea(area.id, newName, area.description, area.location);
+    }
 
-function buildAreaRow(key: number, area:Area, onClick: (a: Area) => void) {
+    const onDescriptionEdit = (newDescr: string) => {
+        onEditArea(area.id, area.name, newDescr, area.location);
+    }
+
     return (
-        <TableRow hover role="checkbox" tabIndex={-1} key={key}>
-            <TableCell>{area.name}</TableCell>
-            <TableCell align="right">{area.description}</TableCell>
+        <TableRow hover role="checkbox" tabIndex={-1}>
+            <TableCell>
+                <EditableText content={area.name} onContentEdit={onNameEdit}/>
+            </TableCell>
+            <TableCell align="right">
+                <EditableText content={area.description} onContentEdit={onDescriptionEdit}/>
+            </TableCell>
             <TableCell align="right">
                 <Grid item>
                     <Chip
@@ -101,9 +128,10 @@ function buildAreaRow(key: number, area:Area, onClick: (a: Area) => void) {
 
 export type AreasTableComponentType = {
     areas: Area[] | undefined,
-    loading: boolean
+    loading: boolean,
+    onEditArea: (id: number, name: string, descr: string, location: number[][]) => void,
 }
-export default function AreasTableComponent({ areas, loading }: AreasTableComponentType) {
+export default function AreasTableComponent({ areas, loading, onEditArea }: AreasTableComponentType) {
     const routeChange = (area: Area) => {
         let path = `/attendance?areaid=${area.id}`;
         Router.push(path);
@@ -141,7 +169,7 @@ export default function AreasTableComponent({ areas, loading }: AreasTableCompon
                                     <LinearProgress />
                                 </TableCell>
                             ) : ( areas && areas.length > 0 ? areas.map((area, idx) => {
-                                    return buildAreaRow(idx, area, routeChange)
+                                    return <AreaRow key={idx} area={area} onClick={routeChange} onEditArea={onEditArea} />
                                 })
                                 : <TableCell align="center" colSpan={headCells.length}></TableCell>
                             )

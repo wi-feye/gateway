@@ -49,3 +49,15 @@
     flex-direction: column;
     z-index: 1001;
 }
+
+.editable-text-field {
+    border: 0;
+    background: transparent;
+    text-align: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    line-height: inherit;
+    font-family: inherit;
+    padding: 8px;
+}

@@ -90,7 +90,6 @@ export type DevicesTableComponentType = {
     mutate?: any
 }
 export default function DevicesTableComponent({ devices, loading, selectedBuildingId, mutate, editable }: DevicesTableComponentType) {
-
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
     const [device, setDevice] = useState<Device|null>(null);
