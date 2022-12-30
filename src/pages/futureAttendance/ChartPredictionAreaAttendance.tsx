@@ -1,15 +1,14 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
 import dynamic from "next/dynamic";
 import PredictedAttendance from "../../models/predictedAttendance";
 import LoadingComponent from "../../components/LoadingComponent";
+import NoDataComponent from "../../components/NoDataComponent";
 
 // third-party
 const ReactApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
-
-const NoDataComponent = () => <div className="not-enough-data-component">Not enough data to predict attendance</div>
 
 // chart options
 const areaChartOptions = {
@@ -104,7 +103,7 @@ const ChartPredictionAreaAttendance = ({ prediction, height, isLoading, categori
         <div style={{ position: "relative" }}>
             { chartDom }
             { isLoading && <LoadingComponent /> }
-            { noData && !isLoading && <NoDataComponent /> }
+            { noData && !isLoading && <NoDataComponent>Not enough data to predict attendance</NoDataComponent> }
         </div>
     );
 };

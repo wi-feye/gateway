@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 // material-ui
 import {
@@ -18,6 +18,7 @@ import AttendanceBarChart from "../overview/AttendanceBarChart";
 import Area from "../../models/area";
 import Attendance from "../../models/attendance";
 import BuildingAttendance from "../../components/BuildingAttendance";
+import NoDataComponent from "../../components/NoDataComponent";
 
 function getAreaNameById(areas: Area[], areaId: number): string {
     // R.I.P. EFFICIENZA

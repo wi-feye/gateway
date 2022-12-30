@@ -176,19 +176,6 @@ const AuthLogin = () => {
                                 >
                                     Login
                                 </Button>
-{/*                                <AnimateButton>
-                                    <Button
-                                        disableElevation
-                                        disabled={isSubmitting}
-                                        fullWidth
-                                        size="large"
-                                        type="submit"
-                                        variant="contained"
-                                        color="primary"
-                                    >
-                                        Login
-                                    </Button>
-                                </AnimateButton>*/}
                             </Grid>
                         </Grid>
                     </form>

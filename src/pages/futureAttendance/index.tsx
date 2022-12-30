@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 // material-ui
 import {
@@ -20,6 +20,7 @@ import {RootState} from "../../store";
 import ChartPredictionAreaAttendance from "./ChartPredictionAreaAttendance";
 import MainCard from "../../components/MainCard";
 import PredictedAttendance from "../../models/predictedAttendance";
+import NoDataComponent from "../../components/NoDataComponent";
 
 function getPredictionByAreaId(predictions: PredictedAttendance[], areaId: number): (PredictedAttendance | undefined) {
     // R.I.P. EFFICIENZA :(
