@@ -62,7 +62,7 @@ const FutureAttendancePage = () => {
         const newCategories: string[] = [];
         if (maxDate) {
             const fromDateCopy = new Date(maxDate);
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 12; i++) {
                 newCategories.push((fromDateCopy.getHours()).toString() + ':' + (fromDateCopy.getMinutes() <= 9 ? '0' + fromDateCopy.getMinutes() : fromDateCopy.getMinutes()));
                 fromDateCopy.setTime(fromDateCopy.getTime() + minutesGap * 60000);
             }
