@@ -17,6 +17,7 @@ import * as React from "react";
 import {useEffect, useState} from "react";
 import {LocalizationProvider, MobileDatePicker, MobileTimePicker} from "@mui/x-date-pickers";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import CreateFirstAreaContentPage from "../../components/CreateFirstAreaContentPage";
 
 const Map = dynamic(() => import('../../../src/components/Map'), {
     ssr: false
@@ -27,7 +28,7 @@ const PoiPageContent = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
 
-    const { areas, isLoading: areasIsLoading } = useAreas(selectedBuilding?.id);
+    const { areas, isLoading: isLoadingAreas } = useAreas(selectedBuilding?.id);
     const { maxDate, isLoading: isLoadingMaxDate } = useMaxDate(selectedBuilding?.id);
 
     const [date, setDate] = useState<Date>(new Date("2022-11-09T13:20:00Z"));
@@ -109,6 +110,7 @@ const PoiPageContent = () => {
                     />
                 </MainCard>
             </Grid>
+            { !isLoadingAreas && (!areas || areas.length == 0) && <CreateFirstAreaContentPage /> }
         </Grid>
     );
 };

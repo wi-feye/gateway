@@ -24,6 +24,7 @@ import Building from "../../models/building";
 import {selectBuilding} from "../../store/reducers/building";
 import Router from "next/router";
 import {overviewRoute} from "../../routes";
+import CreateFirstAreaContentPage from "../../components/CreateFirstAreaContentPage";
 
 
 // ==============================|| SETTINGS - DEFAULT ||============================== //

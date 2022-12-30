@@ -17,6 +17,7 @@ import CrowdsGridContainer from "../../components/CrowdsGridContainer";
 import {useAreas, useCrowdBehavior, useMaxDate} from "../../restapi";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import * as React from "react";
+import CreateFirstAreaContentPage from "../../components/CreateFirstAreaContentPage";
 
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
@@ -180,28 +181,7 @@ const CrowdBehaviorPageContent = () => {
                     milliseconds={milliseconds}
                 />
             </Grid>
-
-            {/* row 3 */}
-            {/*<Grid item xs={12} md={7} lg={8}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item>
-                        <Typography variant="h5">Number of point of interest</Typography>
-                    </Grid>
-                </Grid>
-                <MainCard sx={{mt: 2}} content={false}>
-                    <CrowdAreaChart timeFrom={timeFrom} timeTo={timeTo} pointOfInterest={pointOfInterest ? pointOfInterest:[]} areas={areas? areas:[]}/>
-                </MainCard>
-            </Grid>
-            <Grid item xs={12} md={5} lg={4}>
-                <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item>
-                        <Typography variant="h5">Point of interest Area</Typography>
-                    </Grid>
-                </Grid>
-                <MainCard sx={{mt: 2}} content={false}>
-                    <CrowdBarChart pointOfInterest={pointOfInterest ? pointOfInterest:[]} areas={areas? areas:[]}/>
-                </MainCard>
-            </Grid>*/}
+            { !isLoadingAreas && (!areas || areas.length == 0) && <CreateFirstAreaContentPage /> }
         </Grid>
     );
 };

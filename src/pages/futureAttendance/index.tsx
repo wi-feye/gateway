@@ -21,6 +21,7 @@ import ChartPredictionAreaAttendance from "./ChartPredictionAreaAttendance";
 import MainCard from "../../components/MainCard";
 import PredictedAttendance from "../../models/predictedAttendance";
 import NoDataComponent from "../../components/NoDataComponent";
+import CreateFirstAreaContentPage from "../../components/CreateFirstAreaContentPage";
 
 function getPredictionByAreaId(predictions: PredictedAttendance[], areaId: number): (PredictedAttendance | undefined) {
     // R.I.P. EFFICIENZA :(
@@ -122,6 +123,7 @@ const FutureAttendancePage = () => {
                 </Grid>
                 )
             }
+            { !isLoadingAreas && (!areas || areas.length == 0) && <CreateFirstAreaContentPage /> }
         </Grid>
     );
 };

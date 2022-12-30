@@ -1,7 +1,7 @@
 import {Autocomplete, Stack, TextField} from "@mui/material";
 import * as React from "react";
 import {useState} from "react";
-import ZerynthBuilding from "../models/zerynth_building";
+import ZerynthBuilding from "../../models/zerynth_building";
 
 type AddNewBuildingFormProps = {
     onChangeBuildingName: (newName: string) => void,

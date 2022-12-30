@@ -16,6 +16,7 @@ import * as React from "react";
 import {useState} from "react";
 import ZerynthBuilding from '../../models/zerynth_building';
 import ZerynthDevice from '../../models/zerynth_device';
+import CreateFirstAreaContentPage from "../../components/CreateFirstAreaContentPage";
 
 const Map = dynamic(() => import('../../../src/components/Map'), {
     ssr: false
@@ -25,7 +26,7 @@ const Map = dynamic(() => import('../../../src/components/Map'), {
 const Devices = () => {
     const buildingState = useSelector((state: RootState) => state.building);
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
-    const { devices, isLoading,mutate } = useDevices(selectedBuilding?.id);
+    const { devices, isLoading, mutate } = useDevices(selectedBuilding?.id);
     const { zerynthDevices } = useZerynthDevices(selectedBuilding?.id);
     const [open, setOpen] = useState(false);
     const [nameSniffer, setNameSniffer] = useState('');

@@ -19,6 +19,7 @@ import Area from "../../models/area";
 import Attendance from "../../models/attendance";
 import BuildingAttendance from "../../components/BuildingAttendance";
 import NoDataComponent from "../../components/NoDataComponent";
+import CreateFirstAreaContentPage from "../../components/CreateFirstAreaContentPage";
 
 function getAreaNameById(areas: Area[], areaId: number): string {
     // R.I.P. EFFICIENZA
@@ -126,6 +127,7 @@ const AttendancePage = () => {
                 />
                 )
             }
+            { !isLoadingAreas && (!areas || areas.length == 0) && <CreateFirstAreaContentPage /> }
         </Grid>
     );
 };

@@ -26,6 +26,7 @@ import DevicesTableComponent from "../devices/DevicesTableComponent";
 import BuildingAttendance from "../../components/BuildingAttendance";
 import * as React from "react";
 import HelpLinks from './HelpLinks';
+import CreateFirstAreaContentPage from "../../components/CreateFirstAreaContentPage";
 
 function getAreaNameById(areas: Area[], areaId: number): string {
     // R.I.P. EFFICIENZA
@@ -36,7 +37,6 @@ function getAreaNameById(areas: Area[], areaId: number): string {
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const Overview = () => {
-
     const [lessBusy, setLessBusy] = useState<{
         attendance: number,
         areaName: string
@@ -201,6 +201,7 @@ const Overview = () => {
                     <Button onClick={handleClickCloseHelp}>Cancel</Button>
                 </DialogActions>
             </Dialog>
+            { !isLoadingAreas && (!areas || areas.length == 0) && <CreateFirstAreaContentPage /> }
         </>
     );
 };

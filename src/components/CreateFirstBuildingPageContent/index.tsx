@@ -37,7 +37,7 @@ function CreateFirstBuildingPageContent() {
         <AuthWrapper>
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <Typography variant="h5">Let's start! Create your first building</Typography>
+                    <Typography variant="h5">Let&apos;s start! Create your first building</Typography>
                 </Grid>
                 <Grid item xs={12}>
                     <AddNewBuildingForm
