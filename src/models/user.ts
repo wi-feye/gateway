@@ -5,5 +5,4 @@ export type User = {
     surname: string,
     apikey_zerynth: string,
     isLoggedIn: boolean,
-    avatarUrl: string,
 }

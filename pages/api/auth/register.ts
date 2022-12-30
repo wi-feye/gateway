@@ -10,14 +10,8 @@ async function registerRoute(req: NextApiRequest, res: NextApiResponse) {
     const { email, password, name, surname,apikey_zerynth} = await req.body
 
     try {
-        /*const {
-            data: { login, avatar_url },
-        } = await octokit.rest.users.getByEmail({ email })
-
-        const user = { isLoggedIn: true, login, avatarUrl: avatar_url } as User*/
         const userLoggedIn = await UserManagerAPI.register(email, password, name, surname,apikey_zerynth);
         userLoggedIn.isLoggedIn = true;
-        userLoggedIn.avatarUrl = "/assets/images/avatar-2.png";
         req.session.user = userLoggedIn;
         await req.session.save();
         res.json(userLoggedIn);

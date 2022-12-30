@@ -14,7 +14,6 @@ function logoutRoute(req: NextApiRequest, res: NextApiResponse<User>) {
         isLoggedIn: false,
         name: '',
         surname: '',
-        avatarUrl: ''
     })
 }
 

@@ -47,7 +47,7 @@ const HeaderContent = ({ user }: HeaderContentProps) => {
         <>
             {!matchesXs && <Search />}
             {matchesXs && <Box sx={{ width: '100%', ml: 1 }} />}
-            {!matchesXs && user && <Profile name={user.name} surname={user.surname} avatarSrc={user.avatarUrl} />}
+            {!matchesXs && user && <Profile name={user.name} surname={user.surname} />}
             <LogOutButton />
 {/*            <Notification />
             {matchesXs && <MobileSection />}*/}

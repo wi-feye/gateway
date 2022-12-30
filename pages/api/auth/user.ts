@@ -14,7 +14,6 @@ async function userRoute(req: NextApiRequest, res: NextApiResponse<User>) {
         res.json({
             ...userWithInfo,
             isLoggedIn: true,
-            avatarUrl: "/assets/images/avatar-2.png"
         })
     } else {
         res.json({
@@ -24,7 +23,6 @@ async function userRoute(req: NextApiRequest, res: NextApiResponse<User>) {
             isLoggedIn: false,
             name: '',
             surname: '',
-            avatarUrl: ''
         })
     }
 }

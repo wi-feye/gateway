@@ -14,7 +14,7 @@ type ProfileProps = {
     name: string,
     surname: string
 }
-const Profile = ({ avatarSrc, name, surname }: ProfileProps) => {
+const Profile = ({ name, surname }: ProfileProps) => {
     const profileOnClick = () => {
         console.log("profileOnClick")
     };
@@ -33,7 +33,6 @@ const Profile = ({ avatarSrc, name, surname }: ProfileProps) => {
                 onClick={profileOnClick}
             >
                 <Stack direction="row" spacing={2} alignItems="center" sx={{ p: 0.5 }}>
-                    <Avatar alt="profile user" src={avatarSrc} sx={{ width: 32, height: 32 }} />
                     <Typography variant="subtitle1">{name} {surname}</Typography>
                 </Stack>
             </ButtonBase>

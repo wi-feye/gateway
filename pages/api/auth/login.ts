@@ -10,14 +10,8 @@ async function loginRoute(req: NextApiRequest, res: NextApiResponse) {
     const { email, password } = await req.body
 
     try {
-        /*const {
-            data: { login, avatar_url },
-        } = await octokit.rest.users.getByEmail({ email })
-
-        const user = { isLoggedIn: true, login, avatarUrl: avatar_url } as User*/
         const userLoggedIn = await UserManagerAPI.login(email, password);
         userLoggedIn.isLoggedIn = true;
-        userLoggedIn.avatarUrl = "/assets/images/avatar-2.png";
         req.session.user = userLoggedIn;
         await req.session.save();
         res.json(userLoggedIn);
