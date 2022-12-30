@@ -6,6 +6,7 @@ import {
     Box,
     Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
     Grid,
+    Link,
     Stack,
     Typography
 } from '@mui/material';
@@ -24,6 +25,7 @@ import Area from "../../models/area";
 import DevicesTableComponent from "../devices/DevicesTableComponent";
 import BuildingAttendance from "../../components/BuildingAttendance";
 import * as React from "react";
+import HelpLinks from './HelpLinks';
 
 function getAreaNameById(areas: Area[], areaId: number): string {
     // R.I.P. EFFICIENZA
@@ -34,6 +36,7 @@ function getAreaNameById(areas: Area[], areaId: number): string {
 // ==============================|| DASHBOARD - DEFAULT ||============================== //
 
 const Overview = () => {
+
     const [lessBusy, setLessBusy] = useState<{
         attendance: number,
         areaName: string
@@ -191,11 +194,7 @@ const Overview = () => {
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <MainCard sx={{mt: 2.5}}>
-                            <Box>Domenico Tupputi: d.tupputi@studenti.unipi.it</Box>
-                            <Box>Domenico Ferraro: d.ferraro7@studenti.unipi.it</Box>
-                            <Box>Geremia Pompei: g.pompei2@studenti.unipi.it</Box>
-                        </MainCard>
+                        <HelpLinks/>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
