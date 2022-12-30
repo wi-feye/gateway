@@ -10,7 +10,6 @@ import {
 // ==============================|| HEADER CONTENT - PROFILE ||============================== //
 
 type ProfileProps = {
-    avatarSrc: string,
     name: string,
     surname: string
 }
