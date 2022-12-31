@@ -45,7 +45,7 @@ export const poiRoute: Route = {
 
 export const devicesRoute: Route = {
     title: "Sniffers",
-    url: "/devices"
+    url: "/sniffers"
 }
 
 export const settingsRoute: Route = {
