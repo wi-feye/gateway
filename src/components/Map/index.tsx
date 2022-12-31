@@ -129,12 +129,11 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         if (whenReady != null) whenReady();
     }
 
-    console.log("MAAAAPPP",pointOfInterest)
     const POLYGON_PANE = "heatmap_pane";
     const DEVICES_PANE = "devices_pane";
     const DEVICES_SHADOW_PANE = "devices_shadow_pane";
-    const zoom = 18; // max zoom is 18
-    const mapRef = useCallback((node: HTMLDivElement | null) => { // fix per "map already created"
+    const zoom = 4;
+    const mapRef = useCallback((node: HTMLDivElement | null) => {
         if (node !== null && map == null) {
             let newMap = new LeafletMap(node, {
                 scrollWheelZoom: false, // avoid zoomming while scrolling on the page
@@ -156,10 +155,10 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                 showLength: true,
                 precision: {
                     m: 2,
-                    ft: 0,
-                    km: 4,
+                    ft: 1,
+                    km: 1,
                 },
-                factor: 0.001,
+                factor: 0.00001,
                 allowIntersection: false, // disallow intersection of the polygon with itself. It is not to avoid intersections with other polygons
                 zIndexOffset: 390,
                 shapeOptions: {
@@ -203,7 +202,7 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
             }
 
             if (center != null && zoom != null) {
-                newMap = newMap.setView(new LatLng(center[0], center[1]), zoom);
+                newMap = newMap.setView(new LatLng(center[0], center[1]), 18);
             } /* else {
                 newMap = newMap.fitWorld();
             }*/
@@ -266,7 +265,7 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                 direction: "center",
                 className: "leaflet-area-tooltip"
             }).openTooltip();
-            console.log(poly.area);
+
             editableLayer.addLayer(poly);
         });
 
@@ -356,45 +355,36 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         return retMap;
     }
 
-    const computeAreasBounds = (areas: Area[]) => {
-        let newBounds: number[] = [];
-        if (areas && areas.length > 0) {
-            // min x, min y, max x, max y
-            newBounds = [areas[0].location[0][0], areas[0].location[0][1], areas[0].location[0][0], areas[0].location[0][1]];
-            areas.forEach(area => {
-                area.location.forEach(loc => {
-                    if (loc[0] < newBounds[0]) newBounds[0] = loc[0]; // min x
-                    if (loc[1] < newBounds[1]) newBounds[1] = loc[1]; // min y
-                    if (loc[0] > newBounds[2]) newBounds[2] = loc[0]; // max x
-                    if (loc[1] > newBounds[3]) newBounds[3] = loc[1]; // max y
-                })
-            });
-        }
+    const computeAreasBounds = (areas: Area[]): LatLngBounds => {
+        const bounds = new LatLngBounds([[0,0], [0,0]])
 
-        return newBounds;
+        if (!areas) return bounds;
+
+        areas.forEach(area => {
+            area.location.forEach(loc => {
+                const latlngs = xy(loc[0], loc[1]);
+                bounds.extend(latlngs);
+            });
+        })
+        return bounds;
     }
 
-    const boundsGap = 1;
+    const boundsGap = 0.05;
     useEffect(() => {
         if (areas && map) {
             editableLayer.eachLayer(layer => layer.remove());
 
             let newMap = map;
-            if (areas.length > 0) newMap = buildPolygons(newMap, areas);
+            newMap = buildPolygons(newMap, areas);
 
-            if (fitAreasBounds && areas.length > 0) {
-                console.log("FITTING AREAS BOUNDS");
-                // min x, min y, max x, max y
-                const newBounds = computeAreasBounds(areas);
-
-                const centerXY = xy(
-                    (newBounds[0] + newBounds[2]) / 2,
-                    (newBounds[1] + newBounds[3]) / 2,
-                );
-                newMap = newMap.setView(centerXY).fitBounds(new LatLngBounds(
-                    xy(newBounds[0] - boundsGap, newBounds[1] - boundsGap),
-                    xy(newBounds[2] + boundsGap, newBounds[3] + boundsGap),
-                ));
+            if (fitAreasBounds) {
+                if (areas.length > 0) {
+                    const newBounds = computeAreasBounds(areas);
+                    newMap = newMap.setView(newBounds.getCenter(), map.getZoom()).fitBounds(newBounds.pad(boundsGap))//.setView(newBounds.getCenter(), map.getZoom());
+                    console.log(newBounds);
+                } else {
+                    newMap = newMap.setView(xy(0, 0), zoom);
+                }
             }
 
             setMap(newMap);
