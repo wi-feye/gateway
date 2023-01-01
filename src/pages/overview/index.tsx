@@ -47,9 +47,7 @@ const Overview = () => {
     }>();
 
     const buildingState = useSelector((state: RootState) => state.building);
-    console.log(buildingState)
     const selectedBuilding = buildingState.availableBuildings[buildingState.selectedBuildingIndex];
-    console.log(selectedBuilding)
     const {attendance, isLoading: isLoadingAttendance} = useAttendance(selectedBuilding?.id);
     const {areas, isLoading: isLoadingAreas} = useAreas(selectedBuilding?.id);
     const {devices, isLoading} = useDevices(selectedBuilding?.id);
@@ -142,8 +140,7 @@ const Overview = () => {
                 <Grid item xs={12} md={7} lg={8}>
                     <Typography variant="h5">Sniffers</Typography>
                     <MainCard sx={{mt: 2}} content={false}>
-                        <DevicesTableComponent devices={devices} loading={isLoading}
-                                               selectedBuildingId={selectedBuilding?.id} editable={false}/>
+                        <DevicesTableComponent devices={devices? devices:[]} loading={isLoading} editable={false}/>
                     </MainCard>
                 </Grid>
                 <Grid item xs={12} md={5} lg={4}>

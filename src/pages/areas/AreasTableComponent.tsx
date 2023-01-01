@@ -1,20 +1,17 @@
 // material-ui
 import {
-    Box, Button, Chip, FormControl, Grid, IconButton, Input, InputAdornment, LinearProgress, OutlinedInput,
+    Box, Button, Chip, Grid, LinearProgress,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableHead,
-    TableRow, TextField, Typography,
+    TableRow,
 } from '@mui/material';
 
 // project
 import {TableCellProps} from "@mui/material/TableCell/TableCell";
 import {
-    CheckCircleFilled, CheckOutlined,
-    CloseCircleFilled, CloseOutlined,
-    EditFilled,
     FallOutlined,
     RightSquareOutlined,
     RiseOutlined
@@ -22,10 +19,8 @@ import {
 import * as React from "react";
 import Router from "next/router";
 import Area from "../../models/area";
-import {useRef, useState} from "react";
 import EditableText from "../../components/EditableText";
-import {updateArea} from "../../restapi";
-import {KeyedMutator} from "swr";
+import {attendanceRoute} from "../../routes";
 
 const busy = true
 
@@ -133,7 +128,7 @@ export type AreasTableComponentType = {
 }
 export default function AreasTableComponent({ areas, loading, onEditArea }: AreasTableComponentType) {
     const routeChange = (area: Area) => {
-        let path = `/attendance?areaid=${area.id}`;
+        let path = `${attendanceRoute.url}/?areaid=${area.id}`;
         Router.push(path);
     }
 

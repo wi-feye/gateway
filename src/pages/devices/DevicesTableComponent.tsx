@@ -8,15 +8,23 @@ import {
     TableCell,
     TableContainer,
     TableHead,
-    TableRow, TextField,
+    TableRow,
 } from '@mui/material';
 
 // project
 import {TableCellProps} from "@mui/material/TableCell/TableCell";
 import * as React from "react";
 import Device from "../../models/device";
-import {deleteSniffer, modifySniffer} from "../../restapi";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import EditableText from "../../components/EditableText";
+import MainCard from "../../components/MainCard";
+import Area from "../../models/area";
+import EditedDevice from "../../components/Map/models/EditedDevice";
+import dynamic from "next/dynamic";
+
+const Map = dynamic(() => import('../../../src/components/Map'), {
+    ssr: false
+});
 
 // ==============================|| ORDER TABLE - HEADER CELL ||============================== //
 const headCells = [
@@ -60,20 +68,35 @@ function DevicesTableHead() {
     );
 }
 
-// ==============================|| TABLE ||============================== //
+type DeviceRowProps = {
+    device: Device,
+    onClickModify: (device: Device) => void,
+    editable: boolean,
+    onEditDevice?: (id: string, name: string, x: number, y: number) => void,
+    onDeleteDevice?: (deletedDevice: Device) => void
+}
+function DeviceRow({device, onClickModify, onEditDevice, onDeleteDevice, editable}: DeviceRowProps) {
+    const onNameEdit = (newName: string) => {
+        if (onEditDevice) onEditDevice(device.id, newName, device.x, device.y);
+    }
 
-function BuildDeviceRow(key: number, device: Device, handleClickOpen:any, handleEliminaSniffer:any, editable: boolean) {
     return (
         <>
-            <TableRow hover role="checkbox" tabIndex={-1} key={key}>
-                <TableCell align="center">{device.name}</TableCell>
-                <TableCell align="center"><Alert sx={{justifyContent: "center"}}
-                                                 severity={device.status == "Online" ? "success" : "error"}>
-                    {device.status}
-                </Alert></TableCell>
+            <TableRow hover role="checkbox" tabIndex={-1}>
+                <TableCell align="center">
+                    { editable ? <EditableText content={device.name} onContentEdit={onNameEdit}/> : device.name }
+                </TableCell>
+                <TableCell align="center">
+                    <Alert
+                        sx={{justifyContent: "center"}}
+                        severity={device.status == "Online" ? "success" : "error"}
+                    >
+                        {device.status}
+                    </Alert>
+                </TableCell>
                 <TableCell align="center">{device.lastRequest}</TableCell>
-                {editable && <TableCell align="center"><Button variant="contained" onClick={()=>handleClickOpen(device)}>Modify</Button> {" "}
-                    <Button variant="contained" color="error" onClick={() => handleEliminaSniffer(device)}>Delete</Button>
+                {editable && <TableCell align="center"><Button variant="contained" onClick={()=>onClickModify(device)}>Modify</Button> {" "}
+                    <Button variant="contained" color="error" onClick={() => {if (onDeleteDevice) onDeleteDevice(device)}}>Delete</Button>
                 </TableCell>
                 }
             </TableRow>
@@ -83,59 +106,74 @@ function BuildDeviceRow(key: number, device: Device, handleClickOpen:any, handle
 }
 
 export type DevicesTableComponentType = {
-    devices: Device[] | undefined,
+    devices: Device[],
+    areas?: Area[],
     editable: boolean,
     loading: boolean,
-    selectedBuildingId: number
-    mutate?: any
+    onEditDevice?: (id: string, name: string, x: number, y: number) => void,
+    onDeleteDevice?: (deletedDevice: Device) => void
 }
-export default function DevicesTableComponent({ devices, loading, selectedBuildingId, mutate, editable }: DevicesTableComponentType) {
+export default function DevicesTableComponent({ devices, areas, loading, editable, onEditDevice, onDeleteDevice }: DevicesTableComponentType) {
     const [open, setOpen] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
-    const [device, setDevice] = useState<Device|null>(null);
-    const [nameSniffer, setNameSniffer] = useState('');
-    const [dev, setDev] = useState<Device>();
-    const [xPosition, setxPosition] = useState('');
-    const [yPosition, setyPosition] = useState('');
+    const [dialogDevice, setDialogDevice] = useState<Device>({
+        id: "-1",
+        id_zerynth: "",
+        lastRequest: "",
+        name: "New Sniffer",
+        status: "",
+        x: 0,
+        y: 0,
+    });
+    const [uneditableDevices, setUneditableDevices] = useState<Device[]>([]);
+    const [editableDevices, setEditableDevices] = useState<Device[]>([dialogDevice]);
 
-    const handleClickOpen = (device:Device) => {
-        setDev(device)
+    useEffect(() => {
+        const newUneditableDevices = devices.filter(d => d.id != dialogDevice.id);
+        setUneditableDevices(newUneditableDevices);
+    }, [devices]);
+
+    const onClickModify = (device: Device) => {
+        setDialogDevice(device);
+        setEditableDevices([device]);
+        if (devices) {
+            const newUneditableDevices = devices.filter(d => d.id != device.id);
+            setUneditableDevices(newUneditableDevices);
+        }
         setOpen(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
-    const handleConfirm = async () => {
-        if (!dev) return;
-        await modifySniffer(dev.id, selectedBuildingId.toString(), nameSniffer,xPosition == '' ? dev.x.toString(): xPosition, yPosition==''? dev.y.toString(): yPosition)
-        if (mutate) mutate();
-        setOpen(false);
-    };
-    const handlexPosition = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-        setxPosition(event.target.value);
-    };
-    const handleyPosition = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-        setyPosition(event.target.value);
-    };
-    const handleNameSniffer = (event: { target: { value: React.SetStateAction<string>; }; }) => {
-        setNameSniffer(event.target.value);
-    };
-
-    const handleEliminaSniffer = async () => {
-        if(device) {
-            await deleteSniffer(device.id);
-            if (mutate) mutate();
-            setOpenDelete(false);
+    const onEditDevicesLocation = (editedDevices: EditedDevice[]) => {
+        const editedDev = editedDevices[0];
+        if (dialogDevice) {
+            dialogDevice.x = editedDev.newLocationX;
+            dialogDevice.y = editedDev.newLocationY;
         }
-    };
+    }
 
-    const handleClickOpenDelete = (device:Device) => {
-        setDevice(device)
+    const onClickDeleteDevice = (device: Device) => {
+        if (!device) return;
+
+        setDialogDevice(device)
         setOpenDelete(true);
     };
-    const handleCloseDelete = () => {
+
+    const handleCancelDeleteDialog = () => {
         setOpenDelete(false);
+    };
+
+    const handleConfirmDeleteDialog = () => {
+        if (onDeleteDevice && dialogDevice) onDeleteDevice(dialogDevice);
+        setOpenDelete(false);
+    };
+
+    const handleConfirmModifySniffer = () => {
+        if (dialogDevice && onEditDevice) onEditDevice(dialogDevice.id, dialogDevice.name, dialogDevice.x, dialogDevice.y);
+        setOpen(false);
+    }
+
+    const handleCancelModifySnifferDialog = () => {
+        setOpen(false);
     };
 
     return (
@@ -170,7 +208,16 @@ export default function DevicesTableComponent({ devices, loading, selectedBuildi
                                     <LinearProgress/>
                                 </TableCell>
                             ) : (devices && devices.length > 0 ? devices.map((device, idx) => {
-                                    return BuildDeviceRow(idx, device, handleClickOpen, handleClickOpenDelete, editable);
+                                    return (
+                                        <DeviceRow
+                                            key={idx}
+                                            device={device}
+                                            onEditDevice={onEditDevice}
+                                            onDeleteDevice={onClickDeleteDevice}
+                                            editable={editable}
+                                            onClickModify={onClickModify}
+                                        />
+                                    );
                                 })
                                 : <TableCell align="center" colSpan={headCells.length}></TableCell>
                             )
@@ -179,45 +226,34 @@ export default function DevicesTableComponent({ devices, loading, selectedBuildi
                 </Table>
             </TableContainer>
             { editable && <>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Modify Sniffer</DialogTitle>
+                <Dialog open={open}>
+                    <DialogTitle fontWeight="bold">Modify sniffer location</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Enter the values you want to change:
+                            Place your sniffer on the map
                         </DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            label="Name"
-                            type="text"
-                            variant="outlined"
-                            onChange={handleNameSniffer}/>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            label="Position X"
-                            type="text"
-                            variant="outlined"
-                            onChange={handlexPosition}/>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            label="Position Y"
-                            type="text"
-                            variant="outlined"
-                            onChange={handleyPosition}/>
+                        <MainCard sx={{ mt: 2 }} content={false}>
+                            <Map
+                                height={420}
+                                devices={uneditableDevices}
+                                areas={areas ? areas:[]}
+                                fitAreasBounds
+                                editable={{
+                                    areas: false, // areas are NOT editable
+                                    devices: true // devices editable
+                                }}
+                                editableDevices={editableDevices}
+                                onEditDevices={onEditDevicesLocation}
+                            />
+                        </MainCard>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handleConfirm}>Confirm</Button>
+                        <Button onClick={handleCancelModifySnifferDialog}>Cancel</Button>
+                        <Button onClick={handleConfirmModifySniffer}>Confirm</Button>
                     </DialogActions>
                 </Dialog>
                 <Dialog
                     open={openDelete}
-                    onClose={handleCloseDelete}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                 >
@@ -230,8 +266,8 @@ export default function DevicesTableComponent({ devices, loading, selectedBuildi
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleCloseDelete}>Cancel</Button>
-                        <Button onClick={handleEliminaSniffer} autoFocus>
+                        <Button onClick={handleCancelDeleteDialog}>Cancel</Button>
+                        <Button onClick={handleConfirmDeleteDialog} autoFocus>
                             Continue
                         </Button>
                     </DialogActions>

@@ -6,12 +6,12 @@ import {
 // project import
 import MainCard from '../../components/MainCard';
 import AreasTableComponent from './AreasTableComponent';
-import {useAreas, useDevices, useMaxDate, createArea, deleteArea, updateArea} from "../../restapi";
+import {useAreas, useDevices, createArea, deleteArea, updateArea} from "../../restapi";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
 import dynamic from "next/dynamic";
 import Area from "../../models/area";
-import {EditedArea} from "../../components/Map";
+import EditedArea from "../../components/Map/models/EditedArea";
 
 const Map = dynamic(() => import('../../../src/components/Map'), {
     ssr: false

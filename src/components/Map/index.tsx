@@ -3,8 +3,8 @@ import {useCallback, useEffect, useState} from "react";
 import {
     FeatureGroup,
     HeatMapOptions, Icon,
-    LatLng, LatLngBounds, LatLngExpression,
-    Map as LeafletMap, Marker, Point, PointExpression, Polygon, Polyline, PolylineOptions, Rectangle,
+    LatLng, LatLngBounds, Layer,
+    Map as LeafletMap, Marker, Point, PointExpression, Polygon, Polyline, Rectangle,
     TileLayer
 } from "leaflet";
 import * as Leaflet from 'leaflet'; // this is needed to call Leaflet.heatLayer() function
@@ -18,14 +18,23 @@ import Area from "../../models/area";
 import Device from "../../models/device";
 import {renderToString} from "react-dom/server";
 import {CheckCircleOutlined, ExclamationCircleOutlined} from "@ant-design/icons";
-import {Box, CircularProgress, Typography} from "@mui/material";
+import {Box, Typography} from "@mui/material";
 import * as React from "react";
 import CrowdPosition from "../../models/crowdposition";
 import PointOfInterest from "../../models/pointOfInterest";
+import EditedArea from "./models/EditedArea";
+import EditedDevice from "./models/EditedDevice";
+import MarkerDevice from "./models/MarkerDevice";
+import PolygonArea from "./models/PolygonArea";
 
 const BUTTON_TITLE_CREATE_AREA = "Create areas";
+const BUTTON_TITLE_CREATE_SNIFFER = "Create sniffer";
 const BUTTON_TITLE_EDIT_AREA = "Edit areas";
+const BUTTON_TITLE_EDIT_SNIFFER = "Edit sniffers";
+const BUTTON_TITLE_EDIT_AREA_AND_SNIFFER = "Create areas and sniffers";
 const BUTTON_TITLE_REMOVE_AREA = "Delete areas";
+const BUTTON_TITLE_REMOVE_SNIFFER = "Delete sniffers";
+const BUTTON_TITLE_REMOVE_AREA_AND_SNIFFER = "Delete areas and sniffers";
 
 function buildDeviceMarkerPopup(device: Device) {
     return (
@@ -80,19 +89,6 @@ function getPolygonXYCoords(poly: Polygon): number[][] {
     return result;
 }
 
-class PolygonArea extends Polygon {
-    area: Area
-
-    constructor(latlngs: LatLngExpression[] | LatLngExpression[][] | LatLngExpression[][][], options: PolylineOptions, area: Area) {
-        super(latlngs, options);
-        this.area = area;
-    }
-}
-
-export type EditedArea = {
-    area: Area,
-    newLocation: number[][]
-}
 type MapPropType = {
     height: number,
     center?: number[],
@@ -103,24 +99,25 @@ type MapPropType = {
     areas?: Area[],
     fitAreasBounds?: boolean,
     devices?: Device[],
+    editableDevices?: Device[],
     pointOfInterest?: PointOfInterest[],
     editable?: {
         devices?: boolean,
         areas?: boolean
     },
     onCreateAreas?: (points: number[][][]) => void,
-    onCreateDevices?: (points: number[][]) => void,
+    //onCreateDevices?: (points: number[][]) => void,
     onEditAreas?: (editedAreas: EditedArea[]) => void,
     onDeleteAreas?: (areas: Area[]) => void,
-    onEditDevices?: (points: number[][]) => void,
-    onDeleteDevices?: (points: number[][]) => void,
+    onEditDevices?: (editedDevices: EditedDevice[]) => void,
+    //onDeleteDevices?: (points: number[][]) => void,
 }
-export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatmapPoints, areas, fitAreasBounds, devices, pointOfInterest, editable, onCreateAreas, onCreateDevices, onEditAreas, onDeleteAreas, onEditDevices, onDeleteDevices }: MapPropType) {
-
+export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatmapPoints, areas, fitAreasBounds, devices, pointOfInterest, editable, onCreateAreas, onEditAreas, onDeleteAreas, onEditDevices, editableDevices }: MapPropType) {
     const [map, setMap] = useState<LeafletMap>();
     const [heatmapLayer, setHeatmapLayer] = useState<Leaflet.HeatLayer>();
     const [editableLayer, setEditableLayer] = useState<FeatureGroup>(new FeatureGroup());
-    const [devicesMarkers, setDevicesMarkers] = useState<Marker[]>([]);
+    const [devicesLayer, setDevicesLayer] = useState<FeatureGroup>(new FeatureGroup());
+    const [areasLayer, setAreasLayer] = useState<FeatureGroup>(new FeatureGroup());
     const [pointsMarkers, setPointsMarkers] = useState<Marker[]>([]);
 
     const [isLoading, setIsLoading] = useState(true);
@@ -129,8 +126,28 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         if (whenReady != null) whenReady();
     }
 
+    const iconSize: PointExpression = [28, 40];
+    const shadowSize: PointExpression = [20, 20];
+    const deviceMarkerIcon = new Icon({
+        iconSize: iconSize, // size of the icon
+        iconAnchor: [iconSize[0]/2, iconSize[1]], // point of the icon which will correspond to marker's location
+        iconUrl: '/assets/images/device_icon.png',
+        shadowUrl: '/assets/images/device_icon_shadow.png',
+        shadowSize: shadowSize, // size of the shadow
+        shadowAnchor: [shadowSize[0]/2, shadowSize[1]/2],  // point of the icon which will correspond to shadow's location
+    });
+
+    // by default disallow area and sniffer creation
+    const DEFAULT_CAN_CREATE_SNIFFER = false;
+    const DEFAULT_CAN_CREATE_AREA = false;
+
     const POLYGON_PANE = "heatmap_pane";
+    const POLYGONS_ZINDEX = 390;
+    const AREA_NAME_PANE = "area_name_pane";
+    const AREA_NAME_ZINDEX = 391;
     const DEVICES_PANE = "devices_pane";
+    const DEVICES_SHADOW_ZINDEX = 404;
+    const DEVICES_ZINDEX = 405;
     const DEVICES_SHADOW_PANE = "devices_shadow_pane";
     const zoom = 4;
     const mapRef = useCallback((node: HTMLDivElement | null) => {
@@ -141,7 +158,8 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                 zoomSnap: zoomSnap
             });
 
-            newMap = newMap.whenReady(onMapReady); //Runs when the map gets initialized with a view (center and zoom) and at least one layer
+            // Runs when the map gets initialized with a view (center and zoom) and at least one layer
+            newMap = newMap.whenReady(onMapReady);
 
             if (mapUrl) {
                 const tileLayer = new TileLayer(mapUrl)
@@ -160,7 +178,7 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                 },
                 factor: 0.00001,
                 allowIntersection: false, // disallow intersection of the polygon with itself. It is not to avoid intersections with other polygons
-                zIndexOffset: 390,
+                zIndexOffset: POLYGONS_ZINDEX,
                 shapeOptions: {
                     stroke: true,
                     color: '#dcdee2',
@@ -177,40 +195,57 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                 }),
             };
             const markerOptions: Leaflet.DrawOptions.MarkerOptions = {
-
+                zIndexOffset: DEVICES_ZINDEX,
+                icon: deviceMarkerIcon
             }
+
+            if (editable?.areas) setAreasLayer(editableLayer);
+            else newMap = newMap.addLayer(areasLayer);
+            newMap = newMap.addLayer(devicesLayer);
+
             if (editable?.areas || editable?.devices) {
                 const drawControl = new Leaflet.Control.Draw({
                     position: "topleft",
                     draw: {
-                        polygon: editable.areas ? polygonOptions:false,
+                        polygon: editable.areas ? polygonOptions:DEFAULT_CAN_CREATE_AREA,
                         circle: false,
-                        marker: editable.devices ? markerOptions:false,
+                        marker: DEFAULT_CAN_CREATE_SNIFFER, //editable.devices && ? markerOptions:false,
                         polyline: false,
                         rectangle: false,
                         circlemarker: false
                     },
                     edit: {
                         featureGroup: editableLayer,
+                        remove: onDeleteAreas && true
                     }
                 });
-                // Set the title to show on the polygon button and editing button
+
+                // Set the title to show on the polygon button, marker button and editing button
                 Leaflet.drawLocal.draw.toolbar.buttons.polygon = BUTTON_TITLE_CREATE_AREA;
-                Leaflet.drawLocal.edit.toolbar.buttons.edit = BUTTON_TITLE_EDIT_AREA;
-                Leaflet.drawLocal.edit.toolbar.buttons.remove = BUTTON_TITLE_REMOVE_AREA;
+                Leaflet.drawLocal.draw.toolbar.buttons.marker = BUTTON_TITLE_CREATE_SNIFFER;
+
+                let button_title_edit = BUTTON_TITLE_EDIT_AREA;
+                if (editable.areas && editable.devices) button_title_edit = BUTTON_TITLE_EDIT_AREA_AND_SNIFFER;
+                else if (!editable.areas && editable.devices) button_title_edit = BUTTON_TITLE_EDIT_SNIFFER;
+                Leaflet.drawLocal.edit.toolbar.buttons.edit = button_title_edit;
+
+                let button_title_remove = BUTTON_TITLE_REMOVE_AREA;
+                if (editable.areas && editable.devices) button_title_remove = BUTTON_TITLE_REMOVE_AREA_AND_SNIFFER;
+                else if (!editable.areas && editable.devices) button_title_remove = BUTTON_TITLE_REMOVE_SNIFFER;
+                Leaflet.drawLocal.edit.toolbar.buttons.remove = button_title_remove;
+
                 newMap = newMap.addControl(drawControl);
             }
 
             if (center != null && zoom != null) {
                 newMap = newMap.setView(new LatLng(center[0], center[1]), 18);
-            } /* else {
-                newMap = newMap.fitWorld();
-            }*/
+            }
 
-            newMap.createPane(POLYGON_PANE).style.zIndex = "390"; // polygon is below everything
+            newMap.createPane(POLYGON_PANE).style.zIndex = POLYGONS_ZINDEX.toString(); // polygon is below everything
+            newMap.createPane(AREA_NAME_PANE).style.zIndex = AREA_NAME_ZINDEX.toString(); // area name is on top of polygon
             // heatmap goes here. It has zIndex 400
-            newMap.createPane(DEVICES_SHADOW_PANE).style.zIndex = "404"; // on top of heatmap, behind device icon
-            newMap.createPane(DEVICES_PANE).style.zIndex = "405"; // on top of everything
+            newMap.createPane(DEVICES_SHADOW_PANE).style.zIndex = DEVICES_SHADOW_ZINDEX.toString(); // on top of heatmap, behind device icon
+            newMap.createPane(DEVICES_PANE).style.zIndex = DEVICES_ZINDEX.toString(); // on top of everything
 
             setMap(newMap);
         }
@@ -246,42 +281,21 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         }
     }, [heatmapPoints, map]);
 
-    const buildPolygons = (map: LeafletMap, areas: Area[]): LeafletMap => {
-        let retMap = map;
-
-        areas.forEach(area => {
-            const pointsLatLng = area.location.map(coord => xy(coord[0], coord[1]));
-
-            const poly = new PolygonArea(pointsLatLng, {
-                // polygon options
-                color: "#dcdee2",
-                fillColor: "#f1f3f4",
-                fillOpacity: 1,
-                weight: 2,
-                pane: POLYGON_PANE,
-            }, area);
-            poly.bindTooltip(area.name,{
-                permanent: true,
-                direction: "center",
-                className: "leaflet-area-tooltip"
-            }).openTooltip();
-
-            editableLayer.addLayer(poly);
-        });
-
-        retMap = retMap.removeEventListener(Leaflet.Draw.Event.CREATED); // Ensure only one handler
+    const addEditingEventListeners = (map: LeafletMap) => {
+        let retMap = map.removeEventListener(Leaflet.Draw.Event.CREATED); // Ensure only one handler
         retMap = retMap.addEventListener(Leaflet.Draw.Event.CREATED, function (event) {
             // @ts-ignore
-            const type = event.layerType,
-                layer = event.layer;
-            console.log('Something was created!', event);
+            const type = event.layerType, layer = event.layer;
 
             if (type === 'marker') { // Do marker specific actions
-                const marker = layer as Marker;
+                const marker = layer as MarkerDevice;
+                console.log('A sniffer was created!', event);
                 const coordLatLng = marker.getLatLng();
-                if (onCreateDevices) onCreateDevices([[coordLatLng.lng, coordLatLng.lat]]);
+                //if (onCreateDevices) onCreateDevices([[coordLatLng.lng, coordLatLng.lat]]);
+                editableLayer.addLayer(marker);
             } else if (type === 'polygon') {
                 const poly = layer as PolygonArea;
+                console.log('An area was created!', event);
                 poly.bindTooltip("New area",{
                     permanent: true,
                     direction: "center",
@@ -289,8 +303,8 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                 }).openTooltip();
                 const coords = getPolygonXYCoords(poly);
                 if (onCreateAreas && coords.length > 0) onCreateAreas([coords]);
+                areasLayer.addLayer(poly);
             }
-            editableLayer.addLayer(layer);
         });
 
         retMap = retMap.removeEventListener(Leaflet.Draw.Event.DELETED); // Ensure only one handler
@@ -301,11 +315,8 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
             const deletedAreas: Area[] = [];
             // @ts-ignore
             layers.eachLayer(function(layer) {
-                if (layer instanceof Rectangle ||
-                    layer instanceof Polygon ||
-                    layer instanceof Polyline) {
-                    const poly = layer as PolygonArea;
-                    deletedAreas.push(poly.area);
+                if (layer instanceof PolygonArea) {
+                    deletedAreas.push(layer.area);
                 }
             });
             if (deletedAreas.length == 0) console.log('Nothing was deleted!');
@@ -330,26 +341,61 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
             // @ts-ignore
             let layers = event.layers; // edited layers
 
-            const areasPoints: EditedArea[] = [];
+            const editedAreas: EditedArea[] = [];
+            const editedDevices: EditedDevice[] = [];
+
             // @ts-ignore
             layers.eachLayer(function(layer) {
-                if (layer instanceof Rectangle ||
-                    layer instanceof Polygon ||
-                    layer instanceof Polyline) {
-                    const poly = layer as PolygonArea;
-                    poly.closeTooltip();
-                    poly.openTooltip();
-                    const coords = getPolygonXYCoords(poly);
-                    areasPoints.push({
-                        area: poly.area,
+                if (layer instanceof PolygonArea) {
+                    console.log('A polygon was edited!');
+                    layer.closeTooltip();
+                    layer.openTooltip();
+                    const coords = getPolygonXYCoords(layer);
+                    editedAreas.push({
+                        area: layer.area,
                         newLocation: coords
+                    });
+                } else if (layer instanceof MarkerDevice) {
+                    console.log('A device was edited!');
+                    const coords = layer.getLatLng();
+                    editedDevices.push({
+                        device: layer.device,
+                        newLocationX: coords.lng,
+                        newLocationY: coords.lat,
                     });
                 }
             });
-            if (areasPoints.length == 0) console.log('Nothing was edited!');
-            else console.log('Something was edited!');
+            if (editedAreas.length == 0 && editedDevices.length == 0) console.log('Nothing was edited!');
 
-            if (onEditAreas && areasPoints.length > 0) onEditAreas(areasPoints);
+            if (onEditAreas && editedAreas.length > 0) onEditAreas(editedAreas);
+            if (onEditDevices && editedDevices.length > 0) onEditDevices(editedDevices);
+        });
+
+        return retMap;
+    }
+
+    const buildAreas = (map: LeafletMap, areas: Area[]): LeafletMap => {
+        let retMap = map;
+
+        areas.forEach(area => {
+            const pointsLatLng = area.location.map(coord => xy(coord[0], coord[1]));
+
+            const poly = new PolygonArea(pointsLatLng, {
+                // polygon options
+                color: "#dcdee2",
+                fillColor: "#f1f3f4",
+                fillOpacity: 1,
+                weight: 2,
+                pane: POLYGON_PANE,
+            }, area);
+            poly.bindTooltip(area.name,{
+                permanent: true,
+                direction: "center",
+                className: "leaflet-area-tooltip",
+                pane: AREA_NAME_PANE
+            }).openTooltip();
+
+            areasLayer.addLayer(poly);
         });
 
         return retMap;
@@ -372,16 +418,18 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
     const boundsGap = 0.05;
     useEffect(() => {
         if (areas && map) {
-            editableLayer.eachLayer(layer => layer.remove());
+            areasLayer.eachLayer(layer => {
+                if (layer instanceof PolygonArea) layer.remove();
+            });
 
             let newMap = map;
-            newMap = buildPolygons(newMap, areas);
+            newMap = buildAreas(newMap, areas);
+            newMap = addEditingEventListeners(newMap);
 
             if (fitAreasBounds) {
                 if (areas.length > 0) {
                     const newBounds = computeAreasBounds(areas);
-                    newMap = newMap.setView(newBounds.getCenter(), map.getZoom()).fitBounds(newBounds.pad(boundsGap))//.setView(newBounds.getCenter(), map.getZoom());
-                    console.log(newBounds);
+                    newMap = newMap.setView(newBounds.getCenter(), map.getZoom()).fitBounds(newBounds.pad(boundsGap));
                 } else {
                     newMap = newMap.setView(xy(0, 0), zoom);
                 }
@@ -391,49 +439,64 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
         }
     }, [areas, map]);
 
-    const iconSize: PointExpression = [28, 40];
-    const shadowSize: PointExpression = [20, 20];
-    const deviceMarkerIcon = new Icon({
-        iconSize: iconSize, // size of the icon
-        iconAnchor: [iconSize[0]/2, iconSize[1]], // point of the icon which will correspond to marker's location
-        iconUrl: '/assets/images/device_icon.png',
-        shadowUrl: '/assets/images/device_icon_shadow.png',
-        shadowSize: shadowSize, // size of the shadow
-        shadowAnchor: [shadowSize[0]/2, shadowSize[1]/2],  // point of the icon which will correspond to shadow's location
-    });
-
-
-    const addMarkerDevice = (map: LeafletMap, device: Device, icon: Icon, iconYSize: number): LeafletMap => {
-        const markerLayer = new Marker(xy(device.x, device.y), {
+    const addMarkerDevice = (map: LeafletMap, device: Device, icon: Icon, iconYSize: number, destLayer: FeatureGroup): LeafletMap => {
+        const deviceLoc = device.x && device.y ? xy(device.x, device.y):map.getCenter();
+        const markerLayer = new MarkerDevice(deviceLoc, {
             icon: icon,
             title: device.name,
             pane: DEVICES_PANE,
             shadowPane: DEVICES_SHADOW_PANE,
-        });
+        }, device);
         const markerPopup = buildDeviceMarkerPopup(device);
         markerLayer.bindPopup(renderToString(markerPopup), { // some options for the bind popup
             offset: new Point(0, -iconYSize / 4),
-            minWidth: 80
+            minWidth: 80,
         });
-        devicesMarkers.push(markerLayer);
-        setDevicesMarkers(devicesMarkers);
+        destLayer.addLayer(markerLayer);
 
-        return map.addLayer(markerLayer);
+        return map;
     }
 
+    // Add non editable devices
     useEffect(() => {
         if (devices && map) {
-            devicesMarkers.forEach((marker) => marker.remove());
-            setDevicesMarkers([]);
+            devicesLayer.eachLayer((layer) => layer.remove());
 
             let mapObj = map;
-            devices?.forEach((d: Device) => {
-                mapObj = addMarkerDevice(mapObj, d, deviceMarkerIcon, iconSize[1]);
+            devices.forEach((d: Device) => {
+                mapObj = addMarkerDevice(mapObj, d, deviceMarkerIcon, iconSize[1], devicesLayer);
             });
 
             setMap(mapObj);
         }
     }, [devices, map]);
+
+    // Add editable devices
+    useEffect(() => {
+        if (editableDevices && map) {
+            editableLayer.eachLayer((layer) => {
+                if (layer instanceof MarkerDevice) {
+                    layer.remove();
+                }
+            });
+
+            let mapObj = map;
+            editableDevices.forEach((editableDev: Device) => {
+                console.log("Add editable sniffer");
+                mapObj = addMarkerDevice(mapObj, editableDev, deviceMarkerIcon, iconSize[1], editableLayer);
+            });
+
+            mapObj = addEditingEventListeners(mapObj);
+            setMap(mapObj);
+        }
+    }, [editableDevices, map]);
+
+    useEffect(() => {
+        if (map) {
+            const newMap = addEditingEventListeners(map);
+            setMap(newMap);
+        }
+    }, [onCreateAreas, onDeleteAreas, onEditAreas, onEditDevices]);
 
     const interestPointMarkerIcon = new Icon({
         iconSize: iconSize, // size of the icon
