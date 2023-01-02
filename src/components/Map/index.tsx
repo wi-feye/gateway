@@ -294,7 +294,7 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                 //if (onCreateDevices) onCreateDevices([[coordLatLng.lng, coordLatLng.lat]]);
                 editableLayer.addLayer(marker);
             } else if (type === 'polygon') {
-                const poly = layer as PolygonArea;
+                const poly = layer as Polygon;
                 console.log('An area was created!', event);
                 poly.bindTooltip("New area",{
                     permanent: true,
@@ -302,8 +302,14 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
                     className: "leaflet-area-tooltip"
                 }).openTooltip();
                 const coords = getPolygonXYCoords(poly);
+                const polyArea = new PolygonArea(poly.getLatLngs(), poly.options, {
+                    id: -1,
+                    name: "New area",
+                    description: "A new area",
+                    location: coords
+                });
                 if (onCreateAreas && coords.length > 0) onCreateAreas([coords]);
-                areasLayer.addLayer(poly);
+                areasLayer.addLayer(polyArea);
             }
         });
 
@@ -417,11 +423,13 @@ export default function Map({ center, zoomSnap, height, whenReady, mapUrl, heatm
 
     const boundsGap = 0.05;
     useEffect(() => {
-        if (areas && map) {
-            areasLayer.eachLayer(layer => {
-                if (layer instanceof PolygonArea) layer.remove();
-            });
+        areasLayer.eachLayer(layer => {
+            if (layer instanceof PolygonArea) {
+                layer.remove();
+            }
+        });
 
+        if (areas && map) {
             let newMap = map;
             newMap = buildAreas(newMap, areas);
             newMap = addEditingEventListeners(newMap);
