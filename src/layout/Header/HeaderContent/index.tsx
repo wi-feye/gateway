@@ -22,9 +22,11 @@ const LogOutButton = () => {
             aria-label="logout"
             onClick={(event) => {
                 authLogout().then(() => {
+                    window.location.reload();
                     Router.push(loginRoute.url);
                 }).catch(error => {
                     console.log(error);
+                    window.location.reload();
                     Router.push(loginRoute.url);
                 })
             }}
