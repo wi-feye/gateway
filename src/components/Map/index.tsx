@@ -55,7 +55,7 @@ function buildPOIMarkerPopup(poi: PointOfInterest) {
     return (
         <Box sx={{ position: 'relative', display: 'inline-flex' }}>
             <Typography variant="h3" sx={{ mt: 0 }}>
-                Point of Interest affidability: {poi.likelihood*100}%
+                Point of Interest affidability: {(poi.likelihood*100).toFixed(2)}%
             </Typography>
         </Box>
     );
