@@ -10,7 +10,7 @@ export default class MyDocument extends Document {
                 <Head>
                     <meta name="description" content="Crowd Behavior Analysis" />
                     <link rel="icon" href="/favicon.ico" />
-
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
                     <meta name="application-name" content="WiFeye" />
                     <meta name="apple-mobile-web-app-capable" content="yes" />
                     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
